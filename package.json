@@ -13,10 +13,10 @@
   },
   "keywords": [
     "react",
+    "react-directive",
     "directive",
     "vue",
-    "babel",
-    "plugin",
+    "babel-plugin",
     "v-if",
     "v-else",
     "v-model",
