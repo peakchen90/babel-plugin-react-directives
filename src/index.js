@@ -6,7 +6,7 @@ const {
   findParentElement,
   getElementName
 } = require('./shared');
-const { transformIf } = require('./directives');
+const { traverseIf, transformIf } = require('./directives/if');
 
 
 module.exports = ({ types: t }) => {
@@ -14,6 +14,14 @@ module.exports = ({ types: t }) => {
     name: 'react-directives',
     inherits: SyntaxJSX,
     visitor: {
+      JSXElement(path, state) {
+        updateOpts(state.opts);
+        updateTypes(t);
+        const result = traverseIf(path.parentPath, true);
+        if (result.length > 0) {
+          transformIf(result);
+        }
+      },
       JSXAttribute(path, state) {
         const name = path.node.name.name;
         const element = findParentElement(path);
@@ -26,7 +34,7 @@ module.exports = ({ types: t }) => {
 
         switch (name) {
           case DIRECTIVES.IF:
-            transformIf(path, element);
+            // transformIf(path, element);
             break;
 
           case DIRECTIVES.ELSE:
@@ -34,7 +42,7 @@ module.exports = ({ types: t }) => {
             throw path.buildCodeFrameError(
               `${name} used on element <${getElementName(element)}> without corresponding ${DIRECTIVES.IF}.`
             );
-
+            // break;
           case DIRECTIVES.SHOW:
             break;
           case DIRECTIVES.FOR:

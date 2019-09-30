@@ -68,12 +68,12 @@ function getElementName(path) {
 }
 
 /**
- * 找出下一个或上一个可用的兄弟JSXElement
+ * 找出下一个可用的兄弟节点
  * @param path
  * @param findNext 查找下一个，默认true，false表示查找上一个
  * @return {NodePath|null}
  */
-function findSiblingElement(path, findNext = true) {
+function findNextSibling(path, findNext = true) {
   if (!path || !t.isJSXElement(path.node) || !path.inList) {
     return null;
   }
@@ -162,6 +162,29 @@ function throwAttributeCodeFrameError(parentPath, target, errorMsg) {
   });
 }
 
+/**
+ * 移出JSX指定属性
+ * @param path
+ * @param attrNode
+ */
+function removeJAXAttribute(path, attrNode) {
+  if (t.isJSXElement(path)) {
+    const attributes = path.node.openingElement.attributes;
+    path.node.openingElement.attributes = attributes.filter((attr) => attr !== attrNode);
+  }
+}
+
+/**
+ * 条件指令Element
+ */
+class ConditionalElement {
+  constructor(directive, path, attrNode) {
+    this.directive = directive;
+    this.path = path;
+    this.attrNode = attrNode;
+  }
+}
+
 module.exports = {
   DIRECTIVES,
   types,
@@ -169,8 +192,10 @@ module.exports = {
   updateTypes,
   findParentElement,
   getElementName,
-  findSiblingElement,
+  findNextSibling,
   findDirectiveAttribute,
   getAttributeValueExpression,
-  throwAttributeCodeFrameError
+  throwAttributeCodeFrameError,
+  removeJAXAttribute,
+  ConditionalElement
 };
