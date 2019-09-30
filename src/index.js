@@ -1,12 +1,19 @@
 const { default: SyntaxJSX } = require('@babel/plugin-syntax-jsx');
+
 const {
   DIRECTIVES,
   updateOpts,
   updateTypes,
-  findParentElement,
-  getElementName
+  findParentJSXElement,
+  getElementName,
+  getAttributeName,
+  findDirectiveAttribute
 } = require('./shared');
-const { traverseIf, transformIf } = require('./directives/if');
+
+const {
+  traverseIf,
+  transformIf
+} = require('./directives/if');
 
 
 module.exports = ({ types: t }) => {
@@ -17,32 +24,26 @@ module.exports = ({ types: t }) => {
       JSXElement(path, state) {
         updateOpts(state.opts);
         updateTypes(t);
-        const result = traverseIf(path.parentPath, true);
-        if (result.length > 0) {
-          transformIf(result);
+
+        // transform if
+        if (findDirectiveAttribute(path, DIRECTIVES.IF)) {
+          const result = traverseIf(path.parentPath, true);
+          if (result.length > 0) {
+            transformIf(result);
+          }
         }
       },
-      JSXAttribute(path, state) {
-        const name = path.node.name.name;
-        const element = findParentElement(path);
-        if (!name || !element) {
-          return;
-        }
-
-        updateOpts(state.opts);
-        updateTypes(t);
+      JSXAttribute(path) {
+        const name = getAttributeName(path);
+        let elementPath;
 
         switch (name) {
-          case DIRECTIVES.IF:
-            // transformIf(path, element);
-            break;
-
           case DIRECTIVES.ELSE:
           case DIRECTIVES.ELSE_IF:
+            elementPath = findParentJSXElement(path);
             throw path.buildCodeFrameError(
-              `${name} used on element <${getElementName(element)}> without corresponding ${DIRECTIVES.IF}.`
+              `${name} used on element <${getElementName(elementPath)}> without corresponding ${DIRECTIVES.IF}.`
             );
-            // break;
           case DIRECTIVES.SHOW:
             break;
           case DIRECTIVES.FOR:

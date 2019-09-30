@@ -50,8 +50,11 @@ function updateTypes(babelTypes) {
  * @param path
  * @return {NodePath<Node> | null}
  */
-function findParentElement(path) {
-  const JSXElement = path.findParent((parent) => parent.type === 'JSXElement');
+function findParentJSXElement(path) {
+  if (!path) {
+    return null;
+  }
+  const JSXElement = path.findParent((node) => t.isJSXElement(node));
   return JSXElement || null;
 }
 
@@ -68,21 +71,63 @@ function getElementName(path) {
 }
 
 /**
+ * 返回JSXAttribute属性名称
+ * @param path
+ * @return {string | JSXIdentifier|null}
+ */
+function getAttributeName(path) {
+  if (!path || !t.isJSXAttribute(path.node)) {
+    return null;
+  }
+  return path.node.name.name;
+}
+
+/**
+ * 返回属性值表达式
+ * @param path
+ * @return {null|*}
+ */
+function getAttributeValueExpression(path) {
+  if (!path) {
+    return null;
+  }
+
+  let value;
+  if (path.value) {
+    value = path.value;
+  } else if (path.node && path.node.value) {
+    value = path.node.value;
+  }
+  if (value) {
+    return value.expression || value;
+  }
+  return null;
+}
+
+/**
+ * 移出JSX指定属性
+ * @param path
+ * @param attrNode
+ */
+function removeJAXAttribute(path, attrNode) {
+  if (t.isJSXElement(path)) {
+    const attributes = path.node.openingElement.attributes;
+    path.node.openingElement.attributes = attributes.filter((attr) => attr !== attrNode);
+  }
+}
+
+/**
  * 找出下一个可用的兄弟节点
  * @param path
- * @param findNext 查找下一个，默认true，false表示查找上一个
  * @return {NodePath|null}
  */
-function findNextSibling(path, findNext = true) {
+function findNextSibling(path) {
   if (!path || !t.isJSXElement(path.node) || !path.inList) {
     return null;
   }
 
   let key = path.key;
-  const nextKey = () => {
-    key += (findNext ? 1 : -1);
-    return key;
-  };
+  const nextKey = () => ++key;
 
   let next = path.getSibling(nextKey());
   if (!next) {
@@ -122,35 +167,13 @@ function findDirectiveAttribute(path, directive) {
 }
 
 /**
- * 返回属性值表达式
- * @param path
- * @return {null|*}
- */
-function getAttributeValueExpression(path) {
-  if (!path) {
-    return null;
-  }
-
-  let value;
-  if (path.value) {
-    value = path.value;
-  } else if (path.node && path.node.value) {
-    value = path.node.value;
-  }
-  if (value) {
-    return value.expression || value;
-  }
-  return null;
-}
-
-/**
  * 抛出JSXAttribute代码帧错误
  * @param parentPath
  * @param target
  * @param errorMsg
  */
 function throwAttributeCodeFrameError(parentPath, target, errorMsg) {
-  if (!parentPath || !t.isJSXElement(parentPath.node)) {
+  if (!parentPath) {
     return;
   }
   parentPath.traverse({
@@ -160,18 +183,6 @@ function throwAttributeCodeFrameError(parentPath, target, errorMsg) {
       }
     }
   });
-}
-
-/**
- * 移出JSX指定属性
- * @param path
- * @param attrNode
- */
-function removeJAXAttribute(path, attrNode) {
-  if (t.isJSXElement(path)) {
-    const attributes = path.node.openingElement.attributes;
-    path.node.openingElement.attributes = attributes.filter((attr) => attr !== attrNode);
-  }
 }
 
 /**
@@ -190,12 +201,13 @@ module.exports = {
   types,
   updateOpts,
   updateTypes,
-  findParentElement,
+  findParentJSXElement,
   getElementName,
+  getAttributeName,
+  getAttributeValueExpression,
+  removeJAXAttribute,
   findNextSibling,
   findDirectiveAttribute,
-  getAttributeValueExpression,
   throwAttributeCodeFrameError,
-  removeJAXAttribute,
   ConditionalElement
 };
