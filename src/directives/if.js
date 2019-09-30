@@ -124,10 +124,10 @@ function traverseConditionalElement(path, _result) {
 
 /**
  * 转换一组条件语句
- * @param conditionalList
+ * @param conditions
  */
-function transform(conditionalList) {
-  const target = conditionalList[0];
+function transform(conditions) {
+  const target = conditions[0];
   const targetPath = target.path;
   const targetAttrNode = target.attrNode;
 
@@ -150,7 +150,7 @@ function transform(conditionalList) {
 
   targetPath.replaceWith(
     t.jSXExpressionContainer(
-      conditionalList.reduceRight((prev, curr) => {
+      conditions.reduceRight((prev, curr) => {
         const test = getAttributeValueExpression(curr.attrNode);
         removeJAXAttribute(curr.path, curr.attrNode);
 
@@ -191,13 +191,13 @@ function transform(conditionalList) {
 }
 
 /**
- * 转换 if / else / else-if
+ * 转换
  * @param traverseList
  */
 function transformIf(traverseList) {
-  traverseList.forEach((item) => {
-    if (item.length > 0) {
-      transform(item);
+  traverseList.forEach((conditions) => {
+    if (conditions.length > 0) {
+      transform(conditions);
     }
   });
 }
