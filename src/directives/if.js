@@ -31,13 +31,9 @@ let _traverseList = [];
 /**
  * 遍历包含 if 指令的 JSXElement
  * @param nodePath
- * @param reset
  * @return {Array}
  */
-function traverseIf(nodePath, reset = false) {
-  if (reset) {
-    _traverseList = [];
-  }
+function traverseIf(nodePath) {
   nodePath[HAS_TRAVERSED] = true;
 
   nodePath.traverse({
@@ -193,15 +189,15 @@ function transform(conditions) {
  * 转换if指令
  * @param traverseList
  */
-function transformIf(traverseList) {
-  traverseList.forEach((conditions) => {
+function transformIf(path) {
+  _traverseList = [];
+  traverseIf(path.parentPath);
+
+  _traverseList.forEach((conditions) => {
     if (conditions.length > 0) {
       transform(conditions);
     }
   });
 }
 
-module.exports = {
-  traverseIf,
-  transformIf
-};
+module.exports = transformIf;

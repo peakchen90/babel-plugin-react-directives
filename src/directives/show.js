@@ -112,6 +112,4 @@ function transformShow(path) {
   }
 }
 
-module.exports = {
-  transformShow
-};
+module.exports = transformShow;

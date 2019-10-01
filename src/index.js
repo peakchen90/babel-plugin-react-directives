@@ -1,5 +1,7 @@
 const assert = require('assert');
 const { fixTypes } = require('./compatible');
+const transformIf = require('./directives/if');
+const transformShow = require('./directives/show');
 const {
   DIRECTIVES,
   syncBabelAPI,
@@ -9,13 +11,6 @@ const {
   getAttributeName,
   findAttribute
 } = require('./shared');
-const {
-  traverseIf,
-  transformIf
-} = require('./directives/if');
-const {
-  transformShow
-} = require('./directives/show');
 
 
 module.exports = (babel) => {
@@ -49,10 +44,7 @@ module.exports = (babel) => {
 
         // transform if
         if (findAttribute(path, DIRECTIVES.IF)) {
-          const result = traverseIf(path.parentPath, true);
-          if (result.length > 0) {
-            transformIf(result);
-          }
+          transformIf(path);
         }
       },
       JSXAttribute(path) {
