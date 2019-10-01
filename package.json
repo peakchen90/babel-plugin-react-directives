@@ -44,8 +44,5 @@
     "lodash.mergewith": "^4.6.0",
     "path-exists": "^4.0.0",
     "strip-indent": "^3.0.0"
-  },
-  "jest": {
-    "verbose": true
   }
 }
