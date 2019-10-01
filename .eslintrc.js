@@ -35,5 +35,6 @@ module.exports = {
     'prefer-promise-reject-errors': 'off',
     'generator-star-spacing': 'off',
     'new-cap': 'off',
+    "no-cond-assign": "off"
   }
 };

@@ -4,9 +4,10 @@ const {
   getElementName,
   findNextSibling,
   findAttribute,
-  getAttributeValueExpression,
+  getAttributeBindingValue,
   throwAttributeCodeFrameError,
   removeJAXAttribute,
+  buildBooleanExpression,
   ConditionalElement
 } = require('../shared');
 
@@ -58,14 +59,13 @@ function traverseIf(nodePath, reset = false) {
  */
 function traverseConditionalElement(path, _result) {
   const result = _result || [];
+  let attrNode;
 
-  let attr;
-  // eslint-disable-next-line no-cond-assign
-  if (result.length === 0 && (attr = findAttribute(path, DIRECTIVES.IF))) {
-    if (!attr.value) {
+  if (result.length === 0 && (attrNode = findAttribute(path, DIRECTIVES.IF))) {
+    if (!attrNode.value) {
       throwAttributeCodeFrameError(
         path,
-        attr,
+        attrNode,
         `${DIRECTIVES.IF} used on elementPath <${getElementName(path)}> without binding value`
       );
     }
@@ -73,7 +73,7 @@ function traverseConditionalElement(path, _result) {
     result.push(new ConditionalElement(
       DIRECTIVES.IF,
       path,
-      attr
+      attrNode
     ));
   }
 
@@ -84,12 +84,12 @@ function traverseConditionalElement(path, _result) {
 
   // 查找else-if指令
   const nextPath = findNextSibling(path);
-  attr = findAttribute(nextPath, DIRECTIVES.ELSE_IF);
-  if (attr) {
-    if (!attr.value) {
+  attrNode = findAttribute(nextPath, DIRECTIVES.ELSE_IF);
+  if (attrNode) {
+    if (!attrNode.value) {
       throwAttributeCodeFrameError(
         nextPath,
-        attr,
+        attrNode,
         `${DIRECTIVES.ELSE_IF} used on elementPath <${getElementName(nextPath)}> without binding value`
       );
     }
@@ -97,18 +97,18 @@ function traverseConditionalElement(path, _result) {
     result.push(new ConditionalElement(
       DIRECTIVES.ELSE_IF,
       nextPath,
-      attr
+      attrNode
     ));
     return traverseConditionalElement(nextPath, result);
   }
 
   // 查找else指令
-  attr = findAttribute(nextPath, DIRECTIVES.ELSE);
-  if (attr) {
-    if (attr.value) {
+  attrNode = findAttribute(nextPath, DIRECTIVES.ELSE);
+  if (attrNode) {
+    if (attrNode.value) {
       throwAttributeCodeFrameError(
         nextPath,
-        attr,
+        attrNode,
         `${DIRECTIVES.ELSE} used on elementPath <${getElementName(nextPath)}> should not have a binding value`
       );
     }
@@ -116,7 +116,7 @@ function traverseConditionalElement(path, _result) {
     result.push(new ConditionalElement(
       DIRECTIVES.ELSE,
       nextPath,
-      attr
+      attrNode
     ));
   }
   return result;
@@ -127,32 +127,33 @@ function traverseConditionalElement(path, _result) {
  * @param conditions
  */
 function transform(conditions) {
-  const target = conditions[0];
-  const targetPath = target.path;
-  const targetAttrNode = target.attrNode;
+  const current = conditions[0];
+  const path = current.path;
+  const attrNode = current.attrNode;
 
   // 移出 if 属性
-  removeJAXAttribute(targetPath, targetAttrNode);
+  removeJAXAttribute(path, attrNode);
 
   // 根节点使用 if 指令
-  if (!t.isJSXElement(targetPath.parent) && !t.isJSXFragment(targetPath.parent)) {
-    targetPath.replaceWith(
+  if (!t.isJSXElement(path.parent) && !t.isJSXFragment(path.parent)) {
+    path.replaceWith(
       t.logicalExpression(
         '&&',
-        t.expressionStatement(
-          t.unaryExpression('!', t.unaryExpression('!', getAttributeValueExpression(targetAttrNode), true), true)
-        ).expression,
-        targetPath.node
+        buildBooleanExpression(
+          getAttributeBindingValue(attrNode)
+        ),
+        path.node
       )
     );
     return;
   }
 
-  targetPath.replaceWith(
+  path.replaceWith(
     t.jSXExpressionContainer(
       conditions.reduceRight((prev, curr) => {
-        const test = getAttributeValueExpression(curr.attrNode);
         removeJAXAttribute(curr.path, curr.attrNode);
+
+        const test = getAttributeBindingValue(curr.attrNode);
 
         if (!prev) {
           // 最后一个节点是else
@@ -163,13 +164,11 @@ function transform(conditions) {
             };
           }
           return {
-            expression: t.expressionStatement(
-              t.conditionalExpression(
-                test,
-                curr.path.node,
-                t.identifier('null')
-              )
-            ).expression,
+            expression: t.conditionalExpression(
+              test,
+              curr.path.node,
+              t.identifier('null')
+            ),
             removed: curr.path
           };
         }
@@ -182,7 +181,7 @@ function transform(conditions) {
         prev.removed.remove();
 
         return {
-          expression: t.expressionStatement(conditionalExpression).expression,
+          expression: conditionalExpression,
           removed: curr.path
         };
       }, null).expression
@@ -191,7 +190,7 @@ function transform(conditions) {
 }
 
 /**
- * 转换
+ * 转换if指令
  * @param traverseList
  */
 function transformIf(traverseList) {

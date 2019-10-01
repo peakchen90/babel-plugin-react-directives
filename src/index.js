@@ -1,5 +1,5 @@
 const assert = require('assert');
-const { fixTypes } = require('./fix');
+const { fixTypes } = require('./compatible');
 const {
   DIRECTIVES,
   syncBabelAPI,
@@ -13,10 +13,13 @@ const {
   traverseIf,
   transformIf
 } = require('./directives/if');
+const {
+  transformShow
+} = require('./directives/show');
 
 
 module.exports = (babel) => {
-  // babel最低版本是6
+  // 最低支持babel v6.0.0
   const majorVersion = Number(babel.version.split('.')[0]);
   assert(majorVersion >= 6, 'The minimum supported version is babel v6.0.0');
 
@@ -38,6 +41,12 @@ module.exports = (babel) => {
       JSXElement(path, state) {
         syncOptions(state.opts);
 
+        let attrNode;
+
+        if (attrNode = findAttribute(path, DIRECTIVES.SHOW)) {
+          transformShow(path, attrNode);
+        }
+
         // transform if
         if (findAttribute(path, DIRECTIVES.IF)) {
           const result = traverseIf(path.parentPath, true);
@@ -58,8 +67,9 @@ module.exports = (babel) => {
               `${name} used on element <${getElementName(elementPath)}> without corresponding ${DIRECTIVES.IF}.`
             );
           case DIRECTIVES.SHOW:
-            // console.log(path);
-            break;
+            throw path.buildCodeFrameError(
+              `There should be no more than one directive: ${name}`
+            );
           case DIRECTIVES.FOR:
             break;
           case DIRECTIVES.MODEL:

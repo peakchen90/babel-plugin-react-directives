@@ -1,3 +1,5 @@
+const assert = require('assert');
+
 // babel api
 const babel = {
   types: {}
@@ -50,6 +52,13 @@ function syncBabelAPI(babelAPI) {
  * @param _opts
  */
 function syncOptions(options = {}) {
+  const { prefix } = options;
+
+  assert(
+    prefix === undefined || (typeof options.prefix === 'string' && options.prefix.length > 0),
+    'The `prefix` option should be a non-empty string.'
+  );
+
   opts = {
     prefix: 'rd',
     ...options
@@ -99,7 +108,7 @@ function getAttributeName(path) {
  * @param attrNode
  * @return {null|*}
  */
-function getAttributeValueExpression(attrNode) {
+function getAttributeBindingValue(attrNode) {
   if (!attrNode) {
     return null;
   }
@@ -155,10 +164,10 @@ function findNextSibling(path) {
 }
 
 /**
- * 找到JSXElement的指令属性
+ * 找到JSXElement的指定属性
  * @param path
  * @param attrName
- * @return {Array<JSXAttribute | JSXSpreadAttribute>|(JSXAttribute | JSXSpreadAttribute | null)|null}
+ * @return {null|*|null}
  */
 function findAttribute(path, attrName) {
   if (!path || !t.isJSXElement(path.node)) {
@@ -166,10 +175,6 @@ function findAttribute(path, attrName) {
   }
 
   const attributes = path.node.openingElement.attributes;
-  if (!attrName) {
-    return attributes;
-  }
-
   const result = attributes.find((attrNode) => (
     t.isJSXAttribute(attrNode)
     && attrNode.name.name === attrName
@@ -178,22 +183,70 @@ function findAttribute(path, attrName) {
 }
 
 /**
+ * 找到JSXElement的所有属性
+ * @param path
+ * @return {null|Array}
+ */
+function getAttributes(path) {
+  if (!path || !t.isJSXElement(path.node)) {
+    return null;
+  }
+
+  return path.node.openingElement.attributes;
+}
+
+/**
+ * 遍历出所有的属性
+ * @param path
+ * @return {null|Array}
+ */
+function traverseAttributes(path) {
+  if (!path || !t.isJSXElement(path.node)) {
+    return null;
+  }
+
+  const result = [];
+  path.traverse({
+    JSXAttribute(_path) {
+      result.push(_path);
+    },
+    JSXSpreadAttribute(_path) {
+      result.push(_path);
+    }
+  });
+  return result;
+}
+
+/**
  * 抛出JSXAttribute代码帧错误
- * @param parentPath
- * @param target
+ * @param path
+ * @param attrNode
  * @param errorMsg
  */
-function throwAttributeCodeFrameError(parentPath, target, errorMsg) {
-  if (!parentPath) {
+function throwAttributeCodeFrameError(path, attrNode, errorMsg) {
+  if (!path) {
     return;
   }
-  parentPath.traverse({
-    JSXAttribute(path) {
-      if (path.node === target) {
-        throw path.buildCodeFrameError(errorMsg);
+  path.traverse({
+    JSXAttribute(_path) {
+      if (_path.node === attrNode) {
+        throw _path.buildCodeFrameError(errorMsg);
       }
     }
   });
+}
+
+/**
+ * 构建一个Boolean表达式
+ * @param expression
+ * @return {*}
+ */
+function buildBooleanExpression(expression) {
+  return t.unaryExpression(
+    '!',
+    t.unaryExpression('!', expression, true),
+    true
+  );
 }
 
 /**
@@ -217,10 +270,13 @@ module.exports = {
   findParentJSXElement,
   getElementName,
   getAttributeName,
-  getAttributeValueExpression,
+  getAttributeBindingValue,
   removeJAXAttribute,
   findNextSibling,
   findAttribute,
+  getAttributes,
+  traverseAttributes,
   throwAttributeCodeFrameError,
+  buildBooleanExpression,
   ConditionalElement
 };
