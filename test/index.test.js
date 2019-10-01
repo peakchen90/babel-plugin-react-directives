@@ -9,10 +9,10 @@ function runTest(versionNum) {
   let babel;
 
   if (versionNum === 6) {
-    pluginTester = require('./babel6/plugin-tester');
+    pluginTester = require('./plugin-tester');
     babel = require('./babel6/node_modules/babel-core');
   } else {
-    pluginTester = require('babel-plugin-tester');
+    pluginTester = require('./plugin-tester');
     babel = require('./babel7/node_modules/@babel/core');
   }
 
@@ -24,9 +24,9 @@ function runTest(versionNum) {
     plugin: require('../src'),
     title: `babel${versionNum}`,
     filename: __filename,
-    endOfLine: 'lf',
     fixtures: path.join(__dirname, './__fixtures__'),
     tests: [],
+    formatResult: (result) => result.replace(/\s+(\/>)/g, '$1')
   });
 }
 

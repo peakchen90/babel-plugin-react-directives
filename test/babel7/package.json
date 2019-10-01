@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "@babel/core": "7.6.2",
-    "babel-plugin-tester": "7.0.1"
+    "@babel/core": "7.6.2"
   }
 }

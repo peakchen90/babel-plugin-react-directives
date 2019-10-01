@@ -1,14 +1,13 @@
 // babel api
-const babelAPI = {
+const babel = {
   types: {}
 };
-const types = babelAPI.types;
+const types = babel.types;
 const t = types;
 
 // plugin option
-const opts = {
-  prefix: 'rd'
-};
+let opts = {};
+
 
 // 指令名
 const DIRECTIVES = {
@@ -33,26 +32,30 @@ const DIRECTIVES = {
 };
 
 /**
- * 更新types
- * @param api
+ * 同步babel api
+ * @param babelAPI
  */
-function updateAPI(api) {
-  Object.keys(api).forEach((key) => {
+function syncBabelAPI(babelAPI) {
+  Object.keys(babelAPI).forEach((key) => {
     if (key === 'types') {
-      Object.assign(babelAPI.types, api.types);
+      Object.assign(babel.types, babelAPI.types);
     } else {
-      babelAPI[key] = api[key];
+      babel[key] = babelAPI[key];
     }
   });
 }
 
 /**
- * 更新opts
+ * 更新插件options
  * @param _opts
  */
-function updateOpts(_opts = {}) {
-  Object.assign(opts, _opts);
+function syncOptions(options = {}) {
+  opts = {
+    prefix: 'rd',
+    ...options
+  };
 }
+
 
 /**
  * 查找父级的JSXElement
@@ -194,7 +197,7 @@ function throwAttributeCodeFrameError(parentPath, target, errorMsg) {
 }
 
 /**
- * 条件指令Element
+ * 条件指令Class
  */
 class ConditionalElement {
   constructor(directive, path, attrNode) {
@@ -204,11 +207,13 @@ class ConditionalElement {
   }
 }
 
+
 module.exports = {
   DIRECTIVES,
   types,
-  updateAPI,
-  updateOpts,
+  babel,
+  syncBabelAPI,
+  syncOptions,
   findParentJSXElement,
   getElementName,
   getAttributeName,

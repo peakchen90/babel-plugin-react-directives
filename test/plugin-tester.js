@@ -1,6 +1,6 @@
 /**
- * 基于 babel-plugin-tester@5.5.2 修改
- * https://github.com/babel-utils/babel-plugin-tester/blob/v5.5.2/src/index.js
+ * 基于 babel-plugin-tester@7.0.1 修改，兼容babel6
+ * https://github.com/babel-utils/babel-plugin-tester/blob/v7.0.1/src/index.js
  */
 
 /* eslint-disable */
@@ -8,13 +8,26 @@ const assert = require('assert');
 const path = require('path');
 const fs = require('fs');
 const pathExists = require('path-exists');
-const merge = require('lodash.merge');
+const { EOL } = require('os');
+const mergeWith = require('lodash.mergewith');
 const invariant = require('invariant');
 const stripIndent = require('strip-indent');
 const { oneLine } = require('common-tags');
 
 const noop = () => {
 };
+
+// thanks to node throwing an error if you try to use instanceof with an arrow
+// function we have to have this function. I guess it's spec... SMH...
+// NOTE: I tried doing the "proper thing" using Symbol.hasInstance
+// but no matter what that did, I couldn't make that work with a SyntaxError
+// because SyntaxError[Symbol.hasInstance]() returns false. What. The. Heck!?
+// So I'm doing this .prototype stuff :-/
+function instanceOf(inst, cls) {
+  return cls.prototype !== undefined && inst instanceof cls;
+}
+
+module.exports = pluginTester;
 
 const fullDefaultConfig = {
   babelOptions: {
@@ -24,11 +37,17 @@ const fullDefaultConfig = {
   },
 };
 
-// eslint-disable-next-line max-lines-per-function
-module.exports = function pluginTester(
+function mergeCustomizer(objValue, srcValue) {
+  if (Array.isArray(objValue)) {
+    return objValue.concat(srcValue);
+  }
+  return undefined;
+}
+
+function pluginTester(
   {
     /* istanbul ignore next (TODO: write a test for this) */
-    babel = require('babel-core'),
+    babel = require('@babel/core'),
     plugin = requiredParam('plugin'),
     pluginName = getPluginName(plugin, babel),
     title: describeBlockTitle = pluginName,
@@ -37,6 +56,7 @@ module.exports = function pluginTester(
     fixtures,
     fixtureOutputName = 'output',
     filename,
+    endOfLine = 'lf',
     ...rest
   } = {}
 ) {
@@ -51,20 +71,22 @@ module.exports = function pluginTester(
       fixtureOutputName,
       filename,
       babel,
+      endOfLine,
       ...rest,
     });
   }
   const testAsArray = toTestArray(tests);
   if (!testAsArray.length) {
-    return Promise.resolve();
+    return;
   }
-  const testerConfig = merge({}, fullDefaultConfig, rest);
+  const testerConfig = mergeWith({}, fullDefaultConfig, rest, mergeCustomizer);
 
   describe(describeBlockTitle, () => {
     testAsArray.forEach((testConfig) => {
       if (!testConfig) {
-        return Promise.resolve();
+        return;
       }
+
       const {
         skip,
         only,
@@ -77,7 +99,7 @@ module.exports = function pluginTester(
         setup = noop,
         teardown,
         formatResult = (r) => r,
-      } = merge({}, testerConfig, toTestConfig(testConfig));
+      } = mergeWith({}, testerConfig, toTestConfig(testConfig), mergeCustomizer);
       assert(
         (!skip && !only) || skip !== only,
         'Cannot enable both skip and only on a test',
@@ -85,14 +107,13 @@ module.exports = function pluginTester(
 
       if (skip) {
         // eslint-disable-next-line jest/no-disabled-tests
-        return it.skip(title, testerWrapper);
-      }
-      if (only) {
+        it.skip(title, testerWrapper);
+      } else if (only) {
         // eslint-disable-next-line jest/no-focused-tests
-        return it.only(title, testerWrapper);
+        it.only(title, testerWrapper);
+      } else {
+        it(title, testerWrapper);
       }
-      return it(title, testerWrapper);
-
 
       async function testerWrapper() {
         const teardowns = teardown ? [teardown] : [];
@@ -143,7 +164,13 @@ module.exports = function pluginTester(
         let errored = false;
 
         try {
-          result = formatResult(babel.transform(code, babelOptions).code.trim());
+          result = formatResult(
+            fixLineEndings(
+              babel.transform(code, babelOptions).code,
+              endOfLine,
+              code,
+            ),
+          );
         } catch (err) {
           if (error) {
             errored = true;
@@ -176,8 +203,8 @@ module.exports = function pluginTester(
           assert.equal(result, output, 'Output is incorrect.');
         } else {
           assert.equal(
-            result,
-            code,
+            result.trim(),
+            code.trim(),
             'Expected output to not change, but it did',
           );
         }
@@ -197,7 +224,7 @@ module.exports = function pluginTester(
       output = getCode(filename, testConfig.outputFixture) || undefined,
       pluginOptions: testOptions = pluginOptions,
     } = testConfig;
-    return merge(
+    return mergeWith(
       {
         babelOptions: { filename: getPath(filename, fixture) },
       },
@@ -208,9 +235,42 @@ module.exports = function pluginTester(
         code: stripIndent(code).trim(),
         ...(output ? { output: stripIndent(output).trim() } : {}),
       },
+      mergeCustomizer,
     );
   }
-};
+}
+
+function removeMultipleSpaces(str) {
+  return str.replace(/\s+/g, ' ').trim();
+}
+
+function fixLineEndings(code, endOfLine, input) {
+  return code.replace(/\r?\n/g, getReplacement());
+
+  function getReplacement() {
+    switch (endOfLine) {
+      case 'lf': {
+        return '\n';
+      }
+      case 'crlf': {
+        return '\r\n';
+      }
+      case 'auto': {
+        return EOL;
+      }
+      case 'preserve': {
+        const match = input.match(/\r?\n/);
+        if (match === null) {
+          return EOL;
+        }
+        return match[0];
+      }
+      default: {
+        throw new Error("Invalid 'endOfLine' value");
+      }
+    }
+  }
+}
 
 const createFixtureTests = (fixturesDir, options) => {
   if (!fs.statSync(fixturesDir).isDirectory()) return;
@@ -226,14 +286,16 @@ const createFixtureTests = (fixturesDir, options) => {
     const optionsPath = path.join(fixtureDir, 'options.json');
     const jsCodePath = path.join(fixtureDir, 'code.js');
     const tsCodePath = path.join(fixtureDir, 'code.ts');
+    const jsxCodePath = path.join(fixtureDir, 'code.jsx');
+    const tsxCodePath = path.join(fixtureDir, 'code.tsx');
     const blockTitle = caseName.split('-').join(' ');
     const codePath = (pathExists.sync(jsCodePath) && jsCodePath)
-      || (pathExists.sync(tsCodePath) && tsCodePath);
-
-    // 读取options
-    let fixturePluginOptions = {}
+      || (pathExists.sync(tsCodePath) && tsCodePath)
+      || (pathExists.sync(jsxCodePath) && jsxCodePath)
+      || (pathExists.sync(tsxCodePath) && tsxCodePath);
+    let fixturePluginOptions = {};
     if (pathExists.sync(optionsPath)) {
-      fixturePluginOptions = require(optionsPath)
+      fixturePluginOptions = require(optionsPath);
     }
 
     if (!codePath) {
@@ -245,20 +307,26 @@ const createFixtureTests = (fixturesDir, options) => {
             ...options.pluginOptions,
             ...fixturePluginOptions,
           },
-        })
+        });
       });
       return;
     }
 
-    const ext = /\.ts$/.test(codePath) ? '.ts' : '.js';
+    const ext = `.${codePath.split('.').pop()}`;
     it(blockTitle, () => {
       const {
-        plugin, pluginOptions, fixtureOutputName, babel, ...rest
+        plugin,
+        pluginOptions,
+        fixtureOutputName,
+        babel,
+        endOfLine,
+        formatResult = (r) => r,
+        ...rest
       } = options;
 
       const babelRcPath = path.join(fixtureDir, '.babelrc');
 
-      const { babelOptions } = merge(
+      const { babelOptions } = mergeWith(
         {},
         fullDefaultConfig,
         {
@@ -270,8 +338,8 @@ const createFixtureTests = (fixturesDir, options) => {
                   ...rootFixtureOptions,
                   ...pluginOptions,
                   ...fixturePluginOptions,
-                }
-              ]
+                },
+              ],
             ],
             // if they have a babelrc, then we'll let them use that
             // otherwise, we'll just use our simple config
@@ -279,8 +347,30 @@ const createFixtureTests = (fixturesDir, options) => {
           },
         },
         rest,
+        mergeCustomizer,
       );
-      const actual = babel.transformFileSync(codePath, babelOptions).code.trim();
+
+      const input = fs.readFileSync(codePath).toString();
+
+      let actual;
+
+      if (babel.transformSync) { // babel 7
+        actual = formatResult(
+          fixLineEndings(
+            babel.transformSync(input, { ...babelOptions, filename: codePath }).code,
+            endOfLine,
+            input,
+          ),
+        );
+      } else { // babel 6
+        actual = formatResult(
+          fixLineEndings(
+            babel.transformFileSync(codePath, babelOptions).code,
+            endOfLine,
+            input,
+          ),
+        );
+      }
 
       const outputPath = path.join(fixtureDir, `${fixtureOutputName}${ext}`);
 
@@ -289,11 +379,11 @@ const createFixtureTests = (fixturesDir, options) => {
         return;
       }
 
-      const output = fs.readFileSync(outputPath, 'utf8').trim();
+      const output = fs.readFileSync(outputPath, 'utf8');
 
       assert.equal(
-        actual,
-        output,
+        removeMultipleSpaces(actual),
+        removeMultipleSpaces(output),
         `actual output does not match ${fixtureOutputName}${ext}`,
       );
     });
@@ -352,11 +442,11 @@ function getPath(filename, basename) {
 // eslint-disable-next-line complexity
 function assertError(result, error) {
   if (typeof error === 'function') {
-    if (!(result instanceof error || error(result) === true)) {
+    if (!(instanceOf(result, error) || error(result) === true)) {
       throw result;
     }
   } else if (typeof error === 'string') {
-    assert.equal(result.message, error, 'Error message is incorrect');
+    assert(result.message.includes(error), 'Error message is incorrect');
   } else if (error instanceof RegExp) {
     assert(
       error.test(result.message),

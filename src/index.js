@@ -1,35 +1,33 @@
 const assert = require('assert');
 const { fixTypes } = require('./fix');
-
 const {
   DIRECTIVES,
-  updateAPI,
-  updateOpts,
+  syncBabelAPI,
+  syncOptions,
   findParentJSXElement,
   getElementName,
   getAttributeName,
   findAttribute
 } = require('./shared');
-
 const {
   traverseIf,
   transformIf
 } = require('./directives/if');
 
 
-module.exports = (api) => {
+module.exports = (babel) => {
   // babel最低版本是6
-  const majorVersion = Number(api.version.split('.')[0]);
+  const majorVersion = Number(babel.version.split('.')[0]);
   assert(majorVersion >= 6, 'The minimum supported version is babel v6.0.0');
 
   let JSXSyntax;
 
   if (majorVersion === 6) {
-    fixTypes(api.types);
-    updateAPI(api);
+    fixTypes(babel.types);
+    syncBabelAPI(babel);
     JSXSyntax = require('babel-plugin-syntax-jsx');
   } else {
-    updateAPI(api);
+    syncBabelAPI(babel);
     JSXSyntax = require('@babel/plugin-syntax-jsx').default;
   }
 
@@ -38,7 +36,7 @@ module.exports = (api) => {
     inherits: JSXSyntax,
     visitor: {
       JSXElement(path, state) {
-        updateOpts(state.opts);
+        syncOptions(state.opts);
 
         // transform if
         if (findAttribute(path, DIRECTIVES.IF)) {
@@ -60,7 +58,7 @@ module.exports = (api) => {
               `${name} used on element <${getElementName(elementPath)}> without corresponding ${DIRECTIVES.IF}.`
             );
           case DIRECTIVES.SHOW:
-            console.log(path);
+            // console.log(path);
             break;
           case DIRECTIVES.FOR:
             break;
