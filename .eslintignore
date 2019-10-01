@@ -1,3 +1,3 @@
 node_modules
 test/coverage
-test/__fixtures__
+test/fixtures
