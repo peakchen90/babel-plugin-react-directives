@@ -9,7 +9,6 @@ const {
   findParentJSXElement,
   getElementName,
   getAttributeName,
-  findAttribute
 } = require('./shared');
 
 
@@ -35,32 +34,29 @@ module.exports = (babel) => {
     visitor: {
       JSXElement(path, state) {
         syncOptions(state.opts);
-
-        let attrNode;
-
-        if (attrNode = findAttribute(path, DIRECTIVES.SHOW)) {
-          transformShow(path, attrNode);
-        }
-
-        // transform if
-        if (findAttribute(path, DIRECTIVES.IF)) {
-          transformIf(path);
-        }
+        // transform directive show
+        transformShow(path);
+        // transform directive if
+        transformIf(path);
       },
       JSXAttribute(path) {
         const name = getAttributeName(path);
         let elementPath;
 
         switch (name) {
+          case DIRECTIVES.IF:
+            throw path.buildCodeFrameError(
+              `There should be no more than one directive: \`${name}\``
+            );
           case DIRECTIVES.ELSE:
           case DIRECTIVES.ELSE_IF:
             elementPath = findParentJSXElement(path);
             throw path.buildCodeFrameError(
-              `${name} used on element <${getElementName(elementPath)}> without corresponding ${DIRECTIVES.IF}.`
+              `\`${name}\` used on element <${getElementName(elementPath)}> without corresponding \`${DIRECTIVES.IF}\`.`
             );
           case DIRECTIVES.SHOW:
             throw path.buildCodeFrameError(
-              `There should be no more than one directive: ${name}`
+              `There should be no more than one directive: \`${name}\``
             );
           case DIRECTIVES.FOR:
             break;

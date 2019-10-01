@@ -72,6 +72,7 @@ function syncOptions(options = {}) {
  * @return {NodePath<Node> | null}
  */
 function findParentJSXElement(path) {
+  /* istanbul ignore if: fault tolerant control */
   if (!path) {
     return null;
   }
@@ -85,6 +86,7 @@ function findParentJSXElement(path) {
  * @return {string | JSXIdentifier|null}
  */
 function getElementName(path) {
+  /* istanbul ignore if: fault tolerant control */
   if (!path || !t.isJSXElement(path.node)) {
     return null;
   }
@@ -97,6 +99,7 @@ function getElementName(path) {
  * @return {string | JSXIdentifier|null}
  */
 function getAttributeName(path) {
+  /* istanbul ignore if: fault tolerant control */
   if (!path || !t.isJSXAttribute(path.node)) {
     return null;
   }
@@ -109,6 +112,7 @@ function getAttributeName(path) {
  * @return {null|*}
  */
 function getAttributeBindingValue(attrNode) {
+  /* istanbul ignore if: fault tolerant control */
   if (!attrNode) {
     return null;
   }
@@ -125,9 +129,16 @@ function getAttributeBindingValue(attrNode) {
  * @param attrNode
  */
 function removeJAXAttribute(path, attrNode) {
+  /* istanbul ignore else: fault tolerant control */
   if (t.isJSXElement(path)) {
-    const attributes = path.node.openingElement.attributes;
-    path.node.openingElement.attributes = attributes.filter((attr) => attr !== attrNode);
+    path.traverse({
+      JSXAttribute(nodePath) {
+        if (nodePath.node === attrNode) {
+          nodePath.remove();
+          nodePath.stop();
+        }
+      }
+    });
   }
 }
 
@@ -137,6 +148,7 @@ function removeJAXAttribute(path, attrNode) {
  * @return {NodePath|null}
  */
 function findNextSibling(path) {
+  /* istanbul ignore if: fault tolerant control */
   if (!path || !t.isJSXElement(path.node) || !path.inList) {
     return null;
   }
@@ -145,6 +157,7 @@ function findNextSibling(path) {
   const nextKey = () => ++key;
 
   let next = path.getSibling(nextKey());
+  /* istanbul ignore if: fault tolerant control */
   if (!next) {
     return null;
   }
@@ -170,6 +183,7 @@ function findNextSibling(path) {
  * @return {null|*|null}
  */
 function findAttribute(path, attrName) {
+  /* istanbul ignore if: fault tolerant control */
   if (!path || !t.isJSXElement(path.node)) {
     return null;
   }
@@ -188,6 +202,7 @@ function findAttribute(path, attrName) {
  * @return {null|Array}
  */
 function getAttributes(path) {
+  /* istanbul ignore if: fault tolerant control */
   if (!path || !t.isJSXElement(path.node)) {
     return null;
   }
@@ -201,6 +216,7 @@ function getAttributes(path) {
  * @return {null|Array}
  */
 function traverseAttributes(path) {
+  /* istanbul ignore if: fault tolerant control */
   if (!path || !t.isJSXElement(path.node)) {
     return null;
   }
@@ -224,6 +240,7 @@ function traverseAttributes(path) {
  * @param errorMsg
  */
 function throwAttributeCodeFrameError(path, attrNode, errorMsg) {
+  /* istanbul ignore if: fault tolerant control */
   if (!path) {
     return;
   }

@@ -1,5 +1,8 @@
 /**
- * 基于 babel-plugin-tester@7.0.1 修改，兼容babel6
+ * 基于 babel-plugin-tester@7.0.1 修改：
+ *   1. 兼容babel6
+ *   2. 支持fixtures文件夹下配置error.js断言错误
+ *
  * https://github.com/babel-utils/babel-plugin-tester/blob/v7.0.1/src/index.js
  */
 
@@ -284,6 +287,7 @@ const createFixtureTests = (fixturesDir, options) => {
   fs.readdirSync(fixturesDir).forEach((caseName) => {
     const fixtureDir = path.join(fixturesDir, caseName);
     const optionsPath = path.join(fixtureDir, 'options.json');
+    const errorPath = path.join(fixtureDir, 'error.js');
     const jsCodePath = path.join(fixtureDir, 'code.js');
     const tsCodePath = path.join(fixtureDir, 'code.ts');
     const jsxCodePath = path.join(fixtureDir, 'code.jsx');
@@ -296,6 +300,10 @@ const createFixtureTests = (fixturesDir, options) => {
     let fixturePluginOptions = {};
     if (pathExists.sync(optionsPath)) {
       fixturePluginOptions = require(optionsPath);
+    }
+    let error = null;
+    if (pathExists.sync(errorPath)) {
+      error = require(errorPath);
     }
 
     if (!codePath) {
@@ -353,27 +361,42 @@ const createFixtureTests = (fixturesDir, options) => {
       const input = fs.readFileSync(codePath).toString();
 
       let actual;
+      let errored = false;
 
-      if (babel.transformSync) { // babel 7
-        actual = formatResult(
-          fixLineEndings(
-            babel.transformSync(input, { ...babelOptions, filename: codePath }).code,
-            endOfLine,
-            input,
-          ),
-        );
-      } else { // babel 6
-        actual = formatResult(
-          fixLineEndings(
-            babel.transformFileSync(codePath, babelOptions).code,
-            endOfLine,
-            input,
-          ),
-        );
+      try {
+        if (babel.transformSync) { // babel 7
+          actual = formatResult(
+            fixLineEndings(
+              babel.transformSync(input, { ...babelOptions, filename: codePath }).code,
+              endOfLine,
+              input,
+            ),
+          );
+        } else { // babel 6
+          actual = formatResult(
+            fixLineEndings(
+              babel.transformFileSync(codePath, babelOptions).code,
+              endOfLine,
+              input,
+            ),
+          );
+        }
+      } catch (e) {
+        if (error) {
+          assertError(e, error)
+          errored = true;
+          return;
+        } else {
+          throw e;
+        }
       }
 
-      const outputPath = path.join(fixtureDir, `${fixtureOutputName}${ext}`);
+      assert(
+        !error || errored,
+        'Expected to throw error, but it did not.',
+      );
 
+      const outputPath = path.join(fixtureDir, `${fixtureOutputName}${ext}`);
       if (!fs.existsSync(outputPath)) {
         fs.writeFileSync(outputPath, actual);
         return;

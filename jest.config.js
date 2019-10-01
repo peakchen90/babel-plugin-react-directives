@@ -7,6 +7,7 @@ module.exports = {
   coverageDirectory: '<rootDir>/test/coverage',
   coveragePathIgnorePatterns: [
     'node_modules',
-    'test/plugin-tester.js'
+    'test/plugin-tester.js',
+    'test/fixtures'
   ]
 };

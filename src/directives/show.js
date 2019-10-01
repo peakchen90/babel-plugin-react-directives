@@ -25,7 +25,7 @@ function transformShow(path) {
     throw throwAttributeCodeFrameError(
       path,
       attrNode,
-      `${DIRECTIVES.SHOW} used on elementPath <${getElementName(path)}> without binding value`
+      `\`${DIRECTIVES.SHOW}\` used on element <${getElementName(path)}> without binding value`
     );
   }
 

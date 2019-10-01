@@ -25,6 +25,7 @@ function runTest(versionNum) {
     title: `babel${versionNum}`,
     filename: __filename,
     fixtures: path.join(__dirname, './fixtures'),
+    endOfLine: 'lf',
     tests: [],
     formatResult: (result) => result.replace(/\s+(\/>)/g, '$1')
   });
