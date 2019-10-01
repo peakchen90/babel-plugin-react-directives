@@ -1,0 +1,16 @@
+language: node_js
+
+node_js:
+  - "11"
+
+install:
+  - npm install
+  - npm install -g codecov
+  - npm run test:install
+
+script:
+  - npm run test
+  - codecov
+
+notifications:
+  email: false
