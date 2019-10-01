@@ -3,7 +3,7 @@ const {
   types: t,
   getElementName,
   findNextSibling,
-  findDirectiveAttribute,
+  findAttribute,
   getAttributeValueExpression,
   throwAttributeCodeFrameError,
   removeJAXAttribute,
@@ -41,7 +41,7 @@ function traverseIf(nodePath, reset = false) {
 
   nodePath.traverse({
     JSXElement(path) {
-      if (!path[HAS_TRAVERSED] && findDirectiveAttribute(path, DIRECTIVES.IF)) {
+      if (!path[HAS_TRAVERSED] && findAttribute(path, DIRECTIVES.IF)) {
         // eslint-disable-next-line no-use-before-define
         _traverseList.push(traverseConditionalElement(path));
       }
@@ -61,7 +61,7 @@ function traverseConditionalElement(path, _result) {
 
   let attr;
   // eslint-disable-next-line no-cond-assign
-  if (result.length === 0 && (attr = findDirectiveAttribute(path, DIRECTIVES.IF))) {
+  if (result.length === 0 && (attr = findAttribute(path, DIRECTIVES.IF))) {
     if (!attr.value) {
       throwAttributeCodeFrameError(
         path,
@@ -84,7 +84,7 @@ function traverseConditionalElement(path, _result) {
 
   // 查找else-if指令
   const nextPath = findNextSibling(path);
-  attr = findDirectiveAttribute(nextPath, DIRECTIVES.ELSE_IF);
+  attr = findAttribute(nextPath, DIRECTIVES.ELSE_IF);
   if (attr) {
     if (!attr.value) {
       throwAttributeCodeFrameError(
@@ -103,7 +103,7 @@ function traverseConditionalElement(path, _result) {
   }
 
   // 查找else指令
-  attr = findDirectiveAttribute(nextPath, DIRECTIVES.ELSE);
+  attr = findAttribute(nextPath, DIRECTIVES.ELSE);
   if (attr) {
     if (attr.value) {
       throwAttributeCodeFrameError(

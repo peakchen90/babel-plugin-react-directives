@@ -1,5 +1,8 @@
-// babel-types
-const types = {};
+// babel api
+const babelAPI = {
+  types: {}
+};
+const types = babelAPI.types;
 const t = types;
 
 // plugin option
@@ -30,19 +33,25 @@ const DIRECTIVES = {
 };
 
 /**
+ * 更新types
+ * @param api
+ */
+function updateAPI(api) {
+  Object.keys(api).forEach((key) => {
+    if (key === 'types') {
+      Object.assign(babelAPI.types, api.types);
+    } else {
+      babelAPI[key] = api[key];
+    }
+  });
+}
+
+/**
  * 更新opts
  * @param _opts
  */
 function updateOpts(_opts = {}) {
   Object.assign(opts, _opts);
-}
-
-/**
- * 更新types
- * @param babelTypes
- */
-function updateTypes(babelTypes) {
-  Object.assign(t, babelTypes);
 }
 
 /**
@@ -84,20 +93,14 @@ function getAttributeName(path) {
 
 /**
  * 返回属性值表达式
- * @param path
+ * @param attrNode
  * @return {null|*}
  */
-function getAttributeValueExpression(path) {
-  if (!path) {
+function getAttributeValueExpression(attrNode) {
+  if (!attrNode) {
     return null;
   }
-
-  let value;
-  if (path.value) {
-    value = path.value;
-  } else if (path.node && path.node.value) {
-    value = path.node.value;
-  }
+  const value = attrNode.value;
   if (value) {
     return value.expression || value;
   }
@@ -151,17 +154,22 @@ function findNextSibling(path) {
 /**
  * 找到JSXElement的指令属性
  * @param path
- * @param directive
- * @return {(JSXAttribute | JSXSpreadAttribute | null)|null}
+ * @param attrName
+ * @return {Array<JSXAttribute | JSXSpreadAttribute>|(JSXAttribute | JSXSpreadAttribute | null)|null}
  */
-function findDirectiveAttribute(path, directive) {
+function findAttribute(path, attrName) {
   if (!path || !t.isJSXElement(path.node)) {
     return null;
   }
 
-  const result = path.node.openingElement.attributes.find((attrbute) => (
-    attrbute.type === 'JSXAttribute'
-    && attrbute.name.name === directive
+  const attributes = path.node.openingElement.attributes;
+  if (!attrName) {
+    return attributes;
+  }
+
+  const result = attributes.find((attrNode) => (
+    t.isJSXAttribute(attrNode)
+    && attrNode.name.name === attrName
   ));
   return result || null;
 }
@@ -199,15 +207,15 @@ class ConditionalElement {
 module.exports = {
   DIRECTIVES,
   types,
+  updateAPI,
   updateOpts,
-  updateTypes,
   findParentJSXElement,
   getElementName,
   getAttributeName,
   getAttributeValueExpression,
   removeJAXAttribute,
   findNextSibling,
-  findDirectiveAttribute,
+  findAttribute,
   throwAttributeCodeFrameError,
   ConditionalElement
 };

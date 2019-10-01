@@ -1,13 +1,14 @@
-const { default: SyntaxJSX } = require('@babel/plugin-syntax-jsx');
+const assert = require('assert');
+const { fixTypes } = require('./fix');
 
 const {
   DIRECTIVES,
+  updateAPI,
   updateOpts,
-  updateTypes,
   findParentJSXElement,
   getElementName,
   getAttributeName,
-  findDirectiveAttribute
+  findAttribute
 } = require('./shared');
 
 const {
@@ -16,17 +17,31 @@ const {
 } = require('./directives/if');
 
 
-module.exports = ({ types: t }) => {
+module.exports = (api) => {
+  // babel最低版本是6
+  const majorVersion = Number(api.version.split('.')[0]);
+  assert(majorVersion >= 6, 'The minimum supported version is babel v6.0.0');
+
+  let JSXSyntax;
+
+  if (majorVersion === 6) {
+    fixTypes(api.types);
+    updateAPI(api);
+    JSXSyntax = require('babel-plugin-syntax-jsx');
+  } else {
+    updateAPI(api);
+    JSXSyntax = require('@babel/plugin-syntax-jsx').default;
+  }
+
   return {
     name: 'react-directives',
-    inherits: SyntaxJSX,
+    inherits: JSXSyntax,
     visitor: {
       JSXElement(path, state) {
         updateOpts(state.opts);
-        updateTypes(t);
 
         // transform if
-        if (findDirectiveAttribute(path, DIRECTIVES.IF)) {
+        if (findAttribute(path, DIRECTIVES.IF)) {
           const result = traverseIf(path.parentPath, true);
           if (result.length > 0) {
             transformIf(result);
@@ -45,6 +60,7 @@ module.exports = ({ types: t }) => {
               `${name} used on element <${getElementName(elementPath)}> without corresponding ${DIRECTIVES.IF}.`
             );
           case DIRECTIVES.SHOW:
+            console.log(path);
             break;
           case DIRECTIVES.FOR:
             break;

@@ -9,7 +9,8 @@
     "README.md"
   ],
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "test:install": "node test/install.js"
   },
   "keywords": [
     "react",
@@ -18,15 +19,16 @@
     "vue",
     "babel-plugin",
     "v-if",
-    "v-else",
-    "v-model",
-    "v-for"
+    "v-show"
   ],
   "author": "peakchen90 <1558267774@qq.com>",
   "license": "MIT",
-  "devDependencies": {
-    "@babel/core": "^7.6.2",
+  "dependencies": {
     "@babel/plugin-syntax-jsx": "^7.2.0",
+    "babel-plugin-syntax-jsx": "^6.18.0"
+  },
+  "devDependencies": {
+    "babel-plugin-tester": "^7.0.1",
     "eslint": "^6.5.0",
     "eslint-config-airbnb-base": "^14.0.0",
     "eslint-plugin-import": "^2.18.2",
