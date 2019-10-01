@@ -24,7 +24,7 @@ function runTest(versionNum) {
     plugin: require('../src'),
     title: `babel${versionNum}`,
     filename: __filename,
-    fixtures: path.join(__dirname, './__fixtures__'),
+    fixtures: path.join(__dirname, './fixtures'),
     tests: [],
     formatResult: (result) => result.replace(/\s+(\/>)/g, '$1')
   });
