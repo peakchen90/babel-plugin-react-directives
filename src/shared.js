@@ -1,12 +1,7 @@
 const { codeFrameColumns } = require('@babel/code-frame');
 const assert = require('assert');
 const chalk = require('chalk');
-
-// babel api
-const babel = {
-  types: {}
-};
-const types = babel.types;
+const types = require('@babel/types');
 
 // plugin option
 let opts = {};
@@ -33,20 +28,6 @@ const DIRECTIVES = {
     return `${opts.prefix}-model`;
   }
 };
-
-/**
- * 同步babel api
- * @param babelAPI
- */
-function syncBabelAPI(babelAPI) {
-  Object.keys(babelAPI).forEach((key) => {
-    if (key === 'types') {
-      Object.assign(babel.types, babelAPI.types);
-    } else {
-      babel[key] = babelAPI[key];
-    }
-  });
-}
 
 /**
  * 更新插件options
@@ -96,16 +77,17 @@ function codeFrameWarn(path, message) {
 
 /**
  * 判断版本是否支持
- * @param version
+ * @param currentVersion
+ * @param targetVersion
  * @param message
  */
-function assertVersion(version, message) {
-  const current = babel.version.split('.').map((item) => Number(item));
+function assertVersion(currentVersion, targetVersion, message) {
+  const current = currentVersion.split('.').map((item) => Number(item));
   let target = [];
-  if (typeof version === 'number') {
-    target = [version];
-  } else if (typeof version === 'string' && /^(\d+)(\.\d+)*$/.test(version)) {
-    target = version.split('.').map((item) => Number(item));
+  if (typeof targetVersion === 'number') {
+    target = [targetVersion];
+  } else if (typeof targetVersion === 'string' && /^(\d+)(\.\d+)*$/.test(targetVersion)) {
+    target = targetVersion.split('.').map((item) => Number(item));
   } else {
     throw new Error('invalid version');
   }
@@ -122,7 +104,7 @@ function assertVersion(version, message) {
       if (item > curr) return true;
       return index === target.length - 1;
     }),
-    message || `The version supported: > ${version}`
+    message || `The version supported: > ${targetVersion}`
   );
 }
 
@@ -140,9 +122,7 @@ class DirectiveData {
 module.exports = {
   DIRECTIVES,
   types,
-  babel,
   codeFrameWarn,
-  syncBabelAPI,
   syncOptions,
   assertVersion,
   DirectiveData,

@@ -1,7 +1,5 @@
-const { fixTypes } = require('./compatible');
 const {
   DIRECTIVES,
-  syncBabelAPI,
   syncOptions,
   codeFrameWarn,
   assertVersion
@@ -13,21 +11,18 @@ const transformShow = require('./directives/show');
 const transformModel = require('./directives/model');
 
 
-module.exports = (babel) => {
-  const majorVersion = Number(babel.version.split('.')[0]);
+module.exports = ({ version }) => {
+  const majorVersion = Number(version.split('.')[0]);
   let JSXSyntax;
 
   if (majorVersion === 6) {
-    fixTypes(babel.types);
-    syncBabelAPI(babel);
     JSXSyntax = require('babel-plugin-syntax-jsx');
   } else {
-    syncBabelAPI(babel);
     JSXSyntax = require('@babel/plugin-syntax-jsx').default;
   }
 
   // 最低支持babel v6.20.0
-  assertVersion('6.20.0', 'The version of babel supported: > 6.20.0');
+  assertVersion(version, '6.20.0', 'The version of babel supported: > 6.20.0');
 
   const visitor = {
     JSXElement(path, state) {
