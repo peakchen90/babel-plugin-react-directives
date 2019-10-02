@@ -3,15 +3,10 @@
  * @param t
  */
 function fixTypes(t) {
-  // 判断是JSX Fragment节点
-  t.isJSXFragment = function isJSXFragment(node, opts = {}) {
-    return !!node
-      && node.type === 'JSXFragment'
-      && Object.keys(opts).every((key) => node[key] === opts[key]);
-  };
-
-  // 兼容spreadElement
-  t.spreadElement = t.spreadProperty;
+  const types = require('@babel/types');
+  t.isJSXFragment = types.isJSXFragment;
+  t.spreadElement = types.spreadElement;
+  t.objectExpression = types.objectExpression;
 }
 
 module.exports = {

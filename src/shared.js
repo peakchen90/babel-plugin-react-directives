@@ -95,6 +95,38 @@ function codeFrameWarn(path, message) {
 }
 
 /**
+ * 判断版本是否支持
+ * @param version
+ * @param message
+ */
+function assertVersion(version, message) {
+  const current = babel.version.split('.').map((item) => Number(item));
+  let target = [];
+  if (typeof version === 'number') {
+    target = [version];
+  } else if (typeof version === 'string' && /^(\d+)(\.\d+)*$/.test(version)) {
+    target = version.split('.').map((item) => Number(item));
+  } else {
+    throw new Error('invalid version');
+  }
+
+  const lenDiff = current.length - target.length;
+  if (lenDiff > 0) {
+    target.push(...Array(lenDiff).fill(0));
+  }
+
+  assert(
+    target.some((item, index) => {
+      const curr = current[index];
+      if (curr === undefined || item < curr) return true;
+      if (item > curr) return true;
+      return index === target.length - 1;
+    }),
+    message || `The version supported: > ${version}`
+  );
+}
+
+/**
  * 包含指令的信息
  */
 class DirectiveData {
@@ -112,5 +144,6 @@ module.exports = {
   codeFrameWarn,
   syncBabelAPI,
   syncOptions,
+  assertVersion,
   DirectiveData,
 };

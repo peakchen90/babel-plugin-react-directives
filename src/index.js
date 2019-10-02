@@ -1,7 +1,10 @@
-const assert = require('assert');
 const { fixTypes } = require('./compatible');
 const {
-  DIRECTIVES, syncBabelAPI, syncOptions, codeFrameWarn
+  DIRECTIVES,
+  syncBabelAPI,
+  syncOptions,
+  codeFrameWarn,
+  assertVersion
 } = require('./shared');
 const attrUtil = require('./utils/attribute');
 const elementUtil = require('./utils/element');
@@ -11,10 +14,7 @@ const transformModel = require('./directives/model');
 
 
 module.exports = (babel) => {
-  // 最低支持babel v6.0.0
   const majorVersion = Number(babel.version.split('.')[0]);
-  assert(majorVersion >= 6, 'The version of babel supported: > 6.0.0');
-
   let JSXSyntax;
 
   if (majorVersion === 6) {
@@ -25,6 +25,9 @@ module.exports = (babel) => {
     syncBabelAPI(babel);
     JSXSyntax = require('@babel/plugin-syntax-jsx').default;
   }
+
+  // 最低支持babel v6.20.0
+  assertVersion('6.20.0', 'The version of babel supported: > 6.20.0');
 
   const visitor = {
     JSXElement(path, state) {

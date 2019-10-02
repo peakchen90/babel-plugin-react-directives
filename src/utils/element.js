@@ -113,7 +113,7 @@ class ElementUtil {
 
     const {
       attrName, // 属性名
-      directivePath, // 指令的NodePath
+      directivePath, // 指令属性的NodePath
       callback, // 遍历的attribute回调方法，返回值用于判断匹配成功
       getMergeResult, // 合并结果回调方法，返回值用于设置到属性上
     } = option;
@@ -169,19 +169,15 @@ class ElementUtil {
         getMergeResult(mergeItems.reverse())
       )
     );
-    if (lastSpreadAttrIndex === -1 && lastAttrIndex === -1) { // 不存在其他attributes
-      directivePath.replaceWith(replacement);
-    } else if (lastSpreadAttrIndex === -1 || lastAttrIndex > lastSpreadAttrIndex) { // 不存在spread属性，或者指定属性在spread属性之后
-      attributes[lastAttrIndex].replaceWith(replacement);
-      directivePath.remove();
-    } else { // 在spread属性后插入
-      attributes[lastSpreadAttrIndex].insertAfter(replacement);
-      directivePath.remove();
-      // 移出匹配的属性
-      if (lastAttrIndex !== -1) {
-        attributes[lastAttrIndex].remove();
-      }
+
+    if (lastAttrIndex >= 0) {
+      attributes[lastAttrIndex].remove();
     }
+    if (!directivePath.removed) {
+      directivePath.remove();
+    }
+    // 在最后插入替换属性
+    this.path.get('openingElement').pushContainer('attributes', replacement);
 
     return replacement;
   }

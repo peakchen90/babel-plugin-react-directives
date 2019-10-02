@@ -25,13 +25,16 @@ function transformShow(path) {
     return;
   }
 
+  // merge `style` prop
   elementUtil(path).mergeAttributes({
     attrName: 'style',
     directivePath: attrPath,
     callback(attr, setValue) {
       const attrName = attrUtil(attr).getName();
       const value = attrUtil(attr).getValueExpression();
-      if (attrName === 'style') { /* istanbul ignore next: print warn info */
+
+      /* istanbul ignore next: print warn info */
+      if (attrName === 'style') {
         if (t.isStringLiteral(value)) {
           codeFrameWarn(
             attr,
@@ -47,7 +50,7 @@ function transformShow(path) {
       if (/^(style)$/i.test(attrName)) {
         codeFrameWarn(
           attr,
-          'Non-lowercase `style` prop will be ignored'
+          `Non-lowercase \`style\` prop will be ignored, when use \`${DIRECTIVES.SHOW}\``
         );
         return true;
       }
