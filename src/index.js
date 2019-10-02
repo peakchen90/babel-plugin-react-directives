@@ -15,7 +15,7 @@ const {
 module.exports = (babel) => {
   // 最低支持babel v6.0.0
   const majorVersion = Number(babel.version.split('.')[0]);
-  assert(majorVersion >= 6, 'The minimum supported version is babel v6.0.0');
+  assert(majorVersion >= 6, 'The version of babel supported: > 6.0.0');
 
   let JSXSyntax;
 
