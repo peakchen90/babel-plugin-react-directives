@@ -1,3 +1,4 @@
+const assert = require('assert');
 const { types: t } = require('../shared');
 
 
@@ -41,21 +42,28 @@ class ElementUtil {
 
   /**
    * 根据属性名返回的找到的第一个属性NodePath
-   * @param attrName
+   * @param attrName 属性名称
+   * @param isFindLast 是否从最后开始查找，默认true
    * @return {null|NodePath}
    */
-  findAttributeByName(attrName) {
+  findAttributeByName(attrName, isFindLast = true) {
     /* istanbul ignore if: fault tolerant control */
     if (!this._isValid) {
       return null;
     }
 
     const attributes = this.path.node.openingElement.attributes;
+    let index = isFindLast ? attributes.length - 1 : 0;
 
-    for (let i = 0; i < attributes.length; i++) {
-      const attrPath = this.path.get(`openingElement.attributes.${i}`);
+    while (isFindLast ? index >= 0 : index < attributes.length) {
+      const attrPath = this.path.get(`openingElement.attributes.${index}`);
       if (t.isJSXAttribute(attrPath.node) && attrPath.node.name.name === attrName) {
         return attrPath;
+      }
+      if (isFindLast) {
+        index--;
+      } else {
+        index++;
       }
     }
 
@@ -72,10 +80,7 @@ class ElementUtil {
       return null;
     }
 
-    let key = this.path.key;
-    const nextKey = () => ++key;
-
-    let nextPath = this.path.getSibling(nextKey());
+    let nextPath = this.path.getNextSibling();
     /* istanbul ignore if: fault tolerant control */
     if (!nextPath) {
       return null;
@@ -85,7 +90,7 @@ class ElementUtil {
       if (/\S/.test(nextPath.node.value)) {
         return null;
       }
-      nextPath = this.path.getSibling(nextKey());
+      nextPath = nextPath.getNextSibling();
     }
 
     if (t.isJSXElement(nextPath.node)) {
@@ -93,6 +98,92 @@ class ElementUtil {
     }
 
     return null;
+  }
+
+  /**
+   * 合并属性
+   * @param option
+   * @return {null|NodePath}
+   */
+  mergeAttributes(option = {}) {
+    /* istanbul ignore if: fault tolerant control */
+    if (!this._isValid) {
+      return null;
+    }
+
+    const {
+      attrName, // 属性名
+      directivePath, // 指令的NodePath
+      callback, // 遍历的attribute回调方法，返回值用于判断匹配成功
+      getMergeResult, // 合并结果回调方法，返回值用于设置到属性上
+    } = option;
+
+    assert(attrName && typeof attrName === 'string', 'The `attrName` expects a non-empty string');
+    assert(t.isJSXAttribute(directivePath), 'The `directivePath` expects a JSXAttribute');
+    assert(typeof callback === 'function', 'The `callback` expects a function');
+    assert(typeof getMergeResult === 'function', 'The `getMergeResult` expects a function');
+
+    const attributes = this.findAllAttributes();
+    const mergeItems = [];
+
+    let lastAttrIndex = -1; // 最后一个属性位置
+    let lastSpreadAttrIndex = -1; // 最后一个spread属性位置
+
+    // 用于callback回调设置值
+    let _value;
+    const setValue = (val) => _value = val;
+
+    for (let i = attributes.length - 1; i >= 0; i--) {
+      const attr = attributes[i];
+      if (attr === directivePath) {
+        // eslint-disable-next-line no-continue
+        continue;
+      }
+
+      if (t.isJSXSpreadAttribute(attr.node)) {
+        if (lastSpreadAttrIndex === -1) {
+          lastSpreadAttrIndex = i;
+        }
+        mergeItems.push(
+          t.logicalExpression(
+            '&&',
+            attr.node.argument,
+            t.memberExpression(
+              attr.node.argument,
+              t.identifier(attrName)
+            )
+          )
+        );
+      } else if (lastAttrIndex === -1 && callback(attr, setValue)) {
+        lastAttrIndex = i;
+        if (_value) {
+          mergeItems.push(_value);
+        }
+      }
+    }
+
+    // 创建用于替换属性
+    const replacement = t.jsxAttribute(
+      t.jSXIdentifier(attrName),
+      t.jSXExpressionContainer(
+        getMergeResult(mergeItems.reverse())
+      )
+    );
+    if (lastSpreadAttrIndex === -1 && lastAttrIndex === -1) { // 不存在其他attributes
+      directivePath.replaceWith(replacement);
+    } else if (lastSpreadAttrIndex === -1 || lastAttrIndex > lastSpreadAttrIndex) { // 不存在spread属性，或者指定属性在spread属性之后
+      attributes[lastAttrIndex].replaceWith(replacement);
+      directivePath.remove();
+    } else { // 在spread属性后插入
+      attributes[lastSpreadAttrIndex].insertAfter(replacement);
+      directivePath.remove();
+      // 移出匹配的属性
+      if (lastAttrIndex !== -1) {
+        attributes[lastAttrIndex].remove();
+      }
+    }
+
+    return replacement;
   }
 }
 

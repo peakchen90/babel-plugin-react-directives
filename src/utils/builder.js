@@ -13,7 +13,6 @@ function buildBooleanExpression(expression) {
   );
 }
 
-
 module.exports = {
   buildBooleanExpression
 };

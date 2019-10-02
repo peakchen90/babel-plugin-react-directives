@@ -1,4 +1,6 @@
-const { types: t, DIRECTIVES, DirectiveData } = require('../shared');
+const {
+  types: t, DIRECTIVES, DirectiveData, codeFrameWarn
+} = require('../shared');
 const attrUtil = require('../utils/attribute');
 const elementUtil = require('../utils/element');
 const builderUtil = require('../utils/builder');
@@ -85,7 +87,8 @@ function traverseConditional(path, attrPath, _result) {
   attrPath = elementUtil(path).findAttributeByName(DIRECTIVES.ELSE);
   if (attrPath) {
     if (attrUtil(attrPath).getValueExpression()) {
-      throw attrPath.buildCodeFrameError(
+      codeFrameWarn(
+        attrPath,
         `\`${DIRECTIVES.ELSE}\` used on element <${elementUtil(path).getName()}> should not have a binding value`
       );
     }

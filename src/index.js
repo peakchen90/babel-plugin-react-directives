@@ -1,6 +1,8 @@
 const assert = require('assert');
 const { fixTypes } = require('./compatible');
-const { DIRECTIVES, syncBabelAPI, syncOptions } = require('./shared');
+const {
+  DIRECTIVES, syncBabelAPI, syncOptions, codeFrameWarn
+} = require('./shared');
 const attrUtil = require('./utils/attribute');
 const elementUtil = require('./utils/element');
 const transformIf = require('./directives/if');
@@ -24,43 +26,48 @@ module.exports = (babel) => {
     JSXSyntax = require('@babel/plugin-syntax-jsx').default;
   }
 
+  const visitor = {
+    JSXElement(path, state) {
+      syncOptions(state.opts);
+
+      transformShow(path);
+      transformModel(path);
+      transformIf(path);
+    },
+    JSXAttribute(path) {
+      const name = attrUtil(path).getName();
+      let elementPath;
+
+      switch (name) {
+        case DIRECTIVES.IF:
+          throw path.buildCodeFrameError(
+            `There should be no more than one directive: \`${name}\``
+          );
+        case DIRECTIVES.ELSE:
+        case DIRECTIVES.ELSE_IF:
+          elementPath = attrUtil(path).getJSXElement();
+          throw path.buildCodeFrameError(
+            `\`${name}\` used on element <${elementUtil(elementPath).getName()}> without corresponding \`${DIRECTIVES.IF}\`.`
+          );
+        case DIRECTIVES.SHOW:
+          codeFrameWarn(
+            path,
+            `There should be no more than one directive: \`${name}\``
+          );
+          path.remove();
+          break;
+        case DIRECTIVES.FOR:
+          break;
+        case DIRECTIVES.MODEL:
+          break;
+        default:
+      }
+    }
+  };
+
   return {
     name: 'react-directives',
     inherits: JSXSyntax,
-    visitor: {
-      JSXElement(path, state) {
-        syncOptions(state.opts);
-
-        transformShow(path);
-        transformModel(path);
-        transformIf(path);
-      },
-      JSXAttribute(path) {
-        const name = attrUtil(path).getName();
-        let elementPath;
-
-        switch (name) {
-          case DIRECTIVES.IF:
-            throw path.buildCodeFrameError(
-              `There should be no more than one directive: \`${name}\``
-            );
-          case DIRECTIVES.ELSE:
-          case DIRECTIVES.ELSE_IF:
-            elementPath = attrUtil(path).getJSXElement();
-            throw path.buildCodeFrameError(
-              `\`${name}\` used on element <${elementUtil(elementPath).getName()}> without corresponding \`${DIRECTIVES.IF}\`.`
-            );
-          case DIRECTIVES.SHOW:
-            throw path.buildCodeFrameError(
-              `There should be no more than one directive: \`${name}\``
-            );
-          case DIRECTIVES.FOR:
-            break;
-          case DIRECTIVES.MODEL:
-            break;
-          default:
-        }
-      }
-    }
+    visitor
   };
 };

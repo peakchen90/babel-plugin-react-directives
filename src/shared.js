@@ -1,4 +1,6 @@
+const { codeFrameColumns } = require('@babel/code-frame');
 const assert = require('assert');
+const chalk = require('chalk');
 
 // babel api
 const babel = {
@@ -65,13 +67,30 @@ function syncOptions(options = {}) {
 }
 
 /**
- * 打印警告信息
+ * 打印附带代码位置的警告信息
+ * @param path
  * @param message
  */
-function warn(message) {
-  /* istanbul ignore next */
-  if (console && typeof console.warn === 'function') {
-    console.warn(message);
+function codeFrameWarn(path, message) {
+  if (process.env.NODE_ENV === 'test') {
+    return;
+  }
+
+  /* istanbul ignore next: print warn info */
+  console.log(chalk.yellow(`[Warn]: ${message}`));
+
+  /* istanbul ignore next: print warn info */
+  if (path && path.hub && path.node) {
+    const code = path.hub.file.code;
+    console.log(codeFrameColumns(
+      code,
+      path.node.loc,
+      {
+        highlightCode: true,
+        linesAbove: 2,
+        linesBelow: 3
+      }
+    ));
   }
 }
 
@@ -90,7 +109,7 @@ module.exports = {
   DIRECTIVES,
   types,
   babel,
-  warn,
+  codeFrameWarn,
   syncBabelAPI,
   syncOptions,
   DirectiveData,
