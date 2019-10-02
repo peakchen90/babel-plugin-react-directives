@@ -6,7 +6,7 @@
  * https://github.com/babel-utils/babel-plugin-tester/blob/v7.0.1/src/index.js
  */
 
-/* eslint-disable */
+/* eslint-disable import/no-dynamic-require */
 const assert = require('assert');
 const path = require('path');
 const fs = require('fs');
@@ -109,10 +109,8 @@ function pluginTester(
       );
 
       if (skip) {
-        // eslint-disable-next-line jest/no-disabled-tests
         it.skip(title, testerWrapper);
       } else if (only) {
-        // eslint-disable-next-line jest/no-focused-tests
         it.only(title, testerWrapper);
       } else {
         it(title, testerWrapper);
@@ -383,12 +381,11 @@ const createFixtureTests = (fixturesDir, options) => {
         }
       } catch (e) {
         if (error) {
-          assertError(e, error)
+          assertError(e, error);
           errored = true;
           return;
-        } else {
-          throw e;
         }
+        throw e;
       }
 
       assert(

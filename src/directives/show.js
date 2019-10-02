@@ -1,13 +1,6 @@
-const {
-  DIRECTIVES,
-  types: t,
-  findAttribute,
-  getAttributeBindingValue,
-  throwAttributeCodeFrameError,
-  traverseAttributes,
-  getElementName,
-  getAttributeName
-} = require('../shared');
+const { types: t, DIRECTIVES } = require('../shared');
+const attrUtil = require('../utils/attribute');
+const elementUtil = require('../utils/element');
 
 
 /**
@@ -15,21 +8,19 @@ const {
  * @param path
  */
 function transformShow(path) {
-  const attrNode = findAttribute(path, DIRECTIVES.SHOW);
-  if (!attrNode) {
+  const attrPath = elementUtil(path).findAttributeByName(DIRECTIVES.SHOW);
+  if (!attrPath) {
     return;
   }
 
-  const bindingValue = getAttributeBindingValue(attrNode);
+  const bindingValue = attrUtil(attrPath).getValueExpression();
   if (!bindingValue) {
-    throw throwAttributeCodeFrameError(
-      path,
-      attrNode,
-      `\`${DIRECTIVES.SHOW}\` used on element <${getElementName(path)}> without binding value`
+    throw attrPath.buildCodeFrameError(
+      `\`${DIRECTIVES.SHOW}\` used on element <${elementUtil(path).getName()}> without binding value`
     );
   }
 
-  const attributes = traverseAttributes(path);
+  const attributes = elementUtil(path).findAllAttributes();
   const spreadItems = [
     // 定义对象属性 display: bindingValue ? undefined : 'none'
     t.objectProperty(
@@ -49,13 +40,13 @@ function transformShow(path) {
   for (let i = attributes.length - 1; i >= 0; i--) {
     const attr = attributes[i];
 
-    if (attr.node === attrNode) {
+    if (attr === attrPath) {
       targetPath = attr;
     } else if (t.isJSXSpreadAttribute(attr.node)) {
       if (lastSpreadAttrIndex === -1) {
         lastSpreadAttrIndex = i;
       }
-      //  {...foo}  ===>>>  (foo && foo.style)
+      // ex: {...foo} ==> (foo && foo.style)
       spreadItems.push(
         t.spreadElement(
           t.logicalExpression(
@@ -68,10 +59,10 @@ function transformShow(path) {
           )
         )
       );
-    } else if (lastStyleIndex === -1 && getAttributeName(attr) === 'style') {
+    } else if (lastStyleIndex === -1 && attrUtil(attr).getName() === 'style') {
       lastStyleIndex = i;
 
-      const value = getAttributeBindingValue(attr.node);
+      const value = attrUtil(attr).getValueExpression();
       if (t.isStringLiteral(value)) {
         throw attr.buildCodeFrameError(
           'The `style` prop expects a mapping from style properties to values, not a string. For example, style={{marginRight: spacing + \'em\'}}'
@@ -80,7 +71,10 @@ function transformShow(path) {
       spreadItems.push(
         t.spreadElement(value)
       );
-    } else if (lastStyleIndex === -1 && /^(style)$/i.test(getAttributeName(attr))) { // 非小写`style`属性的样式会被忽略
+    } else if (
+      lastStyleIndex === -1
+      && /^(style)$/i.test(attrUtil(attr).getName()) // 非小写`style`属性的样式会被忽略
+    ) {
       throw attr.buildCodeFrameError(
         `The \`style\` prop should be lowercase, but received: \`${RegExp.$1}\``
       );

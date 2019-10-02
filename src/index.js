@@ -1,15 +1,11 @@
 const assert = require('assert');
 const { fixTypes } = require('./compatible');
+const { DIRECTIVES, syncBabelAPI, syncOptions } = require('./shared');
+const attrUtil = require('./utils/attribute');
+const elementUtil = require('./utils/element');
 const transformIf = require('./directives/if');
 const transformShow = require('./directives/show');
-const {
-  DIRECTIVES,
-  syncBabelAPI,
-  syncOptions,
-  findParentJSXElement,
-  getElementName,
-  getAttributeName,
-} = require('./shared');
+const transformModel = require('./directives/model');
 
 
 module.exports = (babel) => {
@@ -34,13 +30,13 @@ module.exports = (babel) => {
     visitor: {
       JSXElement(path, state) {
         syncOptions(state.opts);
-        // transform directive show
+
         transformShow(path);
-        // transform directive if
+        transformModel(path);
         transformIf(path);
       },
       JSXAttribute(path) {
-        const name = getAttributeName(path);
+        const name = attrUtil(path).getName();
         let elementPath;
 
         switch (name) {
@@ -50,9 +46,9 @@ module.exports = (babel) => {
             );
           case DIRECTIVES.ELSE:
           case DIRECTIVES.ELSE_IF:
-            elementPath = findParentJSXElement(path);
+            elementPath = attrUtil(path).getJSXElement();
             throw path.buildCodeFrameError(
-              `\`${name}\` used on element <${getElementName(elementPath)}> without corresponding \`${DIRECTIVES.IF}\`.`
+              `\`${name}\` used on element <${elementUtil(elementPath).getName()}> without corresponding \`${DIRECTIVES.IF}\`.`
             );
           case DIRECTIVES.SHOW:
             throw path.buildCodeFrameError(

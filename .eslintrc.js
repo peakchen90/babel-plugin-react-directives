@@ -14,6 +14,7 @@ module.exports = {
     'import/no-extraneous-dependencies': 'off',
     'no-console': 'off',
     'no-empty': ['error', { allowEmptyCatch: true }],
+    'no-use-before-define': ["error", { "functions": false }],
     'no-underscore-dangle': 'off',
     'no-param-reassign': 'off',
     'no-plusplus': 'off',
