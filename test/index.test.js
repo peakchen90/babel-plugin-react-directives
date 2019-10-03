@@ -26,14 +26,6 @@ function runTest(versionNum) {
     title: `babel${versionNum}`,
     filename: __filename,
     fixtures: path.join(__dirname, './fixtures'),
-    babelOptions: {
-      parserOpts: {
-        plugins: [
-          'classProperties',
-          'jsx'
-        ]
-      }
-    },
     formatResult: (result) => prettier.format(result, {
       parser: 'babel',
       endOfLine: 'lf'

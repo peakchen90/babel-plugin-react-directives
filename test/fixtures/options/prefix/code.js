@@ -7,5 +7,7 @@ const a = <div>
 const b = <div v-show={testB}>B</div>;
 
 class C {
-  render = () => <input v-model={testC}/>
+  render() {
+    return <input v-model={this.state.testC}/>
+  }
 }

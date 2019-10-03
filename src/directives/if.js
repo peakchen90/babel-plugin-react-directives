@@ -1,9 +1,7 @@
-const {
-  types: t, DIRECTIVES, DirectiveData, codeFrameWarn
-} = require('../shared');
+const { types: t, DIRECTIVES, DirectiveData } = require('../shared');
+const util = require('../utils/util');
 const attrUtil = require('../utils/attribute');
 const elementUtil = require('../utils/element');
-const builderUtil = require('../utils/builder');
 
 
 /**
@@ -87,7 +85,7 @@ function traverseConditional(path, attrPath, _result) {
   attrPath = elementUtil(path).findAttributeByName(DIRECTIVES.ELSE);
   if (attrPath) {
     if (attrUtil(attrPath).getValueExpression()) {
-      codeFrameWarn(
+      util.codeFrameWarn(
         attrPath,
         `\`${DIRECTIVES.ELSE}\` used on element <${elementUtil(path).getName()}> should not have a binding value`
       );
@@ -109,13 +107,13 @@ function transform(conditions) {
   const path = directiveData.path;
   const attrPath = directiveData.attrPath;
 
-  // 根节点使用 if 指令
+  // 父节点是非JSXElement或JSXFragment
   if (!t.isJSXElement(path.parent) && !t.isJSXFragment(path.parent)) {
     path.replaceWith(
-      t.logicalExpression(
-        '&&',
-        builderUtil.buildBooleanExpression(attrUtil(attrPath).getValueExpression()),
-        path.node
+      t.conditionalExpression(
+        attrUtil(attrPath).getValueExpression(),
+        path.node,
+        t.identifier('null')
       )
     );
     attrPath.remove();

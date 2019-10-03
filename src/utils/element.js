@@ -118,10 +118,10 @@ class ElementUtil {
       getResult, // 合并结果回调方法，返回值用于设置到属性上
     } = option;
 
-    assert(attrName && typeof attrName === 'string', 'The `attrName` expects a non-empty string');
-    assert(t.isJSXAttribute(directivePath), 'The `directivePath` expects a JSXAttribute');
-    assert(typeof callback === 'function', 'The `callback` expects a function');
-    assert(typeof getResult === 'function', 'The `getResult` expects a function');
+    assert(attrName && typeof attrName === 'string', 'The `attrName` expected a non-empty string');
+    assert(t.isJSXAttribute(directivePath), 'The `directivePath` expected a JSXAttribute');
+    assert(typeof callback === 'function', 'The `callback` expected a function');
+    assert(typeof getResult === 'function', 'The `getResult` expected a function');
 
     const attributes = this.findAllAttributes();
     const mergeItems = [];

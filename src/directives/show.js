@@ -1,4 +1,5 @@
-const { types: t, DIRECTIVES, codeFrameWarn } = require('../shared');
+const { types: t, DIRECTIVES } = require('../shared');
+const util = require('../utils/util');
 const attrUtil = require('../utils/attribute');
 const elementUtil = require('../utils/element');
 
@@ -17,7 +18,7 @@ function transformShow(path) {
 
   /* istanbul ignore next: print warn info */
   if (!bindingValue) {
-    codeFrameWarn(
+    util.codeFrameWarn(
       attrPath,
       `\`${DIRECTIVES.SHOW}\` used on element <${elementUtil(path).getName()}> without binding value`
     );
@@ -36,9 +37,9 @@ function transformShow(path) {
       /* istanbul ignore next: print warn info */
       if (attrName === 'style') {
         if (t.isStringLiteral(value)) {
-          codeFrameWarn(
+          util.codeFrameWarn(
             attr,
-            'The `style` prop expects a mapping from style properties to values, not a string. For example, style={{marginRight: spacing + \'em\'}}'
+            'The `style` prop expected a mapping from style properties to values, not a string. For example, style={{marginRight: spacing + \'em\'}}'
           );
         } else {
           setValue(value);
@@ -48,7 +49,7 @@ function transformShow(path) {
 
       /* istanbul ignore next: print warn info */
       if (/^(style)$/i.test(attrName)) {
-        codeFrameWarn(
+        util.codeFrameWarn(
           attr,
           `Non-lowercase \`style\` prop will be ignored, when use \`${DIRECTIVES.SHOW}\``
         );

@@ -1,30 +1,99 @@
-const { types: t, DIRECTIVES, codeFrameWarn } = require('../shared');
+const { types: t, DIRECTIVES } = require('../shared');
+const util = require('../utils/util');
 const attrUtil = require('../utils/attribute');
 const elementUtil = require('../utils/element');
 const builder = require('../utils/builder');
 
 /**
- * 创建更新state表达式
+ * TODO: 1. setState没有处理数组，2. 绑定的值再引用其他的值
  */
-function buildUpdateStateExpression(path) {
-  const isClassComponent = path.findParent((parentPath) => t.isClassBody(parentPath.node));
 
-  if (isClassComponent) {
-    //
-  } else {
-    //
+/**
+ * 返回使用的类型
+ * @param path
+ * @return {string|null}
+ */
+function getUseType(path) {
+  const findClass = path.findParent((parentPath) => t.isClassBody(parentPath.node));
+  if (findClass) {
+    return 'class';
   }
+  return null;
+}
 
+function getStateBindingStack(attrPath) {
+  let bindingStack = [];
+
+  const nestedVisitor = {
+    Identifier(path) {
+      const identifierName = path.node.name;
+      let binding = path.scope.bindings[identifierName];
+
+      if (!binding) {
+        const targetPath = attrPath.findParent((p) => (
+          !!p.scope.bindings[identifierName]
+        ));
+        if (targetPath) {
+          binding = targetPath.scope.bindings[identifierName];
+        }
+      }
+
+      if (!binding) {
+        throw path.buildCodeFrameError(
+          `\`${identifierName}\` is not defined`
+        );
+      }
+
+      const bindingNode = binding.path.node;
+
+      bindingStack = [
+        ...util.getMemberStack(bindingNode.init),
+        ...util.findDeconstructionStack(
+          binding.path.get('id'),
+          identifierName
+        )
+      ];
+      path.stop();
+    },
+    MemberExpression(path) {
+      bindingStack = util.getMemberStack(path.node);
+      path.stop();
+    }
+  };
+
+  attrPath.traverse(nestedVisitor);
+
+  return bindingStack;
+}
+
+/**
+ * 创建更新state表达式(Class组件方式)
+ * @param path
+ * @return {CallExpression}
+ */
+function buildClassSetStateExp(stateBindingStack, valueExpression) {
   return t.callExpression(
     builder.buildMemberExpression(
       t.thisExpression(),
       t.identifier('setState')
     ),
-    [t.objectExpression([
-      // t.objectProperty(
-      //
-      // )
-    ])]
+    [
+      stateBindingStack.reduceRight((prev, curr, index) => {
+        return t.objectExpression([
+          index > 0 && t.spreadElement(
+            builder.buildMemberExpression(
+              t.thisExpression(),
+              t.identifier('state'),
+              ...stateBindingStack.filter((_, i) => i <= index - 1)
+            )
+          ),
+          t.objectProperty(
+            curr,
+            prev || valueExpression
+          )
+        ].filter(Boolean));
+      }, null)
+    ]
   );
 }
 
@@ -41,7 +110,7 @@ function transformModel(path) {
   const bindingValue = attrUtil(attrPath).getValueExpression();
   /* istanbul ignore next: print warn info */
   if (!bindingValue) {
-    codeFrameWarn(
+    util.codeFrameWarn(
       attrPath,
       `\`${DIRECTIVES.MODEL}\` used on element <${elementUtil(path).getName()}> without binding value`
     );
@@ -49,22 +118,49 @@ function transformModel(path) {
     return;
   }
 
-  /* istanbul ignore next: print warn info */
-  if (t.isStringLiteral(bindingValue)) {
-    codeFrameWarn(
-      attrPath,
-      `When the \`${DIRECTIVES.MODEL}\` prop binding value is a string literal, the component will not be updated accordingly`
+  let bindingValuePath = attrPath.get('value.expression');
+  if (!bindingValuePath.node) {
+    bindingValuePath = attrPath.get('value');
+  }
+  if (!t.isIdentifier(bindingValue) && !t.isMemberExpression(bindingValue)) {
+    throw bindingValuePath.buildCodeFrameError(
+      `The \`${DIRECTIVES.MODEL}\` binding value expected an identifier or a member expression, but got: \`${util.getSourceCode(path, bindingValue)}\``
     );
   }
 
-  // replace `value` prop
+  // 使用类型: 'class', null
+  const useType = getUseType(path);
+  if (!useType) {
+    throw attrPath.buildCodeFrameError(
+      `The \`${DIRECTIVES.MODEL}\` cannot be used outside of class`
+    );
+  }
+
+  const stateBindingStack = getStateBindingStack(attrPath);
+  const thisExp = stateBindingStack.shift();
+  const stateExp = stateBindingStack.shift();
+  if (!t.isThisExpression(thisExp) || !t.isIdentifier(stateExp, { name: 'state' })) {
+    throw bindingValuePath.buildCodeFrameError(
+      `The \`${DIRECTIVES.MODEL}\` binding value should define in \`this.state\``
+    );
+  }
+  if (stateBindingStack.length === 0) {
+    throw bindingValuePath.buildCodeFrameError(
+      `The \`${DIRECTIVES.MODEL}\` binding value cannot be \`this.state\``
+    );
+  }
+
+  /**
+   * 合并 value prop
+   */
+
   elementUtil(path).mergeAttributes({
     attrName: 'value',
     directivePath: attrPath,
     callback(attr) {
       /* istanbul ignore next: print warn info */
       if (attrUtil(attr).getName() === 'value') {
-        codeFrameWarn(
+        util.codeFrameWarn(
           attr,
           `The \`value\` prop will be ignored, when use \`${DIRECTIVES.MODEL}\``
         );
@@ -78,11 +174,14 @@ function transformModel(path) {
   });
 
 
-  const args = path.scope.generateUidIdentifier('args');
-  const val = path.scope.generateUidIdentifier('val');
-  const extraFn = path.scope.generateUidIdentifier('extraFn');
+  /**
+   * 合并 onChange prop
+   */
 
-  // merge `onChange` prop
+  const scopeArgs = path.scope.generateUidIdentifier('args');
+  const scopeVal = path.scope.generateUidIdentifier('val');
+  const scopeExtraFn = path.scope.generateUidIdentifier('extraFn');
+
   elementUtil(path).mergeAttributes({
     attrName: 'onChange',
     directivePath: attrPath,
@@ -100,24 +199,24 @@ function transformModel(path) {
     },
     getResult(mergeItems) {
       return t.arrowFunctionExpression(
-        [t.restElement(args)],
+        [t.restElement(scopeArgs)],
         t.blockStatement([
 
           // let _val = _args[0] && (_args[0].target instanceof window.Element) ? _args[0].target.value : _args[0]
           t.variableDeclaration('let', [
             t.variableDeclarator(
-              val,
+              scopeVal,
               t.conditionalExpression(
                 t.logicalExpression(
                   '&&',
                   builder.buildMemberExpression(
-                    args,
+                    scopeArgs,
                     t.numericLiteral(0)
                   ),
                   t.binaryExpression(
                     'instanceof',
                     builder.buildMemberExpression(
-                      args,
+                      scopeArgs,
                       t.numericLiteral(0),
                       t.identifier('target')
                     ),
@@ -128,13 +227,13 @@ function transformModel(path) {
                   )
                 ),
                 builder.buildMemberExpression(
-                  args,
+                  scopeArgs,
                   t.numericLiteral(0),
                   t.identifier('target'),
                   t.identifier('value'),
                 ),
                 builder.buildMemberExpression(
-                  args,
+                  scopeArgs,
                   t.numericLiteral(0)
                 )
               )
@@ -143,13 +242,13 @@ function transformModel(path) {
 
           // 执行更新state方法
           t.expressionStatement(
-            buildUpdateStateExpression(path)
+            buildClassSetStateExp(stateBindingStack, scopeVal)
           ),
 
           // let _extraFn = {}.onChange;
           mergeItems.length > 0 && t.variableDeclaration('let', [
             t.variableDeclarator(
-              extraFn,
+              scopeExtraFn,
               builder.buildMemberExpression(
                 t.objectExpression(
                   mergeItems.map((item) => t.spreadElement(item))
@@ -159,7 +258,7 @@ function transformModel(path) {
             )
           ]),
 
-          // typeof _extraFn === "function" && _extraFn(..._args);
+          // typeof _extraFn === "function" && _extraFn.apply(this, _args);
           mergeItems.length > 0 && t.expressionStatement(
             t.logicalExpression(
               '&&',
@@ -167,13 +266,19 @@ function transformModel(path) {
                 '===',
                 t.unaryExpression(
                   'typeof',
-                  extraFn
+                  scopeExtraFn
                 ),
                 t.stringLiteral('function')
               ),
               t.callExpression(
-                extraFn,
-                [t.spreadElement(args)]
+                t.memberExpression(
+                  scopeExtraFn,
+                  t.identifier('apply')
+                ),
+                [
+                  t.thisExpression(),
+                  scopeArgs
+                ]
               )
             )
           )

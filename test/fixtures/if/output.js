@@ -1,5 +1,5 @@
-const a = !!testA && <div>A</div>;
+const a = testA ? <div>A</div> : null;
 
-const b = !!(testB1 + testB2) && <div>B</div>;
+const b = testB1 + testB2 ? <div>B</div> : null;
 
-const c = !!"testString" && <div>C</div>;
+const c = "testString" ? <div>C</div> : null;

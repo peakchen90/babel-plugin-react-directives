@@ -10,16 +10,20 @@ const b = (
 );
 
 class C {
-  render = () => (
-    <input
-      value={testC}
-      onChange={(..._args) => {
-        let _val =
-          _args[0] && _args[0].target instanceof window.Element
-            ? _args[0].target.value
-            : _args[0];
+  render() {
+    return (
+      <input
+        value={this.state.testC}
+        onChange={(..._args) => {
+          let _val =
+            _args[0] && _args[0].target instanceof window.Element
+              ? _args[0].target.value
+              : _args[0];
 
-        this.setState({});
-      }}/>
-  );
+          this.setState({
+            testC: _val
+          });
+        }}/>
+    );
+  }
 }

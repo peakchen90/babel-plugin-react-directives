@@ -10,7 +10,6 @@ module.exports = {
   rules: {
     'import/prefer-default-export': 'off',
     'import/no-mutable-exports': 'off',
-    'import/no-unresolved': 'off',
     'import/no-extraneous-dependencies': 'off',
     'no-console': 'off',
     'no-empty': ['error', { allowEmptyCatch: true }],
