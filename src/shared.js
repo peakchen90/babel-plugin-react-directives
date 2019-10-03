@@ -42,7 +42,7 @@ function syncOptions(options = {}) {
   );
 
   opts = {
-    prefix: 'rd',
+    prefix: 'x',
     ...options
   };
 }

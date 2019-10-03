@@ -1,5 +1,6 @@
 const path = require('path');
 const assert = require('assert');
+const prettier = require('prettier');
 const pluginTester = require('./plugin-tester');
 
 // 各版本babel
@@ -25,9 +26,18 @@ function runTest(versionNum) {
     title: `babel${versionNum}`,
     filename: __filename,
     fixtures: path.join(__dirname, './fixtures'),
-    formatResult: (result) => result.replace(/\s+(\/>)/g, '$1'),
-    endOfLine: 'lf',
-    tests: []
+    babelOptions: {
+      parserOpts: {
+        plugins: [
+          'classProperties',
+          'jsx'
+        ]
+      }
+    },
+    formatResult: (result) => prettier.format(result, {
+      parser: 'babel',
+      endOfLine: 'lf'
+    }).replace(/\s+(\/>|>)/g, '$1')
   });
 }
 

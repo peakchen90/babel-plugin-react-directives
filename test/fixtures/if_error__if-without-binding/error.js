@@ -1,1 +1,1 @@
-module.exports = /`rd-if` used on element <div> without binding value/
+module.exports = /`x-if` used on element <div> without binding value/

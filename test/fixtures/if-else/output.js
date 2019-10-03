@@ -1,3 +1,1 @@
-const a = <div>
-  {testA ? <p>A</p> : <p>B</p>}
-</div>;
+const a = <div>{testA ? <p>A</p> : <p>B</p>}</div>;

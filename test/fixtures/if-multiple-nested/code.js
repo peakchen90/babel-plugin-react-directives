@@ -1,14 +1,14 @@
 const a = <div>
-  <p rd-if={testA}>
+  <p x-if={testA}>
     A
-    <span rd-if={testAa}>
+    <span x-if={testAa}>
       Aa
-      <img rd-if={testAa1} alt="image1"/>
-      <img rd-else-if={testAa2} alt="image2"/>
-      <img rd-else alt="image3"/>
+      <img x-if={testAa1} alt="image1"/>
+      <img x-else-if={testAa2} alt="image2"/>
+      <img x-else alt="image3"/>
     </span>
-    <span rd-else>Ab</span>
+    <span x-else>Ab</span>
   </p>
-  <p rd-else>B</p>
-  <p rd-if={testC}>C</p>
+  <p x-else>B</p>
+  <p x-if={testC}>C</p>
 </div>;

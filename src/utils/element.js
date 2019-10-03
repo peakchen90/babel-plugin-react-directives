@@ -115,13 +115,13 @@ class ElementUtil {
       attrName, // 属性名
       directivePath, // 指令属性的NodePath
       callback, // 遍历的attribute回调方法，返回值用于判断匹配成功
-      getMergeResult, // 合并结果回调方法，返回值用于设置到属性上
+      getResult, // 合并结果回调方法，返回值用于设置到属性上
     } = option;
 
     assert(attrName && typeof attrName === 'string', 'The `attrName` expects a non-empty string');
     assert(t.isJSXAttribute(directivePath), 'The `directivePath` expects a JSXAttribute');
     assert(typeof callback === 'function', 'The `callback` expects a function');
-    assert(typeof getMergeResult === 'function', 'The `getMergeResult` expects a function');
+    assert(typeof getResult === 'function', 'The `getResult` expects a function');
 
     const attributes = this.findAllAttributes();
     const mergeItems = [];
@@ -166,7 +166,7 @@ class ElementUtil {
     const replacement = t.jsxAttribute(
       t.jSXIdentifier(attrName),
       t.jSXExpressionContainer(
-        getMergeResult(mergeItems.reverse())
+        getResult(mergeItems.reverse())
       )
     );
 

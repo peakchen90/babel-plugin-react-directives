@@ -1,1 +1,1 @@
-const a = <div rd-else-if={testA}>A</div>;
+const a = <div x-else-if={testA}>A</div>;

@@ -3,6 +3,30 @@ const attrUtil = require('../utils/attribute');
 const elementUtil = require('../utils/element');
 const builder = require('../utils/builder');
 
+/**
+ * 创建更新state表达式
+ */
+function buildUpdateStateExpression(path) {
+  const isClassComponent = path.findParent((parentPath) => t.isClassBody(parentPath.node));
+
+  if (isClassComponent) {
+    //
+  } else {
+    //
+  }
+
+  return t.callExpression(
+    builder.buildMemberExpression(
+      t.thisExpression(),
+      t.identifier('setState')
+    ),
+    [t.objectExpression([
+      // t.objectProperty(
+      //
+      // )
+    ])]
+  );
+}
 
 /**
  * 转换model指令
@@ -15,6 +39,7 @@ function transformModel(path) {
   }
 
   const bindingValue = attrUtil(attrPath).getValueExpression();
+  /* istanbul ignore next: print warn info */
   if (!bindingValue) {
     codeFrameWarn(
       attrPath,
@@ -24,19 +49,12 @@ function transformModel(path) {
     return;
   }
 
+  /* istanbul ignore next: print warn info */
   if (t.isStringLiteral(bindingValue)) {
     codeFrameWarn(
       attrPath,
       `When the \`${DIRECTIVES.MODEL}\` prop binding value is a string literal, the component will not be updated accordingly`
     );
-  }
-
-  const isClassComponent = path.findParent((parentPath) => t.isClassBody(parentPath.node));
-
-  if (isClassComponent) {
-    //
-  } else {
-    //
   }
 
   // replace `value` prop
@@ -54,10 +72,11 @@ function transformModel(path) {
       }
       return false;
     },
-    getMergeResult() {
+    getResult() {
       return bindingValue;
     },
   });
+
 
   const args = path.scope.generateUidIdentifier('args');
   const val = path.scope.generateUidIdentifier('val');
@@ -79,22 +98,11 @@ function transformModel(path) {
       }
       return false;
     },
-    getMergeResult(mergeItems) {
-      const updateState = t.callExpression(
-        builder.buildMemberExpression(
-          t.thisExpression(),
-          t.identifier('setState')
-        ),
-        [t.objectExpression([
-          // t.objectProperty(
-          //
-          // )
-        ])]
-      );
-
+    getResult(mergeItems) {
       return t.arrowFunctionExpression(
         [t.restElement(args)],
         t.blockStatement([
+
           // let _val = _args[0] && (_args[0].target instanceof window.Element) ? _args[0].target.value : _args[0]
           t.variableDeclaration('let', [
             t.variableDeclarator(
@@ -132,12 +140,14 @@ function transformModel(path) {
               )
             )
           ]),
+
           // 执行更新state方法
           t.expressionStatement(
-            updateState
+            buildUpdateStateExpression(path)
           ),
+
           // let _extraFn = {}.onChange;
-          t.variableDeclaration('let', [
+          mergeItems.length > 0 && t.variableDeclaration('let', [
             t.variableDeclarator(
               extraFn,
               builder.buildMemberExpression(
@@ -148,8 +158,9 @@ function transformModel(path) {
               )
             )
           ]),
+
           // typeof _extraFn === "function" && _extraFn(..._args);
-          t.expressionStatement(
+          mergeItems.length > 0 && t.expressionStatement(
             t.logicalExpression(
               '&&',
               t.binaryExpression(
@@ -166,7 +177,7 @@ function transformModel(path) {
               )
             )
           )
-        ])
+        ].filter(Boolean))
       );
     },
   });

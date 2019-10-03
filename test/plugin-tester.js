@@ -2,6 +2,7 @@
  * 基于 babel-plugin-tester@7.0.1 修改：
  *   1. 兼容babel6
  *   2. 支持fixtures文件夹下配置error.js断言错误
+ *   3. fixture文件夹名包含.skip表示跳过，包含.only表示只执行，包含.output表示强制输出output.js文件
  *
  * https://github.com/babel-utils/babel-plugin-tester/blob/v7.0.1/src/index.js
  */
@@ -290,7 +291,7 @@ const createFixtureTests = (fixturesDir, options) => {
     const tsCodePath = path.join(fixtureDir, 'code.ts');
     const jsxCodePath = path.join(fixtureDir, 'code.jsx');
     const tsxCodePath = path.join(fixtureDir, 'code.tsx');
-    const blockTitle = caseName.split('-').join(' ');
+    const blockTitle = caseName.replace(/__/g, ' > ').split('-').join(' ');
     const codePath = (pathExists.sync(jsCodePath) && jsCodePath)
       || (pathExists.sync(tsCodePath) && tsCodePath)
       || (pathExists.sync(jsxCodePath) && jsxCodePath)
@@ -318,8 +319,16 @@ const createFixtureTests = (fixturesDir, options) => {
       return;
     }
 
+    const forceOutput = /\.output(\.|\b)/.test(caseName);
+    let testFn = it;
+    if (/\.only(\.|\b)/.test(caseName)) {
+      testFn = it.only;
+    } else if (/\.skip(\.|\b)/.test(caseName)) {
+      testFn = it.skip;
+    }
+
     const ext = `.${codePath.split('.').pop()}`;
-    it(blockTitle, () => {
+    testFn(blockTitle, () => {
       const {
         plugin,
         pluginOptions,
@@ -389,12 +398,12 @@ const createFixtureTests = (fixturesDir, options) => {
       }
 
       assert(
-        !error || errored,
+        forceOutput || !error || errored,
         'Expected to throw error, but it did not.',
       );
 
       const outputPath = path.join(fixtureDir, `${fixtureOutputName}${ext}`);
-      if (!fs.existsSync(outputPath)) {
+      if (forceOutput || !fs.existsSync(outputPath)) {
         fs.writeFileSync(outputPath, actual);
         return;
       }

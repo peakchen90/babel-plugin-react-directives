@@ -1,1 +1,1 @@
-const a = <div rd-show={testA}>A</div>;
+const a = <div x-show={testA}>A</div>;

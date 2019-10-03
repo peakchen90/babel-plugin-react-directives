@@ -1,1 +1,1 @@
-const a = <div rd-if>A</div>;
+const a = <div x-if>A</div>;

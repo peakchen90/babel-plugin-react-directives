@@ -1,4 +1,4 @@
 const a = <div>
-  <div rd-if={testA}>A</div>
-  <div rd-else-if>B</div>
+  <div x-if={testA}>A</div>
+  <div x-else-if>B</div>
 </div>;

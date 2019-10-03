@@ -1,1 +1,1 @@
-const a = <div rd-show={testA} STYLE="styleString">A</div>;
+const a = <div x-show={testA} STYLE="styleString">A</div>;

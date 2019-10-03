@@ -56,7 +56,7 @@ function transformShow(path) {
       }
       return false;
     },
-    getMergeResult(mergeItems) {
+    getResult(mergeItems) {
       return t.objectExpression(
         mergeItems.map((item) => t.spreadElement(item)).concat(
           t.objectProperty(
