@@ -4,9 +4,6 @@ const attrUtil = require('../utils/attribute');
 const elementUtil = require('../utils/element');
 const builder = require('../utils/builder');
 
-/**
- * TODO: 1. setState没有处理数组，2. 绑定的值再引用其他的值
- */
 
 /**
  * 返回使用的类型
@@ -22,12 +19,100 @@ function getUseType(path) {
 }
 
 /**
- * 创建更新state表达式(Class组件方式)
+ * 创建 this.setState 表达式(Class组件方式)
  * @param path
  * @return {CallExpression}
  */
-function buildClassSetStateExpression(stateBindingStack, valueExpression) {
-  const nodeStack = stateBindingStack.map((path) => path.node);
+function buildClassSetStateExpression(path, stateBindingStack, valueExpression) {
+  const scopePrevState = path.scope.generateUidIdentifier('prevState');
+  const nodeStack = stateBindingStack.map((_path) => _path.node);
+  const statements = [];
+
+  const resolveValue = nodeStack.map((node, index) => {
+    return builder.buildMemberExpression(
+      scopePrevState,
+      ...(index === nodeStack.length - 1
+        ? nodeStack
+        : nodeStack.filter((_, i) => i <= index))
+    );
+  });
+
+  // 定义语句
+  const defineStatements = (node, varId, value, resolveExp) => {
+    if (t.isNumericLiteral(node)) {
+      return [
+        t.variableDeclaration('let', [
+          t.variableDeclarator(
+            varId,
+            t.arrayExpression([
+              t.spreadElement(
+                resolveExp
+              )
+            ])
+          )
+        ]),
+        t.expressionStatement(
+          t.callExpression(
+            t.memberExpression(
+              varId,
+              t.identifier('splice')
+            ),
+            [
+              node,
+              t.numericLiteral(1),
+              value
+            ]
+          )
+        )
+      ];
+    }
+    return [
+      t.variableDeclaration('let', [
+        t.variableDeclarator(
+          varId,
+          t.objectExpression([
+            resolveExp && t.spreadElement(resolveExp),
+            t.objectProperty(
+              node,
+              value
+            )
+          ].filter(Boolean))
+        )
+      ])
+    ];
+  };
+
+  // this.setState 返回值表达式
+  const resultStatement = nodeStack.reduceRight((prevVar, currentNode, index) => {
+    const scopeVar = path.scope.generateUidIdentifier('val');
+    if (index === 0) {
+      return t.returnStatement(
+        t.objectExpression([
+          t.objectProperty(
+            currentNode,
+            prevVar || valueExpression
+          )
+        ])
+      );
+    }
+
+    if (!prevVar) {
+      statements.push(...defineStatements(
+        currentNode,
+        scopeVar,
+        valueExpression,
+        resolveValue[index - 1]
+      ));
+    } else if (index > 0) {
+      statements.push(...defineStatements(
+        currentNode,
+        scopeVar,
+        prevVar,
+        resolveValue[index - 1]
+      ));
+    }
+    return scopeVar;
+  }, null);
 
   return t.callExpression(
     builder.buildMemberExpression(
@@ -35,21 +120,13 @@ function buildClassSetStateExpression(stateBindingStack, valueExpression) {
       t.identifier('setState')
     ),
     [
-      nodeStack.reduceRight((prev, curr, index) => {
-        return t.objectExpression([
-          index > 0 && t.spreadElement(
-            builder.buildMemberExpression(
-              t.thisExpression(),
-              t.identifier('state'),
-              ...nodeStack.filter((_, i) => i <= index - 1)
-            )
-          ),
-          t.objectProperty(
-            curr,
-            prev || valueExpression
-          )
-        ].filter(Boolean));
-      }, null)
+      t.arrowFunctionExpression(
+        [scopePrevState],
+        t.blockStatement([
+          ...statements,
+          resultStatement
+        ])
+      )
     ]
   );
 }
@@ -89,7 +166,10 @@ function transformModel(path) {
   const statePath = stateBindingStack.shift();
   if (
     !t.isThisExpression(thisPath && thisPath.node)
-    || !t.isIdentifier(statePath && statePath.node, { name: 'state' })
+    || (
+      !t.isIdentifier(statePath && statePath.node, { name: 'state' })
+      && !t.isStringLiteral(statePath && statePath.node, { value: 'state' })
+    )
   ) {
     throw valuePath.buildCodeFrameError(
       `The \`${DIRECTIVES.MODEL}\` binding value should define in \`this.state\``
@@ -98,6 +178,11 @@ function transformModel(path) {
   if (stateBindingStack.length === 0) {
     throw valuePath.buildCodeFrameError(
       `The \`${DIRECTIVES.MODEL}\` binding value cannot be \`this.state\``
+    );
+  }
+  if (t.isNumericLiteral(stateBindingStack[0].node)) {
+    throw valuePath.buildCodeFrameError(
+      `The \`${DIRECTIVES.MODEL}\` binding value cannot use \`this.state\` as an array`
     );
   }
 
@@ -130,7 +215,7 @@ function transformModel(path) {
    */
 
   const scopeArgs = path.scope.generateUidIdentifier('args');
-  const scopeVal = path.scope.generateUidIdentifier('val');
+  const scopeValue = path.scope.generateUidIdentifier('value');
   const scopeExtraFn = path.scope.generateUidIdentifier('extraFn');
 
   elementUtil(path).mergeAttributes({
@@ -156,7 +241,7 @@ function transformModel(path) {
           // let _val = _args[0] && (_args[0].target instanceof window.Element) ? _args[0].target.value : _args[0]
           t.variableDeclaration('let', [
             t.variableDeclarator(
-              scopeVal,
+              scopeValue,
               t.conditionalExpression(
                 t.logicalExpression(
                   '&&',
@@ -193,7 +278,7 @@ function transformModel(path) {
 
           // 执行更新state方法
           t.expressionStatement(
-            buildClassSetStateExpression(stateBindingStack, scopeVal)
+            buildClassSetStateExpression(attrPath, stateBindingStack, scopeValue)
           ),
 
           // let _extraFn = {}.onChange;

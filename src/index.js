@@ -49,6 +49,11 @@ module.exports = ({ version }) => {
           break;
 
         case DIRECTIVES.MODEL:
+          util.codeFrameWarn(
+            path,
+            `There should be no more than one directive: \`${name}\``
+          );
+          path.remove();
           break;
 
         default:
@@ -66,7 +71,6 @@ module.exports = ({ version }) => {
       if (parserOpts.plugins.some((p) => (Array.isArray(p) ? p[0] : p) === 'typescript')) {
         return;
       }
-
       parserOpts.plugins.push('jsx');
     },
     visitor

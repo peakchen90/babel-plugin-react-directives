@@ -2,7 +2,7 @@ class A extends React.Component {
   render() {
     return (
       <input
-        value={this.state.data}
+        value={this.state.dataB}
         onChange={(..._args) => {
           let _value =
             _args[0] && _args[0].target instanceof window.Element
@@ -11,7 +11,7 @@ class A extends React.Component {
 
           this.setState(_prevState => {
             return {
-              data: _value
+              dataB: _value
             };
           });
         }}/>

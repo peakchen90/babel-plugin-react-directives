@@ -38,6 +38,7 @@ function codeFrameWarn(path, message) {
  * @param targetVersion
  * @param message
  */
+/* istanbul ignore next: use check version */
 function assertVersion(currentVersion, targetVersion, message) {
   const current = currentVersion.split('.').map((item) => Number(item));
   let target = [];
@@ -72,7 +73,7 @@ function assertVersion(currentVersion, targetVersion, message) {
  * @return {string|null}
  */
 function getSourceCode(path, node) {
-  /* istanbul ignore if: fault tolerant control */
+  /* istanbul ignore next: fault tolerant control */
   if (!path || !path.hub) {
     return null;
   }
@@ -186,9 +187,7 @@ function getReferenceStack(path) {
     }
 
     if (!binding) {
-      throw path.buildCodeFrameError(
-        `\`${identifierName}\` is not defined`
-      );
+      return bindingStack;
     }
 
     bindingStack = [
