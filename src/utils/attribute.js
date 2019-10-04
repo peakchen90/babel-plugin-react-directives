@@ -20,6 +20,24 @@ class AttributeUtil {
   }
 
   /**
+   * 返回属性值NodePath
+   * @return {expression | null}
+   */
+  getValuePath() {
+    /* istanbul ignore if: fault tolerant control */
+    if (!this._isValid) {
+      return null;
+    }
+
+    let bindingValuePath = this.path.get('value');
+    if (t.isJSXExpressionContainer(bindingValuePath)) {
+      bindingValuePath = this.path.get('value.expression');
+    }
+
+    return bindingValuePath || null;
+  }
+
+  /**
    * 返回属性值表达式
    * @return {expression | null}
    */

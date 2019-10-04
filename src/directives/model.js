@@ -21,70 +21,27 @@ function getUseType(path) {
   return null;
 }
 
-function getStateBindingStack(attrPath) {
-  let bindingStack = [];
-
-  const nestedVisitor = {
-    Identifier(path) {
-      const identifierName = path.node.name;
-      let binding = path.scope.bindings[identifierName];
-
-      if (!binding) {
-        const targetPath = attrPath.findParent((p) => (
-          !!p.scope.bindings[identifierName]
-        ));
-        if (targetPath) {
-          binding = targetPath.scope.bindings[identifierName];
-        }
-      }
-
-      if (!binding) {
-        throw path.buildCodeFrameError(
-          `\`${identifierName}\` is not defined`
-        );
-      }
-
-      const bindingNode = binding.path.node;
-
-      bindingStack = [
-        ...util.getMemberStack(bindingNode.init),
-        ...util.findDeconstructionStack(
-          binding.path.get('id'),
-          identifierName
-        )
-      ];
-      path.stop();
-    },
-    MemberExpression(path) {
-      bindingStack = util.getMemberStack(path.node);
-      path.stop();
-    }
-  };
-
-  attrPath.traverse(nestedVisitor);
-
-  return bindingStack;
-}
-
 /**
  * 创建更新state表达式(Class组件方式)
  * @param path
  * @return {CallExpression}
  */
-function buildClassSetStateExp(stateBindingStack, valueExpression) {
+function buildClassSetStateExpression(stateBindingStack, valueExpression) {
+  const nodeStack = stateBindingStack.map((path) => path.node);
+
   return t.callExpression(
     builder.buildMemberExpression(
       t.thisExpression(),
       t.identifier('setState')
     ),
     [
-      stateBindingStack.reduceRight((prev, curr, index) => {
+      nodeStack.reduceRight((prev, curr, index) => {
         return t.objectExpression([
           index > 0 && t.spreadElement(
             builder.buildMemberExpression(
               t.thisExpression(),
               t.identifier('state'),
-              ...stateBindingStack.filter((_, i) => i <= index - 1)
+              ...nodeStack.filter((_, i) => i <= index - 1)
             )
           ),
           t.objectProperty(
@@ -118,16 +75,6 @@ function transformModel(path) {
     return;
   }
 
-  let bindingValuePath = attrPath.get('value.expression');
-  if (!bindingValuePath.node) {
-    bindingValuePath = attrPath.get('value');
-  }
-  if (!t.isIdentifier(bindingValue) && !t.isMemberExpression(bindingValue)) {
-    throw bindingValuePath.buildCodeFrameError(
-      `The \`${DIRECTIVES.MODEL}\` binding value expected an identifier or a member expression, but got: \`${util.getSourceCode(path, bindingValue)}\``
-    );
-  }
-
   // 使用类型: 'class', null
   const useType = getUseType(path);
   if (!useType) {
@@ -136,16 +83,20 @@ function transformModel(path) {
     );
   }
 
-  const stateBindingStack = getStateBindingStack(attrPath);
-  const thisExp = stateBindingStack.shift();
-  const stateExp = stateBindingStack.shift();
-  if (!t.isThisExpression(thisExp) || !t.isIdentifier(stateExp, { name: 'state' })) {
-    throw bindingValuePath.buildCodeFrameError(
+  const valuePath = attrUtil(attrPath).getValuePath();
+  const stateBindingStack = util.getReferenceStack(valuePath);
+  const thisPath = stateBindingStack.shift();
+  const statePath = stateBindingStack.shift();
+  if (
+    !t.isThisExpression(thisPath && thisPath.node)
+    || !t.isIdentifier(statePath && statePath.node, { name: 'state' })
+  ) {
+    throw valuePath.buildCodeFrameError(
       `The \`${DIRECTIVES.MODEL}\` binding value should define in \`this.state\``
     );
   }
   if (stateBindingStack.length === 0) {
-    throw bindingValuePath.buildCodeFrameError(
+    throw valuePath.buildCodeFrameError(
       `The \`${DIRECTIVES.MODEL}\` binding value cannot be \`this.state\``
     );
   }
@@ -242,7 +193,7 @@ function transformModel(path) {
 
           // 执行更新state方法
           t.expressionStatement(
-            buildClassSetStateExp(stateBindingStack, scopeVal)
+            buildClassSetStateExpression(stateBindingStack, scopeVal)
           ),
 
           // let _extraFn = {}.onChange;

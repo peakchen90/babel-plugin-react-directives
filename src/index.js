@@ -62,6 +62,7 @@ module.exports = ({ version }) => {
       // https://github.com/babel/babel/blob/v7.6.2/packages/babel-plugin-syntax-jsx/src/index.js
       // If the Typescript plugin already ran, it will have decided whether
       // or not this is a TSX file.
+      /* istanbul ignore next */
       if (parserOpts.plugins.some((p) => (Array.isArray(p) ? p[0] : p) === 'typescript')) {
         return;
       }

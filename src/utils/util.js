@@ -84,34 +84,33 @@ function getSourceCode(path, node) {
 }
 
 /**
- * 返回一个对象的成员访问栈，如: a.b.c 返回 [expA, expB, expC] 数组元素为对应的表达式
- * @param exp
- * @return {*[]}
+ * 返回一个对象的成员访问栈，如: a.b.c 返回 [pathA, pathB, pathC] 数组元素为对应的NodePath
+ * @param path
+ * @return {Array<NodePath>}
  */
-function getMemberStack(exp) {
+function getMemberPathStack(path) {
   const stack = [];
-  while (t.isMemberExpression(exp)) {
-    stack.push(exp.property);
-    exp = exp.object;
+  while (t.isMemberExpression(path && path.node)) {
+    stack.push(path.get('property'));
+    path = path.get('object');
   }
-  if (exp) {
-    stack.push(exp);
+  if (path && path.node && path.hub) { // 简单判断是一个NodePath对象
+    stack.push(path);
   }
   return stack.reverse();
 }
 
 /**
- * 找到一个变量在一个数组或对象的解构栈，如: let { a, b: [c] } = obj 中变量c的解构栈返回: [expB, NumericLiteral(0)]
+ * 找到一个变量在一个数组或对象的解构栈，如: let { a, b: [c] } = obj 中变量c的解构栈返回: [pathB, NumericLiteral(0)]
  * @param path
  * @param identifier
- * @return {[]}
+ * @return {Array<NodePath>}
  */
-function findDeconstructionStack(path, identifierName) {
+function findDeconstructionPathStack(path, identifierName) {
   if (!t.isObjectPattern(path && path.node) && !t.isArrayPattern(path && path.node)) {
     return [];
   }
 
-  // const { a: [b], c} = this.state.dataA;
   const stack = [];
   let targetPath = null;
   const nestedVisitor = {
@@ -119,25 +118,37 @@ function findDeconstructionStack(path, identifierName) {
       if (
         _path.node.name === identifierName
         && (
-          (t.isObjectProperty(_path.parent)
-            && _path.parent.value === _path.node)
+          (t.isObjectProperty(_path.parent) && _path.parent.value === _path.node)
           || t.isArrayPattern(_path.parent)
         )
       ) {
         targetPath = _path;
+        // Note: 这里不能停止遍历，要找出可能的最后一个标识符
       }
     }
   };
+
   path.traverse(nestedVisitor);
 
   if (targetPath) {
     while (targetPath !== path) {
       if (t.isObjectProperty(targetPath.parent)) {
-        stack.push(targetPath.parent.key);
+        stack.push(targetPath.parentPath.get('key'));
         targetPath = targetPath.parentPath && targetPath.parentPath.parentPath;
       } else if (t.isArrayPattern(targetPath.parent)) {
         const index = targetPath.parent.elements.indexOf(targetPath.node);
-        stack.push(t.numericLiteral(index));
+        // 创建一个类PathNode对象(不能遍历)
+        const likeNumericLiteral = Object.create(Object.getPrototypeOf(targetPath));
+        likeNumericLiteral.node = {
+          ...t.numericLiteral(index),
+          start: targetPath.node.start,
+          end: targetPath.node.end,
+          loc: targetPath.node.loc,
+        };
+        likeNumericLiteral.hub = targetPath.hub;
+        likeNumericLiteral.scope = targetPath.scope;
+        likeNumericLiteral.type = likeNumericLiteral.node.type;
+        stack.push(likeNumericLiteral);
         targetPath = targetPath.parentPath;
       } else {
         break;
@@ -148,10 +159,67 @@ function findDeconstructionStack(path, identifierName) {
   return stack.reverse();
 }
 
+/**
+ * 返回一个变量或成员表达式引用的对象成员栈
+ * @param attrPath
+ * @param bindingValuePath
+ * @return {[]}
+ */
+function getReferenceStack(path) {
+  let bindingStack = [];
+
+  if (!path) {
+    return bindingStack;
+  }
+
+  if (t.isIdentifier(path.node)) {
+    const identifierName = path.node.name;
+    let binding = path.scope.bindings[identifierName];
+
+    if (!binding) {
+      const targetPath = path.findParent((p) => (
+        !!p.scope.bindings[identifierName]
+      ));
+      if (targetPath) {
+        binding = targetPath.scope.bindings[identifierName];
+      }
+    }
+
+    if (!binding) {
+      throw path.buildCodeFrameError(
+        `\`${identifierName}\` is not defined`
+      );
+    }
+
+    bindingStack = [
+      ...getMemberPathStack(binding.path.get('init')),
+      ...findDeconstructionPathStack(
+        binding.path.get('id'),
+        identifierName
+      )
+    ];
+  } else if (t.isMemberExpression(path.node)) {
+    bindingStack = getMemberPathStack(path);
+  }
+
+  // 判断最后一个标识符是否引用了其他值
+  let first = bindingStack[0];
+  while (first && !t.isThisExpression(first.node)) {
+    const refsStack = getReferenceStack(first);
+    first = refsStack[0];
+    if (refsStack.length > 0) {
+      bindingStack.splice(0, 1, ...refsStack);
+    }
+  }
+
+  return bindingStack;
+}
+
 module.exports = {
   codeFrameWarn,
   assertVersion,
   getSourceCode,
-  getMemberStack,
-  findDeconstructionStack
+  getMemberPathStack,
+  findDeconstructionPathStack,
+  getReferenceStack
 };

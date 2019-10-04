@@ -24,24 +24,15 @@ let _traverseList = [];
 function traverseIf(path) {
   const nestedVisitor = {
     JSXElement(_path) {
-      const _elementUtil = elementUtil(_path);
-      const attrPath = _elementUtil.findAttributeByName(DIRECTIVES.IF);
-      if (
-        attrPath
-        // 一个JSXElement不能同时存在2个if指令
-        && _elementUtil.findAllAttributes().every((item) => (
-          item === attrPath
-          || attrUtil(item).getName() !== DIRECTIVES.IF
-        ))
-      ) {
-        _path.skip(); // 跳过遍历子JSXElement节点
-
-        _traverseList.push(traverseConditional(_path, attrPath));
+      const attributes = elementUtil(_path).findAllAttributes();
+      const attrs = attributes.filter((attr) => attrUtil(attr).getName() === DIRECTIVES.IF);
+      if (attrs.length === 1) {
+        _path.skip(); // 跳过遍历子节点
+        _traverseList.push(traverseConditional(_path, attrs[0]));
       }
     }
   };
 
-  // visitor使用引用，防止每次遍历创建新的visitor对象
   path.traverse(nestedVisitor);
 
   return _traverseList;
@@ -113,7 +104,7 @@ function transform(conditions) {
       t.conditionalExpression(
         attrUtil(attrPath).getValueExpression(),
         path.node,
-        t.identifier('null')
+        t.nullLiteral()
       )
     );
     attrPath.remove();
@@ -134,7 +125,7 @@ function transform(conditions) {
             expression = t.conditionalExpression(
               test,
               curr.path.node,
-              t.identifier('null')
+              t.nullLiteral()
             );
           }
         } else {
