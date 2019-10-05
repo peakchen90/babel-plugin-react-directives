@@ -357,21 +357,29 @@ function setOnChangeProp(path, attrPath, stateBindingStack, useType) {
               t.conditionalExpression(
                 t.logicalExpression(
                   '&&',
-                  builder.buildMemberExpression(
-                    argsVar,
-                    t.numericLiteral(0)
-                  ),
-                  t.binaryExpression(
-                    'instanceof',
+                  t.logicalExpression(
+                    '&&',
+                    builder.buildMemberExpression(
+                      argsVar,
+                      t.numericLiteral(0)
+                    ),
                     builder.buildMemberExpression(
                       argsVar,
                       t.numericLiteral(0),
                       t.identifier('target')
+                    )
+                  ),
+                  t.binaryExpression(
+                    '===',
+                    t.unaryExpression(
+                      'typeof',
+                      builder.buildMemberExpression(
+                        argsVar,
+                        t.numericLiteral(0),
+                        t.identifier('target')
+                      )
                     ),
-                    builder.buildMemberExpression(
-                      t.identifier('window'),
-                      t.identifier('Element')
-                    ),
+                    t.stringLiteral('object')
                   )
                 ),
                 builder.buildMemberExpression(

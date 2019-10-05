@@ -1,7 +1,7 @@
 const path = require('path');
 const assert = require('assert');
 const prettier = require('prettier');
-const pluginTester = require('../plugin-tester');
+const pluginTester = require('./plugin-tester');
 
 // 各版本babel
 const babelMap = {

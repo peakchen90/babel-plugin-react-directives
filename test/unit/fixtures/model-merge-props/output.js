@@ -5,7 +5,7 @@ class A extends React.Component {
         value={this.state.data}
         onChange={(..._args) => {
           let _value =
-            _args[0] && _args[0].target instanceof window.Element
+            _args[0] && _args[0].target && typeof _args[0].target === "object"
               ? _args[0].target.value
               : _args[0];
 
@@ -33,7 +33,7 @@ class B extends React.Component {
         value={this.state.data}
         onChange={(..._args2) => {
           let _value2 =
-            _args2[0] && _args2[0].target instanceof window.Element
+            _args2[0] && _args2[0].target && typeof _args2[0].target === "object"
               ? _args2[0].target.value
               : _args2[0];
 

@@ -10,7 +10,8 @@ const { types: t } = require('../shared');
  * @param message
  */
 function codeFrameWarn(path, message) {
-  if (process.env.NODE_ENV === 'test') {
+  // jest测试时忽略
+  if (process.env.JEST_TEST_ENV) {
     return;
   }
 
