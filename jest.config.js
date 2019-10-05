@@ -8,6 +8,6 @@ module.exports = {
   coveragePathIgnorePatterns: [
     'node_modules',
     'test/plugin-tester.js',
-    'test/fixtures'
+    'test/unit/fixtures'
   ]
 };

@@ -1,7 +1,7 @@
 const path = require('path');
 const assert = require('assert');
 const prettier = require('prettier');
-const pluginTester = require('./plugin-tester');
+const pluginTester = require('../plugin-tester');
 
 // 各版本babel
 const babelMap = {
@@ -22,7 +22,7 @@ function runTest(versionNum) {
    */
   pluginTester({
     babel: babelMap[versionNum],
-    plugin: require('../src'),
+    plugin: require('../../src'),
     title: `babel${versionNum}`,
     filename: __filename,
     fixtures: path.join(__dirname, './fixtures'),
