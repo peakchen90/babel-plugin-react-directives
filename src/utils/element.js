@@ -114,13 +114,13 @@ class ElementUtil {
     const {
       attrName, // 属性名
       directivePath, // 指令属性的NodePath
-      callback, // 遍历的attribute回调方法，返回值用于判断匹配成功
+      find, // 遍历的attribute回调方法，返回值用于判断匹配成功
       getResult, // 合并结果回调方法，返回值用于设置到属性上
     } = option;
 
     assert(attrName && typeof attrName === 'string', 'The `attrName` expected a non-empty string');
     assert(t.isJSXAttribute(directivePath), 'The `directivePath` expected a JSXAttribute');
-    assert(typeof callback === 'function', 'The `callback` expected a function');
+    assert(typeof find === 'function', 'The `find` expected a function');
     assert(typeof getResult === 'function', 'The `getResult` expected a function');
 
     const attributes = this.findAllAttributes();
@@ -129,7 +129,7 @@ class ElementUtil {
     let lastAttrIndex = -1; // 最后一个属性位置
     let lastSpreadAttrIndex = -1; // 最后一个spread属性位置
 
-    // 用于callback回调设置值
+    // 用于find回调设置值
     let _value;
     const setValue = (val) => _value = val;
 
@@ -154,7 +154,7 @@ class ElementUtil {
             )
           )
         );
-      } else if (lastAttrIndex === -1 && callback(attr, setValue)) {
+      } else if (lastAttrIndex === -1 && find(attr, setValue)) {
         lastAttrIndex = i;
         if (_value) {
           mergeItems.push(_value);
@@ -172,9 +172,6 @@ class ElementUtil {
 
     if (lastAttrIndex >= 0) {
       attributes[lastAttrIndex].remove();
-    }
-    if (!directivePath.removed) {
-      directivePath.remove();
     }
     // 在最后插入替换属性
     this.path.get('openingElement').pushContainer('attributes', replacement);

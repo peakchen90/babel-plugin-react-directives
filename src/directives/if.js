@@ -51,7 +51,7 @@ function traverseConditional(path, attrPath, _result) {
   if (result.length === 0 && attrUtil(attrPath).getName() === DIRECTIVES.IF) {
     if (!attrUtil(attrPath).getValueExpression()) {
       throw attrPath.buildCodeFrameError(
-        `\`${DIRECTIVES.IF}\` used on element <${elementUtil(path).getName()}> without binding value`
+        `\`${DIRECTIVES.IF}\` used on element <${elementUtil(path).getName()}> without binding value.`
       );
     }
     traverseIf(path);
@@ -64,7 +64,7 @@ function traverseConditional(path, attrPath, _result) {
   if (attrPath) {
     if (!attrUtil(attrPath).getValueExpression()) {
       throw attrPath.buildCodeFrameError(
-        `\`${DIRECTIVES.ELSE_IF}\` used on element <${elementUtil(path).getName()}> without binding value`
+        `\`${DIRECTIVES.ELSE_IF}\` used on element <${elementUtil(path).getName()}> without binding value.`
       );
     }
     traverseIf(path);

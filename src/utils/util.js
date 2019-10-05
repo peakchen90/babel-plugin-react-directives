@@ -38,6 +38,7 @@ function codeFrameWarn(path, message) {
  * @param targetVersion
  * @param message
  */
+
 /* istanbul ignore next: use check version */
 function assertVersion(currentVersion, targetVersion, message) {
   const current = currentVersion.split('.').map((item) => Number(item));
@@ -64,24 +65,6 @@ function assertVersion(currentVersion, targetVersion, message) {
     }),
     message || `The version supported: > ${targetVersion}`
   );
-}
-
-/**
- * 获取节点的源代码
- * @param path
- * @param node
- * @return {string|null}
- */
-function getSourceCode(path, node) {
-  /* istanbul ignore next: fault tolerant control */
-  if (!path || !path.hub) {
-    return null;
-  }
-  let code = path.hub.file.code;
-  if (node && node.start != null && node.end != null) {
-    return code = code.substring(node.start, node.end);
-  }
-  return code;
 }
 
 /**
@@ -147,7 +130,6 @@ function findDeconstructionPathStack(path, identifierName) {
           loc: targetPath.node.loc,
         };
         likeNumericLiteral.hub = targetPath.hub;
-        likeNumericLiteral.scope = targetPath.scope;
         likeNumericLiteral.type = likeNumericLiteral.node.type;
         stack.push(likeNumericLiteral);
         targetPath = targetPath.parentPath;
@@ -169,10 +151,12 @@ function findDeconstructionPathStack(path, identifierName) {
 function getReferenceStack(path) {
   let bindingStack = [];
 
+  /* istanbul ignore if: fault tolerant control */
   if (!path) {
     return bindingStack;
   }
 
+  /* istanbul ignore if: fault tolerant control */
   if (t.isIdentifier(path.node)) {
     const identifierName = path.node.name;
     let binding = path.scope.bindings[identifierName];
@@ -217,7 +201,6 @@ function getReferenceStack(path) {
 module.exports = {
   codeFrameWarn,
   assertVersion,
-  getSourceCode,
   getMemberPathStack,
   findDeconstructionPathStack,
   getReferenceStack

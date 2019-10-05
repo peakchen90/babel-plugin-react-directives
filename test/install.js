@@ -18,7 +18,7 @@ Promise.all([
   install('babel6'),
   install('babel7')
 ]).then(() => {
-  console.log('Successfully installed babel');
+  console.log('Babel installed successfully');
 }).catch((err) => {
   console.error(err);
 });

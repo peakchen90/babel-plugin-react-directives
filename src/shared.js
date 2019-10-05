@@ -2,7 +2,7 @@ const assert = require('assert');
 const types = require('@babel/types');
 
 // plugin option
-let opts = {};
+const opts = {};
 
 // 指令名
 const DIRECTIVES = {
@@ -31,17 +31,25 @@ const DIRECTIVES = {
  * @param _opts
  */
 function syncOptions(options = {}) {
-  const { prefix } = options;
+  const {
+    prefix,
+    pragmaType
+  } = options;
 
   assert(
-    prefix === undefined || (typeof options.prefix === 'string' && options.prefix.length > 0),
+    prefix === undefined || (typeof prefix === 'string' && prefix.length > 0),
     'The `prefix` option should be a non-empty string.'
   );
 
-  opts = {
-    prefix: 'x',
-    ...options
-  };
+  assert(
+    pragmaType === undefined || (typeof pragmaType === 'string' && pragmaType.length > 0),
+    'The `pragmaType` option should be a non-empty string.'
+  );
+
+  Object.assign(opts, {
+    prefix: prefix || 'x',
+    pragmaType: pragmaType || 'React',
+  });
 }
 
 
@@ -58,6 +66,7 @@ class DirectiveData {
 
 module.exports = {
   DIRECTIVES,
+  opts,
   types,
   syncOptions,
   DirectiveData

@@ -26,11 +26,11 @@ function transformShow(path) {
     return;
   }
 
-  // merge `style` prop
+  // 设置 `style` prop
   elementUtil(path).mergeAttributes({
     attrName: 'style',
     directivePath: attrPath,
-    callback(attr, setValue) {
+    find(attr, setValue) {
       const attrName = attrUtil(attr).getName();
       const value = attrUtil(attr).getValueExpression();
 
@@ -72,6 +72,8 @@ function transformShow(path) {
       );
     },
   });
+
+  attrPath.remove();
 }
 
 module.exports = transformShow;

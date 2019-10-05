@@ -27,7 +27,7 @@ module.exports = ({ version }) => {
       switch (name) {
         case DIRECTIVES.IF:
           throw path.buildCodeFrameError(
-            `There should be no more than one directive: \`${name}\``
+            `There should be no more than one directive: \`${name}\`.`
           );
 
         case DIRECTIVES.ELSE:
@@ -63,16 +63,18 @@ module.exports = ({ version }) => {
 
   return {
     name: 'react-directives',
+
+    /* istanbul ignore next: reference third party */
     manipulateOptions(opts, parserOpts) {
       // https://github.com/babel/babel/blob/v7.6.2/packages/babel-plugin-syntax-jsx/src/index.js
       // If the Typescript plugin already ran, it will have decided whether
       // or not this is a TSX file.
-      /* istanbul ignore next */
       if (parserOpts.plugins.some((p) => (Array.isArray(p) ? p[0] : p) === 'typescript')) {
         return;
       }
       parserOpts.plugins.push('jsx');
     },
+
     visitor
   };
 };
