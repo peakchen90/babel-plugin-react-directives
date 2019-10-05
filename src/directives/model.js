@@ -3,6 +3,7 @@ const util = require('../utils/util');
 const attrUtil = require('../utils/attribute');
 const elementUtil = require('../utils/element');
 const builder = require('../utils/builder');
+const template = require('../utils/template');
 
 
 /**
@@ -347,54 +348,14 @@ function setOnChangeProp(path, attrPath, stateBindingStack, useType) {
 
           /**
            * let _val =
-           *    _args[0] && (_args[0].target instanceof window.Element)
+           *    _args[0] && _args[0].target && typeof _args[0].target === "object"
            *      ? _args[0].target.value
            *      : _args[0]
            */
-          t.variableDeclaration('let', [
-            t.variableDeclarator(
-              valueVar,
-              t.conditionalExpression(
-                t.logicalExpression(
-                  '&&',
-                  t.logicalExpression(
-                    '&&',
-                    builder.buildMemberExpression(
-                      argsVar,
-                      t.numericLiteral(0)
-                    ),
-                    builder.buildMemberExpression(
-                      argsVar,
-                      t.numericLiteral(0),
-                      t.identifier('target')
-                    )
-                  ),
-                  t.binaryExpression(
-                    '===',
-                    t.unaryExpression(
-                      'typeof',
-                      builder.buildMemberExpression(
-                        argsVar,
-                        t.numericLiteral(0),
-                        t.identifier('target')
-                      )
-                    ),
-                    t.stringLiteral('object')
-                  )
-                ),
-                builder.buildMemberExpression(
-                  argsVar,
-                  t.numericLiteral(0),
-                  t.identifier('target'),
-                  t.identifier('value'),
-                ),
-                builder.buildMemberExpression(
-                  argsVar,
-                  t.numericLiteral(0)
-                )
-              )
-            )
-          ]),
+          template.getOnChangeVal({
+            VAL: valueVar,
+            ARGS: argsVar
+          }),
 
           /**
            * 执行更新state方法
@@ -419,29 +380,10 @@ function setOnChangeProp(path, attrPath, stateBindingStack, useType) {
           /**
            * typeof _extraFn === "function" && _extraFn.apply(this, _args);
            */
-          mergeItems.length > 0 && t.expressionStatement(
-            t.logicalExpression(
-              '&&',
-              t.binaryExpression(
-                '===',
-                t.unaryExpression(
-                  'typeof',
-                  extraFnVar
-                ),
-                t.stringLiteral('function')
-              ),
-              t.callExpression(
-                t.memberExpression(
-                  extraFnVar,
-                  t.identifier('apply')
-                ),
-                [
-                  t.thisExpression(),
-                  argsVar
-                ]
-              )
-            )
-          )
+          mergeItems.length > 0 && template.callExtraFn({
+            EXTRA_FN: extraFnVar,
+            ARGS: argsVar
+          })
         ].filter(Boolean))
       );
     },
@@ -535,7 +477,7 @@ function transformModel(path) {
       throw valuePath.buildCodeFrameError(
         `You seem to use \`${DIRECTIVES.MODEL}\` in the hook method, `
         + `the \`${DIRECTIVES.MODEL}\` binding value cannot be found in the first returned of \`${opts.pragmaType}.useState()\`. `
-        + 'For example: `let [data, setData] = useState(initialValue)`, `data` should be used as the binding value.'
+        + 'Usage example: `let [data, setData] = useState(initialValue)`, `data` should be used as the binding value.'
       );
     }
   }

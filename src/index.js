@@ -5,6 +5,7 @@ const elementUtil = require('./utils/element');
 const transformIf = require('./directives/if');
 const transformShow = require('./directives/show');
 const transformModel = require('./directives/model');
+const transformFor = require('./directives/for');
 
 
 module.exports = ({ version }) => {
@@ -18,6 +19,7 @@ module.exports = ({ version }) => {
       // transform directive
       transformShow(path);
       transformModel(path);
+      transformFor(path);
       transformIf(path);
     },
     JSXAttribute(path) {
@@ -38,17 +40,8 @@ module.exports = ({ version }) => {
           );
 
         case DIRECTIVES.SHOW:
-          util.codeFrameWarn(
-            path,
-            `There should be no more than one directive: \`${name}\``
-          );
-          path.remove();
-          break;
-
-        case DIRECTIVES.FOR:
-          break;
-
         case DIRECTIVES.MODEL:
+        case DIRECTIVES.FOR:
           util.codeFrameWarn(
             path,
             `There should be no more than one directive: \`${name}\``
