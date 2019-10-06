@@ -178,6 +178,19 @@ class ElementUtil {
 
     return replacement;
   }
+
+  /**
+   * 是否是顶层Element
+   * @return {null|boolean}
+   */
+  isTopElement() {
+    /* istanbul ignore if: fault tolerant control */
+    if (!this._isValid) {
+      return null;
+    }
+
+    return !t.isJSXElement(this.path.parent) && !t.isJSXFragment(this.path.parent);
+  }
 }
 
 

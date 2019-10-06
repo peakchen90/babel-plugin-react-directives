@@ -98,8 +98,8 @@ function transform(conditions) {
   const path = directiveData.path;
   const attrPath = directiveData.attrPath;
 
-  // 父节点是非JSXElement或JSXFragment
-  if (!t.isJSXElement(path.parent) && !t.isJSXFragment(path.parent)) {
+  // 顶层元素
+  if (elementUtil(path).isTopElement()) {
     path.replaceWith(
       t.conditionalExpression(
         attrUtil(attrPath).getValueExpression(),

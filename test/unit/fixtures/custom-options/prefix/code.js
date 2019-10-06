@@ -6,8 +6,10 @@ const a = <div>
 
 const b = <div v-show={testB}>B</div>;
 
-class C {
+const c = <div v-for={item in list}>{item}</div>;
+
+class D {
   render() {
-    return <input v-model={this.state.testC}/>
+    return <input v-model={this.state.testD}/>
   }
 }

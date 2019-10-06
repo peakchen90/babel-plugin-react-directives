@@ -9,11 +9,13 @@ const b = (
   </div>
 );
 
-class C {
+const c = list.map(item => <div>{item}</div>);
+
+class D {
   render() {
     return (
       <input
-        value={this.state.testC}
+        value={this.state.testD}
         onChange={(..._args) => {
           let _value =
             _args[0] && _args[0].target && typeof _args[0].target === "object"
@@ -22,7 +24,7 @@ class C {
 
           this.setState(_prevState => {
             return {
-              testC: _value
+              testD: _value
             };
           });
         }}/>

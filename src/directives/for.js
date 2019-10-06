@@ -27,13 +27,18 @@ function transformFor(path) {
 
   const valuePath = attrUtil(attrPath).getValuePath();
 
-  if (
-    !t.isBinaryExpression(bindingValue, { operator: 'in' })
-    && !t.isIdentifier(bindingValue.left)
-    && !(t.isSequenceExpression(bindingValue.left)
-      && bindingValue.left.expressions.every((n) => t.isIdentifier(n))
-    )) {
+  if (!t.isBinaryExpression(bindingValue, { operator: 'in' })) {
     throw valuePath.buildCodeFrameError(
+      `The \`${DIRECTIVES.FOR}\` used on element <${elementUtil(path).getName()}> with invalid binding value. `
+      + `Usage example: \`<div ${DIRECTIVES.FOR}={(item, index) in list}>{item}</div>\``
+    );
+  }
+  if (
+    !t.isIdentifier(bindingValue.left)
+    && (!t.isSequenceExpression(bindingValue.left)
+      || !bindingValue.left.expressions.every((n) => t.isIdentifier(n))
+    )) {
+    throw valuePath.get('left').buildCodeFrameError(
       `The \`${DIRECTIVES.FOR}\` used on element <${elementUtil(path).getName()}> with invalid binding value. `
       + `Usage example: \`<div ${DIRECTIVES.FOR}={(item, index) in list}>{item}</div>\``
     );
@@ -46,7 +51,7 @@ function transformFor(path) {
   if (t.isSequenceExpression(bindingValue.left)) {
     if (bindingValue.left.expressions.length > 2) {
       util.codeFrameWarn(
-        valuePath,
+        valuePath.get('left'),
         `The \`${DIRECTIVES.FOR}\` binding value has up to 2 parameters for traversal, and the extra parameters are ignored.`
       );
     }
@@ -55,19 +60,27 @@ function transformFor(path) {
     traverseArgs = [bindingValue.left];
   }
 
+  let replacement = t.callExpression(
+    t.memberExpression(
+      traverseTarget,
+      t.identifier('map')
+    ),
+    [
+      t.arrowFunctionExpression(
+        traverseArgs,
+        { ...path.node }
+      )
+    ]
+  );
+  // 非顶层Element
+  if (!elementUtil(path).isTopElement()) {
+    replacement = t.jsxExpressionContainer(
+      replacement
+    );
+  }
+
   path.replaceWith(
-    t.callExpression(
-      t.memberExpression(
-        traverseTarget,
-        t.identifier('map')
-      ),
-      [
-        t.arrowFunctionExpression(
-          traverseArgs,
-          { ...path }
-        )
-      ]
-    )
+    replacement
   );
 
   attrPath.remove();
