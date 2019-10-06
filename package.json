@@ -4,7 +4,9 @@
   "description": "A babel plugin that provides some directives for react(any JSX), similar to directive of vue.",
   "main": "src/index.js",
   "files": [
-    "src"
+    "src",
+    "package.json",
+    "README.md"
   ],
   "scripts": {
     "test": "jest",
