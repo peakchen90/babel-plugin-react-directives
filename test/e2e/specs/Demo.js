@@ -1,4 +1,5 @@
-// eslint-disable-next-line max-classes-per-file
+/* eslint-disable max-classes-per-file, react/prop-types */
+/* eslint-disable no-undef, no-unused-vars */
 import React from 'react';
 
 export class DemoIf extends React.Component {
@@ -63,7 +64,6 @@ export class DemoModel1 extends React.Component {
 }
 
 export function DemoModel2() {
-  // eslint-disable-next-line no-unused-vars
   const [data, setData] = React.useState({
     text: 'a',
     extra: 'foo'
@@ -78,17 +78,23 @@ export function DemoModel2() {
 }
 
 export function DemoModel3() {
-  // eslint-disable-next-line react/prop-types
   const CustomInput = ({ value, onChange }) => {
     return <input value={value} onChange={(e) => onChange(e.target.value)}/>;
   };
 
-  // eslint-disable-next-line no-unused-vars
   const [data, setData] = React.useState('foo');
   return (
     <div>
       <CustomInput x-model={data}/>
       <p className="text">{data}</p>
     </div>
+  );
+}
+
+export function DemoFor({ list }) {
+  return (
+    <ul>
+      <li x-for={(item, index) in list} key={item.id}>{item.name}-{index}</li>
+    </ul>
   );
 }

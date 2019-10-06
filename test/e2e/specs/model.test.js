@@ -12,7 +12,7 @@ describe('model', () => {
     expect(wrapper.find('.extra').text()).toBe('B');
   });
 
-  test('use hook', async () => {
+  test('use hook', () => {
     const wrapper = mount(<DemoModel2/>);
     wrapper.find('input').simulate('change', {
       target: { value: 'new value' }
@@ -21,7 +21,7 @@ describe('model', () => {
     expect(wrapper.find('.extra').text()).toBe('foo');
   });
 
-  test('custom onChange event', async () => {
+  test('custom onChange event', () => {
     const wrapper = mount(<DemoModel3/>);
     wrapper.find('input').simulate('change', {
       target: { value: 'custom value' }
