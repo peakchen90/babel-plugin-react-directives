@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import { setStatePromisify } from '../util';
 import { DemoShow } from './Demo';
 
-describe('show', () => {
+describe('directive: show', () => {
   const wrapper = shallow(<DemoShow/>);
 
   test('show', async () => {

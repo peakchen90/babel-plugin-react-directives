@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 import { setStatePromisify } from '../util';
 import { DemoIf } from './Demo';
 
-describe('if & else-if & else', () => {
+describe('directive: if & else-if & else', () => {
   const wrapper = shallow(<DemoIf/>);
 
   test('if', async () => {

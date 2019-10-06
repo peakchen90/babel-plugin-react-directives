@@ -2,21 +2,12 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { DemoFor } from './Demo';
 
-describe('for', () => {
+describe('directive: for', () => {
   test('traverse list', () => {
     const list = [
-      {
-        id: 'a',
-        name: 'Alice'
-      },
-      {
-        id: 'b',
-        name: 'Bob'
-      },
-      {
-        id: 'c',
-        name: 'Cindy'
-      }
+      { id: 'a', name: 'Alice' },
+      { id: 'b', name: 'Bob' },
+      { id: 'c', name: 'Cindy' }
     ];
 
     const wrapper = shallow(<DemoFor list={list}/>);
