@@ -384,3 +384,12 @@ function Foo() {
   );
 }
 ```
+
+
+## CHANGELOG
+
+See more information at: [CHANGELOG](./CHANGELOG.md)
+
+## LICENSE
+
+[MIT](./LICENSE)

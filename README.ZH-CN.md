@@ -383,3 +383,11 @@ function Foo() {
   );
 }
 ```
+
+## 更新日志
+
+查看更多信息: [CHANGELOG](./CHANGELOG.md)
+
+## 许可证
+
+[MIT](./LICENSE)
