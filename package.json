@@ -1,7 +1,7 @@
 {
   "name": "babel-plugin-react-directives",
   "version": "0.0.1",
-  "description": "A babel plugin that provides some directives for react, similar to directive of vue.",
+  "description": "A babel plugin that provides some directives for react(any JSX), similar to directive of vue.",
   "main": "src/index.js",
   "files": [
     "src",
@@ -40,8 +40,12 @@
     "vue",
     "babel-plugin",
     "v-if",
-    "v-show"
+    "v-show",
+    "v-model"
   ],
+  "engines": {
+    "node": ">=8.6.0"
+  },
   "dependencies": {
     "@babel/code-frame": "^7.5.5",
     "@babel/template": "^7.6.0",

@@ -1,30 +1,29 @@
 # babel-plugin-react-directives
-A babel plugin that provides some directives for react(any JSX), similar to directive of vue.
-
+一个给react(任何JSX)提供一些类似vue指令的Babel转换插件
 
 [![Travis (.org) branch](https://img.shields.io/travis/peakchen90/babel-plugin-react-directives/master.svg)](https://travis-ci.org/peakchen90/babel-plugin-react-directives)
 [![Codecov](https://img.shields.io/codecov/c/github/peakchen90/babel-plugin-react-directives.svg)](https://codecov.io/gh/peakchen90/babel-plugin-react-directives)
 [![npm](https://img.shields.io/npm/v/babel-plugin-react-directives.svg)](https://www.npmjs.com/package/babel-plugin-react-directives)
 [![GitHub](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/peakchen90/babel-plugin-react-directives/blob/master/LICENSE)
 
-> [中文文档](./README.ZH-CN.md)
+> [English document](./README.md)
 
-## Usage
+## 开始使用
 
-Requires **node v8.6.0** or higher, **babel v6.20.0** or higher.
+需要 **node v8.6.0** 或者更高版本，**babel v6.20.0** 或者更高版本
 
-### Install
-use npm:
+### 安装
+使用 npm:
 ```bash
 npm install --save-dev babel-plugin-react-directives
 ```
 
-use yarn:
+使用 yarn:
 ```base
 yarn add --dev babel-plugin-react-directives
 ```
 
-### Configuring via `.babelrc`
+### 添加配置 `.babelrc` 
 ```json
 {
   "plugins": [
@@ -33,9 +32,9 @@ yarn add --dev babel-plugin-react-directives
 }
 ```
 
-### options
+### 插件选项
 
-default options:
+默认选项:
 ```json5
 {
   "prefix": "x",
@@ -43,30 +42,30 @@ default options:
 }
 ```
 
-- `prefix`: JSX props prefix for directive, default: `"x"`, usage example: `x-if`
-- `pragmaType`: Help internal to correctly identify some syntax, such as hooks, the default value is: "React"
+- `prefix`: 指令的 props 前缀，默认值: "x"，用法示例: `x-if`
+- `pragmaType`: 帮助内部进行正确的识别一些语法，如 hooks，默认值为: "React"
 
-## Directives
+## 指令
 
 ### x-if
-If the `x-if` value is **truthy**, this element will be rendered, otherwise do not.
+如果 `x-if` 的值为**真值**，则将渲染此元素，否则不渲染。
 
-**Example:**
+**例子:**
 ```jsx harmony
 const foo = <div x-if={true}>text</div>
 ```
 
-**Converted to:**
+**转换成:**
 ```jsx harmony
 const foo = true ? <div>text</div> : null
 ```
 
-### x-else-if and x-else
-The `x-else-if` must have a corresponding `x-if`. if `x-if` value is **falsy**, and `x-else-if` value is **truthy**, it will be rendered. 
+### x-else-if 和 x-else
+在 `x-else-if` 的同一层级元素必须有相对应的 `x-if`，如果 `x-if` 的值是**假值**，并且 `x-else-if` 的值是**真值**，则它将被渲染。
 
-The `x-else` must have the corresponding `x-if` or `x-if-else`. When all corresponding `x-if` or `x-else-if` value are **falsy**, it will be rendered.
+在 `x-else` 的同一层级元素必须有相对应的 `x-if` 或 `x-else-if`，当 `x-if` 或者 `x-else-if` 都是**假值**时，它将被渲染。
 
-**Example:**
+**例子:**
 ```jsx harmony
 const foo = (
   <div>
@@ -78,7 +77,7 @@ const foo = (
 )
 ```
 
-**Converted to:**
+**转换成:**
 ```jsx harmony
 const foo = (
   <div>
@@ -93,17 +92,16 @@ const foo = (
   </div>
 )
 ```
-
 ### x-show
-The `x-show` controls the display or hiding of elements by the `display` of the `style` prop. If the `x-show` value is **falsy**, will set `style.display = "none", Otherwise do nothing.
 
+`x-show` 通过 `style` prop 的 `display` 属性来控制元素的显示或隐藏，如果 `x-show` 的值是**假值**，则设置 `style.display = "none"`，否则给不设置。
 
-**Example:**
+**例子:**
 ```jsx harmony
 const foo = <div x-show={true}>text</div>
 ```
 
-**Converted to:**
+**转换成:**
 ```jsx harmony
 const foo = (
   <div style={{
@@ -113,7 +111,7 @@ const foo = (
 )
 ```
 
-Of course, it will also merge other `style`, for example:
+当然，它还将合并其他 `style`，例如：
 ```jsx harmony
 const foo = (
   <div 
@@ -124,7 +122,8 @@ const foo = (
   </div>
 )
 ```
-will be converted to:
+
+将被转换成:
 ```jsx harmony
 const foo = (
   <div 
@@ -139,16 +138,16 @@ const foo = (
 ```
 
 ### x-for
-The `x-for` is used to traverse arrays to generate elements.
+使用 `x-for` 遍历数组生成元素。
 
-The value should like: `(item, index) in list`
-- `list`: array for traversal
-- `item`: current  value
-- `index`: current  index
+绑定的值应该像这样: `(item, index) in list`
+- `list`: 遍历的目标数组
+- `item`: 当前的值
+- `index`: 当前的索引
 
-Note: `index` is optional, no `index` can be replaced with `item in list`
+提示: `index` 是可选的, 如果不需要 `index` 可以这样用: `item in list`
 
-**Example:**
+**例子:**
 ```jsx harmony
 const foo = (
   <ul>
@@ -160,7 +159,7 @@ const foo = (
 )
 ```
 
-**Converted to:**
+**转换成:**
 ```jsx harmony
 const foo = (
   <ul>
@@ -171,7 +170,7 @@ const foo = (
 )
 ```
 
-Also note that if used with `x-if`, the `x-for` has a higher priority, for example:
+另请请注意，如果与 `x-if` 一起使用，则 `x-for` 拥有更高的优先级，例如：
 ```jsx harmony
 const foo = (
   <ul>
@@ -184,7 +183,7 @@ const foo = (
 )
 ```
 
-will be converted to:
+将被转换成:
 ```jsx harmony
 const foo = (
   <ul>
@@ -198,9 +197,9 @@ const foo = (
 ```
 
 ### x-model
-The `x-model` is a syntax sugar similar to vue `v-model`, which binds a state to the `value` prop of the form element and automatically updates the state when the element is updated.
+`x-model` 是类似于 vue `v-model` 的语法糖，使用时绑定一个值到表单元素的 `value` prop 上，在表单元素更新时自动更新状态。
 
-**Example:**
+**例子:**
 ```jsx harmony
 class Foo extends React.Component {
   constructor(props) {
@@ -214,7 +213,7 @@ class Foo extends React.Component {
 }
 ```
 
-**Converted to:**
+**转换成:**
 ```jsx harmony
 class Foo extends React.Component {
   constructor(props) {
@@ -243,7 +242,7 @@ class Foo extends React.Component {
 }
 ```
 
-When there are other `onChange` props, merge them:
+当存在其他 `onChange` prop 时，将会合并这些 prop 上绑定的方法:
 ```jsx harmony
 class Foo extends React.Component {
   constructor(props) {
@@ -267,7 +266,7 @@ class Foo extends React.Component {
 }
 ```
 
-will be converted to:
+将被转换成:
 ```jsx harmony
 class Foo extends React.Component {
   constructor(props) {
@@ -305,7 +304,7 @@ class Foo extends React.Component {
 }
 ```
 
-If the `x-model` value is an object's property, a new object is created when it is updated, and the object's old property values are merged. For example:
+如果 `x-model` 的值是一个对象上的属性，那么当表单元素更新时将创建一个新对象，并合并对象上旧的属性值，比如:
 ```jsx harmony
 class Foo extends React.Component {
   constructor(props) {
@@ -322,9 +321,9 @@ class Foo extends React.Component {
     return <input x-model={data.text}/>
   }
 }
-```
 
-will be converted to:
+```
+将被转换成:
 ```jsx harmony
 class Foo extends React.Component {
   constructor(props) {
@@ -359,7 +358,7 @@ class Foo extends React.Component {
 }
 ```
 
-Of course you can also use **`useState`** hook
+当然也可以使用 `useState` hook 方式:
 ```jsx harmony
 function Foo() {
   const [data, setData] = useState(0);
@@ -367,7 +366,7 @@ function Foo() {
 }
 ```
 
-will be converted to:
+将被转换成:
 ```jsx harmony
 function Foo() {
   const [data, setData] = useState(0);
