@@ -7,7 +7,7 @@
 [![npm](https://img.shields.io/npm/v/babel-plugin-react-directives.svg)](https://www.npmjs.com/package/babel-plugin-react-directives)
 [![GitHub](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/peakchen90/babel-plugin-react-directives/blob/master/LICENSE)
 
-> [English document](./README.md)
+> [**English document**](./README.md)
 
 ## 开始使用
 
