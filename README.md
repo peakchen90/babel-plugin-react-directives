@@ -145,9 +145,11 @@ The `x-for` is used to traverse arrays to generate elements.
 The value should like: `(item, index) in list`
 - `list`: array for traversal
 - `item`: current  value
-- `index`: current  index
+- `index`: current  index (optional)
 
-Note: `index` is optional, no `index` can be replaced with `item in list`
+**Note**: If you use [**ESLint**](https://eslint.org), you may receive an error that `item` and `index` are undeclared variables.
+Please install [`eslint-plugin-react-directives`](https://github.com/peakchen90/eslint-plugin-react-directives) plugin to solve it.
+
 
 **Example:**
 ```jsx harmony
@@ -361,6 +363,10 @@ class Foo extends React.Component {
 ```
 
 Of course you can also use **`useState`** hook
+
+**Note**: If you use [**ESLint**](https://eslint.org), you may receive an error that `setState` is defined but never used.
+Please install [`eslint-plugin-react-directives`](https://github.com/peakchen90/eslint-plugin-react-directives) plugin to solve it.
+
 ```jsx harmony
 function Foo() {
   const [data, setData] = useState(0);

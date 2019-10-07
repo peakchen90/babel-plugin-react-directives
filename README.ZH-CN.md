@@ -144,9 +144,9 @@ const foo = (
 绑定的值应该像这样: `(item, index) in list`
 - `list`: 遍历的目标数组
 - `item`: 当前的值
-- `index`: 当前的索引
+- `index`: 当前的索引 (可选)
 
-提示: `index` 是可选的, 如果不需要 `index` 可以这样用: `item in list`
+**提示**: 如果你在项目中使用了 [**ESLint**](https://eslint.org)，也许会提示你: `item` 和 `index` 是未定义的变量，请安装 [`eslint-plugin-react-directives`](https://github.com/peakchen90/eslint-plugin-react-directives) 来解决这个问题
 
 **例子:**
 ```jsx harmony
@@ -305,7 +305,7 @@ class Foo extends React.Component {
 }
 ```
 
-如果 `x-model` 的值是一个对象上的属性，那么当表单元素更新时将创建一个新对象，并合并对象上旧的属性值，比如:
+如果 `x-model` 的值是一个对象上的属性，那么当更新时将创建一个新对象，并将对象上旧的属性值合并到新对象上，比如:
 ```jsx harmony
 class Foo extends React.Component {
   constructor(props) {
@@ -360,6 +360,9 @@ class Foo extends React.Component {
 ```
 
 当然也可以使用 `useState` hook 方式:
+
+**提示**: 如果你在项目中使用了 [**ESLint**](https://eslint.org)，也许会提示你 `setData` 是一个从未使用的变量，请安装 [`eslint-plugin-react-directives`](https://github.com/peakchen90/eslint-plugin-react-directives) 来解决这个问题
+
 ```jsx harmony
 function Foo() {
   const [data, setData] = useState(0);
