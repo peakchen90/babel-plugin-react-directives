@@ -1,5 +1,3 @@
-/* eslint-disable max-classes-per-file, react/prop-types */
-/* eslint-disable no-undef, no-unused-vars */
 import React from 'react';
 
 export class DemoIf extends React.Component {

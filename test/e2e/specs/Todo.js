@@ -1,6 +1,3 @@
-/* eslint-disable max-classes-per-file, react/prop-types */
-/* eslint-disable no-undef, no-unused-vars */
-
 import React from 'react';
 
 export default class Todo extends React.Component {
@@ -14,9 +11,9 @@ export default class Todo extends React.Component {
 
   onAdd() {
     const { list, searchText } = this.state;
-    this.setState((prevState) => ({
+    this.setState({
       list: list.concat(searchText)
-    }));
+    });
   }
 
   onRemove(index) {
