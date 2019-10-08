@@ -14,7 +14,7 @@ A babel plugin that provides some directives for react(any JSX), similar to dire
 
 Requires **node v8.6.0** or higher, **babel v6.20.0** or higher.
 
-### Install
+### Installation
 use npm:
 ```bash
 npm install --save-dev babel-plugin-react-directives
@@ -45,7 +45,7 @@ default options:
 ```
 
 - `prefix`: JSX props prefix for directive, default: `"x"`, usage example: `x-if`
-- `pragmaType`: Help internal to correctly identify some syntax, such as hooks, the default value is: "React"
+- `pragmaType`: Help internal to correctly identify some syntax, such as hooks, default: `"React"`
 
 ## Directives
 
