@@ -44,7 +44,7 @@ yarn add --dev babel-plugin-react-directives
 ```
 
 - `prefix`: 指令的 props 前缀，默认值: "x"，用法示例: `x-if`
-- `pragmaType`: 帮助内部进行正确的识别一些语法，如 hooks，默认值为: "React"
+- `pragmaType`: 帮助内部进行正确的识别一些语法，如 hooks，默认值: "React"
 
 ## 指令
 
