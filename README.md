@@ -8,7 +8,7 @@ A babel plugin that provides some directives for react(any JSX), similar to dire
 [![npm](https://img.shields.io/npm/v/babel-plugin-react-directives.svg)](https://www.npmjs.com/package/babel-plugin-react-directives)
 [![GitHub](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/peakchen90/babel-plugin-react-directives/blob/master/LICENSE)
 
-> [**中文文档**](./README.ZH-CN.md)
+> [🇨🇳**中文文档**](./README.ZH-CN.md)
 
 ## Usage
 
@@ -96,7 +96,7 @@ const foo = (
 ```
 
 ### x-show
-The `x-show` controls the display or hiding of elements by the `display` of the `style` prop. If the `x-show` value is **falsy**, will set `style.display = "none", Otherwise do nothing.
+The `x-show` controls the display or hiding of elements by the `display` of the `style` prop. If the `x-show` value is **falsy**, will set `style.display = "none"`, otherwise do nothing.
 
 
 **Example:**
@@ -148,7 +148,7 @@ The value should like: `(item, index) in list`
 - `index`: current  index (optional)
 
 **Note**: If you use [**ESLint**](https://eslint.org), you may receive an error that `item` and `index` are undeclared variables.
-Please install [`eslint-plugin-react-directives`](https://github.com/peakchen90/eslint-plugin-react-directives) plugin to solve it.
+Please install [**eslint-plugin-react-directives**](https://github.com/peakchen90/eslint-plugin-react-directives) plugin to solve it.
 
 
 **Example:**
@@ -365,7 +365,7 @@ class Foo extends React.Component {
 Of course you can also use **`useState`** hook
 
 **Note**: If you use [**ESLint**](https://eslint.org), you may receive an error that `setState` is defined but never used.
-Please install [`eslint-plugin-react-directives`](https://github.com/peakchen90/eslint-plugin-react-directives) plugin to solve it.
+Please install [**eslint-plugin-react-directives**](https://github.com/peakchen90/eslint-plugin-react-directives) plugin to solve it.
 
 ```jsx harmony
 function Foo() {
@@ -392,6 +392,9 @@ function Foo() {
 }
 ```
 
+
+## Related Packages
+- [eslint-plugin-react-directives](https://github.com/peakchen90/eslint-plugin-react-directives)
 
 ## CHANGELOG
 

@@ -388,6 +388,10 @@ function Foo() {
 }
 ```
 
+
+## 相关资源
+- [eslint-plugin-react-directives](https://github.com/peakchen90/eslint-plugin-react-directives)
+
 ## 更新日志
 
 查看更多信息: [CHANGELOG](./CHANGELOG.md)
