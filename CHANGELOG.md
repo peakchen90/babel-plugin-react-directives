@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## v0.1.1
+2019-10-17
+
+- Update some documents
+
+
 ## v0.1.0
 2019-10-07
 
