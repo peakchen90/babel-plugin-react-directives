@@ -34,18 +34,24 @@ yarn add --dev babel-plugin-react-directives
 }
 ```
 
-### options
+### Options <a target="_blank" style="font-size: 70%;" href="https://babeljs.io/docs/en/plugins#plugin-options">Babel plugin options</a>
 
-default options:
-```json5
+```json
 {
-  "prefix": "x",
-  "pragmaType": "React"
+  "plugins": [
+    [
+      "react-directives",
+      {
+        "prefix": "x",
+        "pragmaType": "React"
+      }
+    ]
+  ]
 }
 ```
 
-- `prefix`: JSX props prefix for directive, default: `"x"`, usage example: `x-if`
-- `pragmaType`: Help internal to correctly identify some syntax, such as hooks, default: `"React"`
+- `prefix`: JSX props prefix for directive, default: "x", usage example: `x-if`
+- `pragmaType`: Help internal to correctly identify some syntax, such as hooks, default: "React"
 
 ## Directives
 

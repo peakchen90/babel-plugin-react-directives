@@ -33,13 +33,19 @@ yarn add --dev babel-plugin-react-directives
 }
 ```
 
-### 插件选项
+### 插件选项 <a target="_blank" style="font-size: 70%;" href="https://babeljs.io/docs/en/plugins#plugin-options">配置说明</a>
 
-默认选项:
-```json5
+```json
 {
-  "prefix": "x",
-  "pragmaType": "React"
+  "plugins": [
+    [
+      "react-directives",
+      {
+        "prefix": "x",
+        "pragmaType": "React"
+      }
+    ]
+  ]
 }
 ```
 
