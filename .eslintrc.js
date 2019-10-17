@@ -1,5 +1,6 @@
 module.exports = {
   root: true,
+  parser: 'babel-eslint',
   env: {
     browser: false,
     node: true
@@ -13,7 +14,7 @@ module.exports = {
     'import/no-extraneous-dependencies': 'off',
     'no-console': 'off',
     'no-empty': ['error', { allowEmptyCatch: true }],
-    'no-use-before-define': ["error", { "functions": false }],
+    'no-use-before-define': ['error', { 'functions': false }],
     'no-underscore-dangle': 'off',
     'no-param-reassign': 'off',
     'no-plusplus': 'off',
@@ -35,6 +36,6 @@ module.exports = {
     'prefer-promise-reject-errors': 'off',
     'generator-star-spacing': 'off',
     'new-cap': 'off',
-    "no-cond-assign": "off"
+    'no-cond-assign': 'off'
   }
 };
