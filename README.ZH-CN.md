@@ -33,7 +33,7 @@ yarn add --dev babel-plugin-react-directives
 }
 ```
 
-### 插件选项 <a target="_blank" style="font-size: 70%;" href="https://babeljs.io/docs/en/plugins#plugin-options">配置说明</a>
+### 插件选项 <span style="font-size: 70%;">(<a target="_blank" href="https://babeljs.io/docs/en/plugins#plugin-options">配置说明</a>)</span>
 
 ```json
 {
