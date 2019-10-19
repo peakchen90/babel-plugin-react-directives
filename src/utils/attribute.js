@@ -15,7 +15,7 @@ class AttributeUtil {
   name() {
     // such as: <div abc:def="" />
     if (t.isJSXNamespacedName(this.node.name)) {
-      return `${this.node.name.namespace}.${this.node.name.name}`;
+      return `${this.node.name.namespace}:${this.node.name.name}`;
     }
     return this.node.name.name;
   }

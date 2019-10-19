@@ -91,6 +91,16 @@ export function DemoModel3() {
   );
 }
 
+export function DemoModel4({ fn, extraProps }) {
+  const [data, setData] = React.useState('foo');
+  return (
+    <div>
+      <input x-model-hook={data} onChange={fn} {...extraProps}/>
+      <p className="text">{data}</p>
+    </div>
+  );
+}
+
 export function DemoFor({ list }) {
   return (
     <ul>
