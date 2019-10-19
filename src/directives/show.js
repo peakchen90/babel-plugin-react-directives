@@ -34,11 +34,11 @@ function transformShow(path) {
     directivePath: attrPath,
     find(attr, setValue) {
       const attrName = attrUtil(attr).name();
-      const value = attrUtil(attr).valueExpr();
+      const valueExpr = attrUtil(attr).valueExpr();
 
       /* istanbul ignore next: print warn info */
       if (attrName === 'style') {
-        if (t.isStringLiteral(value)) {
+        if (t.isStringLiteral(valueExpr)) {
           codeFrameWarn(
             attr,
             'The `style` prop expected a mapping from style properties to values, not a string. For example, style={{marginRight: spacing + \'em\'}}'
@@ -47,7 +47,7 @@ function transformShow(path) {
           setValue(t.objectExpression([
             t.objectProperty(
               t.identifier('style'),
-              value
+              valueExpr
             )
           ]));
         }

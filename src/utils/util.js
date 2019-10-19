@@ -67,7 +67,7 @@ function getMemberPathStack(path) {
 /**
  * 找到一个变量在一个数组或对象的解构栈，如: let { a, b: [c] } = obj 中变量c的解构栈返回: [pathB, NumericLiteral(0)]
  * @param path
- * @param identifier
+ * @param identifierName
  * @return {Array<NodePath>}
  */
 function findDeconstructionPathStack(path, identifierName) {
@@ -124,8 +124,7 @@ function findDeconstructionPathStack(path, identifierName) {
 
 /**
  * 返回一个变量或成员表达式引用的对象成员栈
- * @param attrPath
- * @param bindingValuePath
+ * @param path
  * @return {[]}
  */
 function getReferenceStack(path) {

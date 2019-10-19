@@ -23,7 +23,7 @@ class ElementUtil {
 
   /**
    * 返回所有的属性NodePath
-   * @return {Array<NodePath>>}
+   * @return {Array<NodePath>}
    */
   attributes() {
     const result = [];
@@ -86,10 +86,11 @@ class ElementUtil {
     }
 
     if (t.isJSXText(nextPath.node)) {
-      if (!/^\S*$/m.test(nextPath.node.value)) {
-        return null;
+      if (/^\s*$/.test(nextPath.node.value)) {
+        nextPath = getNextSibling(nextPath);
+      } else {
+        return nextPath;
       }
-      nextPath = getNextSibling(nextPath);
     }
 
     if (!nextPath.node) {

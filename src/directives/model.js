@@ -290,7 +290,7 @@ function setValueProp(path, attrPath, bindingValue) {
  * 设置onChange prop
  * @param path
  * @param attrPath
- * @param bindingValue
+ * @param stateBindingStack
  * @param useType
  */
 function setOnChangeProp(path, attrPath, stateBindingStack, useType) {

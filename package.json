@@ -1,16 +1,17 @@
 {
   "name": "babel-plugin-react-directives",
-  "version": "1.0.0-alpha",
+  "version": "1.0.0-alpha.3",
   "description": "A babel plugin that provides some directives for react(any JSX), similar to directive of vue.",
   "main": "src/index.js",
   "files": [
     "src",
+    "lib",
     "package.json",
     "README.md",
     "LICENSE"
   ],
   "scripts": {
-    "test": "jest",
+    "test": "jest test/unit/index.test.js",
     "test:no-cache": "jest --clearCache && npm run test",
     "test:install": "node test/install.js"
   },

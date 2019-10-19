@@ -55,7 +55,7 @@ function traverseIf(path) {
  * 遍历一组条件JSXElement
  * @param path
  * @param attrPath
- * @param _result
+ * @param _lastResult
  * @return {*|Array}
  */
 function traverseCondition(path, attrPath, _lastResult) {
@@ -127,7 +127,7 @@ function transform(conditions) {
   path.replaceWith(
     t.jsxExpressionContainer(
       conditions.reduceRight((prev, curr, index) => {
-        const test = attrUtil(curr.attrPath).valueExpr();
+        const testExpr = attrUtil(curr.attrPath).valueExpr();
 
         let expression;
         if (!prev) {
@@ -136,14 +136,14 @@ function transform(conditions) {
             expression = curr.path.node;
           } else {
             expression = t.conditionalExpression(
-              test,
+              testExpr,
               curr.path.node,
               t.nullLiteral()
             );
           }
         } else {
           expression = t.conditionalExpression(
-            test,
+            testExpr,
             curr.path.node,
             prev
           );
@@ -160,7 +160,7 @@ function transform(conditions) {
 
 /**
  * 转换if指令
- * @param traverseList
+ * @param path
  */
 function transformIf(path) {
   if (elemUtil(path).findAttrPath(DIRECTIVES.IF)) {
