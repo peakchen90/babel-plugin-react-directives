@@ -57,6 +57,7 @@
   "devDependencies": {
     "@babel/core": "^7.6.2",
     "@babel/plugin-transform-modules-commonjs": "^7.6.0",
+    "@babel/preset-env": "^7.6.3",
     "@babel/preset-react": "^7.0.0",
     "@types/jest": "^24.0.19",
     "babel-eslint": "^10.0.3",

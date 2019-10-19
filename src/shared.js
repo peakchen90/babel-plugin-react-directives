@@ -33,11 +33,6 @@ const DIRECTIVES = {
  * @param options
  */
 function syncOpts(options = {}) {
-  assert(
-    options && typeof options === 'object',
-    'The `react-directives` options expects a object'
-  );
-
   const {
     prefix,
     pragmaType

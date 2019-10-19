@@ -31,9 +31,10 @@ module.exports = (api) => {
     },
 
     visitor: {
-      JSXElement(path, state) {
+      Program(path, state) {
         syncOpts(state.opts);
-
+      },
+      JSXElement(path) {
         transformShow(path);
         transformModel(path);
         transformFor(path);

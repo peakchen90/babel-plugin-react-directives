@@ -125,7 +125,7 @@ function transform(conditions) {
   }
 
   path.replaceWith(
-    t.jSXExpressionContainer(
+    t.jsxExpressionContainer(
       conditions.reduceRight((prev, curr, index) => {
         const test = attrUtil(curr.attrPath).valueExpr();
 
