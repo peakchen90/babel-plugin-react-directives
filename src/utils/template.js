@@ -11,9 +11,8 @@ module.exports = {
     let VAL = require("babel-plugin-react-directives/lib/runtime").resolveValue(ARGS)
   `),
 
-  // model合并prevState定义语句
-  mergeState: template(`
-    let VAR = [...RESOLVE_EXP]
-    VAR.splice(NODE, 0, VALUE)
-  `)
+  // show 合并style prop
+  mergeStyleProps: template(`
+    require("babel-plugin-react-directives/lib/runtime").mergeProps.call(this, "style", MERGE_ITEMS)
+  `),
 };

@@ -2,8 +2,16 @@ const a = (
   <div
     {...spreadA}
     style={{
-      ...styleA,
-      ...(spreadA && spreadA.style),
+      ...require("babel-plugin-react-directives/lib/runtime").mergeProps.call(
+        this,
+        "style",
+        [
+          {
+            style: styleA
+          },
+          spreadA
+        ]
+      ),
       display: testA ? undefined : "none"
     }}>
     A
@@ -14,8 +22,15 @@ const b = (
   <div
     {...spreadB}
     style={{
-      ...(spreadB && spreadB.style),
-      ...styleB,
+      ...require("babel-plugin-react-directives/lib/runtime").mergeProps.call(
+        this,
+        "style",
+        [
+          {
+            style: styleB
+          }
+        ]
+      ),
       display: testB ? undefined : "none"
     }}>
     B

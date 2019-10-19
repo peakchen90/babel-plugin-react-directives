@@ -3,6 +3,7 @@ const { DIRECTIVES } = require('../shared');
 const { codeFrameWarn } = require('../utils/util');
 const attrUtil = require('../utils/attribute');
 const elemUtil = require('../utils/element');
+const template = require('../utils/template');
 
 
 /**
@@ -43,7 +44,12 @@ function transformShow(path) {
             'The `style` prop expected a mapping from style properties to values, not a string. For example, style={{marginRight: spacing + \'em\'}}'
           );
         } else {
-          setValue(value);
+          setValue(t.objectExpression([
+            t.objectProperty(
+              t.identifier('style'),
+              value
+            )
+          ]));
         }
         return true;
       }
@@ -59,20 +65,21 @@ function transformShow(path) {
       return false;
     },
     getResult(mergeItems) {
-      return t.objectExpression(
-        mergeItems.map(
-          (item) => t.spreadElement(item)
-        ).concat(
-          t.objectProperty(
-            t.identifier('display'),
-            t.conditionalExpression(
-              bindingValue,
-              t.identifier('undefined'),
-              t.stringLiteral('none')
-            )
+      return t.objectExpression([
+        mergeItems.length > 0 && t.spreadElement(
+          template.mergeStyleProps({
+            MERGE_ITEMS: t.arrayExpression(mergeItems)
+          }).expression
+        ),
+        t.objectProperty(
+          t.identifier('display'),
+          t.conditionalExpression(
+            bindingValue,
+            t.identifier('undefined'),
+            t.stringLiteral('none')
           )
         )
-      );
+      ].filter(Boolean));
     },
   });
 

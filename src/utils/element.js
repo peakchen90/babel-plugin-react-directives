@@ -133,25 +133,13 @@ class ElementUtil {
         if (lastSpreadAttrIndex === -1) {
           lastSpreadAttrIndex = i;
         }
-        if (noResolve) {
-          mergeItems.push(attrPath.node.argument);
-        } else {
-          mergeItems.push(
-            t.logicalExpression(
-              '&&',
-              attrPath.node.argument,
-              t.memberExpression(
-                attrPath.node.argument,
-                t.identifier(prop)
-              )
-            )
-          );
-        }
+        mergeItems.push(attrPath.node.argument);
       } else if (lastAttrIndex === -1 && find(attrPath, setValue)) {
         lastAttrIndex = i;
         if (_value) {
           mergeItems.push(_value);
         }
+        break;
       }
     }
 

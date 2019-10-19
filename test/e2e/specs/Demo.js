@@ -24,7 +24,8 @@ export class DemoShow extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      visible: true
+      visible: true,
+      extraProps: {}
     };
   }
 
@@ -34,6 +35,7 @@ export class DemoShow extends React.Component {
         className="test"
         style={{ color: 'red' }}
         x-show={this.state.visible}
+        {...this.state.extraProps}
       />
     );
   }

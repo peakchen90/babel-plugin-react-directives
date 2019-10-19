@@ -1,9 +1,36 @@
 const a = (
-  <div style={{ ...{ color: "red" }, display: testA ? undefined : "none" }}>
+  <div
+    style={{
+      ...require("babel-plugin-react-directives/lib/runtime").mergeProps.call(
+        this,
+        "style",
+        [
+          {
+            style: {
+              color: "red"
+            }
+          }
+        ]
+      ),
+      display: testA ? undefined : "none"
+    }}>
     A
   </div>
 );
-
 const b = (
-  <div style={{ ...styleA, display: testB ? undefined : "none" }}>B</div>
+  <div
+    style={{
+      ...require("babel-plugin-react-directives/lib/runtime").mergeProps.call(
+        this,
+        "style",
+        [
+          {
+            style: styleA
+          }
+        ]
+      ),
+      display: testB ? undefined : "none"
+    }}>
+    B
+  </div>
 );

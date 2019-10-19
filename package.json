@@ -11,6 +11,7 @@
   ],
   "scripts": {
     "test": "jest",
+    "test:no-cache": "jest --clearCache && npm run test",
     "test:install": "node test/install.js"
   },
   "husky": {
