@@ -12,5 +12,8 @@ module.exports = {
   coveragePathIgnorePatterns: [
     'node_modules',
     'test'
-  ]
+  ],
+  moduleNameMapper: {
+    '^babel-plugin-react-directives/(.*)$': '<rootDir>/$1'
+  },
 };

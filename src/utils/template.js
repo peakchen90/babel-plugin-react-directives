@@ -8,7 +8,7 @@ module.exports = {
 
   // model 获取onChange值
   getOnChangeVal: template(`
-    let VAL = require('babel-plugin-react-directives/lib/runtime').resolveValue(ARGS)
+    let VAL = require("babel-plugin-react-directives/lib/runtime").resolveValue(ARGS)
   `),
 
   // model合并prevState定义语句

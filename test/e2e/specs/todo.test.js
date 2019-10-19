@@ -1,6 +1,5 @@
 import React from 'react';
 import { mount } from 'enzyme';
-// import { setStatePromisify } from '../util';
 import Todo from './Todo';
 
 describe('Todo Component', () => {

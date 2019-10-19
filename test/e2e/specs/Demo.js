@@ -68,7 +68,7 @@ export function DemoModel2() {
   });
   return (
     <div>
-      <input x-model={data.text}/>
+      <input x-model-hook={data.text}/>
       <p className="text">{data.text}</p>
       <p className="extra">{data.extra}</p>
     </div>
@@ -83,7 +83,7 @@ export function DemoModel3() {
   const [data, setData] = React.useState('foo');
   return (
     <div>
-      <CustomInput x-model={data}/>
+      <CustomInput x-model-hook={data}/>
       <p className="text">{data}</p>
     </div>
   );

@@ -7,10 +7,9 @@ const A = () => {
     <input
       value={b}
       onChange={(..._args) => {
-        let _value =
-          _args[0] && _args[0].target && typeof _args[0].target === "object"
-            ? _args[0].target.value
-            : _args[0];
+        let _value = require("babel-plugin-react-directives/lib/runtime").resolveValue(
+          _args
+        );
 
         let _val = [...data.a];
 
@@ -27,10 +26,9 @@ const B = () => {
     <input
       value={data}
       onChange={(..._args2) => {
-        let _value2 =
-          _args2[0] && _args2[0].target && typeof _args2[0].target === "object"
-            ? _args2[0].target.value
-            : _args2[0];
+        let _value2 = require("babel-plugin-react-directives/lib/runtime").resolveValue(
+          _args2
+        );
 
         setData(_value2);
       }}/>

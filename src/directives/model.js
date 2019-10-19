@@ -8,33 +8,6 @@ const { codeFrameWarn, getReferenceStack } = require('../utils/util');
 
 
 /**
- * 返回使用的类型 'class', 'hook', null
- * @param path
- * @return {string|null}
- */
-function getUseType(path) {
-  let findFunc = false;
-
-  const findClass = path.findParent((parentPath) => {
-    if (
-      !findFunc
-      && (t.isFunctionDeclaration(parentPath.node)
-      || t.isArrowFunctionExpression(parentPath.node))
-    ) {
-      findFunc = true;
-    }
-    return t.isClassBody(parentPath.node);
-  });
-  if (findClass) {
-    return 'class';
-  }
-  if (findFunc) {
-    return 'hook';
-  }
-  return null;
-}
-
-/**
  * 合并值
  * @param attrPath
  * @param stateBindingStack
@@ -348,10 +321,7 @@ function setOnChangeProp(path, attrPath, stateBindingStack, useType) {
         t.blockStatement([
 
           /**
-           * let _val =
-           *    _args[0] && _args[0].target && typeof _args[0].target === "object"
-           *      ? _args[0].target.value
-           *      : _args[0]
+           * let _val = require('babel-plugin-react-directives').resolveValue(_args)
            */
           template.getOnChangeVal({
             VAL: valueVar,
@@ -396,8 +366,13 @@ function setOnChangeProp(path, attrPath, stateBindingStack, useType) {
  * @param path
  */
 function transformModel(path) {
-  const attrPath = elemUtil(path).findAttrPath(DIRECTIVES.MODEL);
-  if (!attrPath) {
+  let useType = null; // 'class' | 'hook' | null
+  let attrPath;
+  if (attrPath = elemUtil(path).findAttrPath(DIRECTIVES.MODEL)) {
+    useType = 'class';
+  } else if (attrPath = elemUtil(path).findAttrPath(DIRECTIVES.MODEL_HOOK)) {
+    useType = 'hook';
+  } else {
     return;
   }
 
@@ -410,13 +385,6 @@ function transformModel(path) {
     );
     attrPath.remove();
     return;
-  }
-
-  const useType = getUseType(path);
-  if (!useType) {
-    throw attrPath.buildCodeFrameError(
-      `The \`${DIRECTIVES.MODEL}\` is not used in the class, nor is it used in the method using the useState hook.`
-    );
   }
 
   const valuePath = attrUtil(attrPath).valuePath();

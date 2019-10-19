@@ -1,7 +1,7 @@
 const A = () => {
   const [data, setData] = useState(0)
   const { a: [b] } = data
-  return <input x-model={b}/>
+  return <input x-model-hook={b}/>
 }
 
 const B = () => {
@@ -9,5 +9,5 @@ const B = () => {
     0: data,
     1: setData
   } = useState(0)
-  return <input x-model={data}/>
+  return <input x-model-hook={data}/>
 }

@@ -45,10 +45,25 @@ class ElementUtil {
     const attributes = this.node.openingElement.attributes;
     let index = attributes.length - 1;
 
+    const ns = attrName.split(':');
+    const hasNamespace = ns.length > 1;
+
     while (index >= 0) {
       const attrPath = this.path.get(`openingElement.attributes.${index}`);
-      if (t.isJSXAttribute(attrPath.node) && attrPath.node.name.name === attrName) {
-        return attrPath;
+      if (t.isJSXAttribute(attrPath.node)) {
+        // 使用命名空间的属性
+        if (
+          hasNamespace
+          && t.isJSXNamespacedName(attrPath.node.name)
+          && attrPath.node.name.namespace === ns[0]
+          && attrPath.node.name.name === ns[1]
+        ) {
+          return attrPath;
+        }
+
+        if (!hasNamespace && attrPath.node.name.name === attrName) {
+          return attrPath;
+        }
       }
       index--;
     }

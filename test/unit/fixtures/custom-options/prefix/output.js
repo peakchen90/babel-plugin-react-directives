@@ -17,10 +17,9 @@ class D {
       <input
         value={this.state.testD}
         onChange={(..._args) => {
-          let _value =
-            _args[0] && _args[0].target && typeof _args[0].target === "object"
-              ? _args[0].target.value
-              : _args[0];
+          let _value = require("babel-plugin-react-directives/lib/runtime").resolveValue(
+            _args
+          );
 
           this.setState(_prevState => {
             return {

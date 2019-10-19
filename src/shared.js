@@ -25,6 +25,9 @@ const DIRECTIVES = {
   },
   get MODEL() {
     return `${opts.prefix}-model`;
+  },
+  get MODEL_HOOK() {
+    return `${opts.prefix}-model-hook`;
   }
 };
 
@@ -39,8 +42,8 @@ function syncOpts(options = {}) {
   } = options;
 
   assert(
-    prefix === undefined || (typeof prefix === 'string' && prefix.length > 0),
-    'The `prefix` option should be a non-empty string.'
+    prefix === undefined || (typeof prefix === 'string' && /^[A-Za-z$_][A-Za-z0-9$_]*$/.test(prefix)),
+    'The `prefix` option should be a string which javascript identifier, example: `foo`, `$abc`, `_abc123`.'
   );
 
   assert(
