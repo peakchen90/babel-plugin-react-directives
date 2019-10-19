@@ -108,8 +108,7 @@ class ElementUtil {
       prop, // 属性名
       directivePath, // 指令属性的NodePath
       find, // 遍历的attribute回调方法，返回值用于判断匹配成功
-      getResult, // 合并结果回调方法，返回值用于设置到属性上
-      noResolve = false // 针对getResult方法，如果是JSXSpreadAttribute直接返回绑定值，不会解析到prop的值
+      getResult // 合并结果回调方法，返回值用于设置到属性上
     }
   ) {
     const attributes = this.attributes();
@@ -171,9 +170,9 @@ class ElementUtil {
 
 
 module.exports = function elemUtil(path) {
-  const elemUtil = new ElementUtil(path);
+  const elementUtil = new ElementUtil(path);
 
-  return new Proxy(elemUtil, {
+  return new Proxy(elementUtil, {
     get(target, p, receiver) {
       /* istanbul ignore if: fault tolerant control */
       if (!target.isValid && typeof target[p] === 'function') {
