@@ -1,72 +1,79 @@
-const { types: t } = require('../shared');
+const t = require('@babel/types');
 
 
 class AttributeUtil {
   constructor(path) {
     this.path = path;
-    this._isValid = t.isJSXAttribute(path && path.node);
+    this.node = path && path.node;
+    this.isValid = t.isJSXAttribute(this.node);
   }
 
   /**
    * 返回属性名称
-   * @return {string | null}
+   * @return {string}
    */
-  getName() {
-    /* istanbul ignore if: fault tolerant control */
-    if (!this._isValid) {
-      return null;
+  name() {
+    // such as: <div abc:def="" />
+    if (t.isJSXNamespacedName(this.node.name)) {
+      return `${this.node.name.namespace}.${this.node.name.name}`;
     }
-    return this.path.node.name.name;
+    return this.node.name.name;
   }
 
   /**
    * 返回属性值NodePath
-   * @return {expression | null}
+   * @return {NodePath|null}
    */
-  getValuePath() {
-    /* istanbul ignore if: fault tolerant control */
-    if (!this._isValid) {
+  valuePath() {
+    if (this.node.value === null) {
       return null;
     }
-
-    let bindingValuePath = this.path.get('value');
-    if (t.isJSXExpressionContainer(bindingValuePath)) {
-      bindingValuePath = this.path.get('value.expression');
+    if (t.isJSXExpressionContainer(this.node.value)) {
+      if (t.isExpression(this.node.value.expression)) {
+        return this.path.get('value.expression');
+      }
+      return null;
     }
-
-    return bindingValuePath || null;
+    if (this.node.value !== null) {
+      return this.path.get('value');
+    }
+    return null;
   }
 
   /**
    * 返回属性值表达式
-   * @return {expression | null}
+   * @return {Node|null}
    */
-  getValueExpression() {
-    /* istanbul ignore if: fault tolerant control */
-    if (!this._isValid) {
-      return null;
-    }
-    const value = this.path.node.value;
-    if (value) {
-      return value.expression || value;
+  valueExpr() {
+    const valuePath = this.valuePath();
+    if (valuePath) {
+      return valuePath.node || null;
     }
     return null;
   }
 
   /**
    * 返回对应的JSXElement
-   * @return {JSXElement | null}
+   * @return {JSXElement}
    */
-  getJSXElement() {
-    /* istanbul ignore if: fault tolerant control */
-    if (!this._isValid) {
-      return null;
-    }
-    return this.path.findParent((_path) => t.isJSXElement(_path.node));
+  JSXElement() {
+    return this.path.findParent(
+      (_path) => t.isJSXElement(_path.node)
+    );
   }
 }
 
 
 module.exports = function attrUtil(path) {
-  return new AttributeUtil(path);
+  const attributeUtil = new AttributeUtil(path);
+
+  return new Proxy(attributeUtil, {
+    get(target, p, receiver) {
+      /* istanbul ignore if: fault tolerant control */
+      if (!target.isValid && typeof target[p] === 'function') {
+        return () => null;
+      }
+      return Reflect.get(target, p, receiver);
+    }
+  });
 };

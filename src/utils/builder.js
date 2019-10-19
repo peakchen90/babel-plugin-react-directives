@@ -1,5 +1,5 @@
+const t = require('@babel/types');
 const assert = require('assert');
-const { types: t } = require('../shared');
 
 /**
  * 构建成员调用表达式，第一个参数为对象，其后参数为属性

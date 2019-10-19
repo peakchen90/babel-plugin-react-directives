@@ -1,7 +1,8 @@
 const { codeFrameColumns } = require('@babel/code-frame');
+const t = require('@babel/types');
 const assert = require('assert');
 const chalk = require('chalk');
-const { types: t } = require('../shared');
+const semver = require('semver');
 
 
 /**
@@ -33,38 +34,16 @@ function codeFrameWarn(path, message) {
   }
 }
 
+
 /**
- * 判断版本是否支持
- * @param currentVersion
- * @param targetVersion
- * @param message
+ * 断言babel版本是否支持
+ * @param version
+ * @param range
  */
-
-/* istanbul ignore next: use check version */
-function assertVersion(currentVersion, targetVersion, message) {
-  const current = currentVersion.split('.').map((item) => Number(item));
-  let target = [];
-  if (typeof targetVersion === 'number') {
-    target = [targetVersion];
-  } else if (typeof targetVersion === 'string' && /^(\d+)(\.\d+)*$/.test(targetVersion)) {
-    target = targetVersion.split('.').map((item) => Number(item));
-  } else {
-    throw new Error('invalid version');
-  }
-
-  const lenDiff = current.length - target.length;
-  if (lenDiff > 0) {
-    target.push(...Array(lenDiff).fill(0));
-  }
-
+function assertVersion(version, range) {
   assert(
-    target.some((item, index) => {
-      const curr = current[index];
-      if (curr === undefined || item < curr) return true;
-      if (item > curr) return true;
-      return index === target.length - 1;
-    }),
-    message || `The version supported: > ${targetVersion}`
+    semver.minSatisfying([version], range),
+    `Requires Babel "${range}", but was loaded with ${version}.`
   );
 }
 
@@ -176,7 +155,9 @@ function getReferenceStack(path) {
     }
 
     bindingStack = [
-      ...getMemberPathStack(binding.path.get('init')),
+      ...getMemberPathStack(
+        binding.path.get('init')
+      ),
       ...findDeconstructionPathStack(
         binding.path.get('id'),
         identifierName
@@ -198,6 +179,7 @@ function getReferenceStack(path) {
 
   return bindingStack;
 }
+
 
 module.exports = {
   codeFrameWarn,

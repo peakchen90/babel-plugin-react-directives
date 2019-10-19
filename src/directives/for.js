@@ -1,35 +1,36 @@
-const { types: t, DIRECTIVES } = require('../shared');
-const util = require('../utils/util');
+const t = require('@babel/types');
+const { DIRECTIVES } = require('../shared');
 const attrUtil = require('../utils/attribute');
-const elementUtil = require('../utils/element');
+const elemUtil = require('../utils/element');
+const { codeFrameWarn } = require('../utils/util');
 
 /**
  * 转换for遍历指令
  * @param path
  */
 function transformFor(path) {
-  const attrPath = elementUtil(path).findAttributeByName(DIRECTIVES.FOR);
+  const attrPath = elemUtil(path).findAttrPath(DIRECTIVES.FOR);
   if (!attrPath) {
     return;
   }
 
-  const bindingValue = attrUtil(attrPath).getValueExpression();
+  const bindingValue = attrUtil(attrPath).valueExpr();
 
   /* istanbul ignore next: print warn info */
   if (!bindingValue) {
-    util.codeFrameWarn(
+    codeFrameWarn(
       attrPath,
-      `\`${DIRECTIVES.FOR}\` used on element <${elementUtil(path).getName()}> without binding value`
+      `\`${DIRECTIVES.FOR}\` used on element <${elemUtil(path).name()}> without binding value`
     );
     attrPath.remove();
     return;
   }
 
-  const valuePath = attrUtil(attrPath).getValuePath();
+  const valuePath = attrUtil(attrPath).valuePath();
 
   if (!t.isBinaryExpression(bindingValue, { operator: 'in' })) {
     throw valuePath.buildCodeFrameError(
-      `The \`${DIRECTIVES.FOR}\` used on element <${elementUtil(path).getName()}> with invalid binding value. `
+      `The \`${DIRECTIVES.FOR}\` used on element <${elemUtil(path).name()}> with invalid binding value. `
       + `Usage example: \`<div ${DIRECTIVES.FOR}={(item, index) in list}>{item}</div>\``
     );
   }
@@ -39,7 +40,7 @@ function transformFor(path) {
       || !bindingValue.left.expressions.every((n) => t.isIdentifier(n))
     )) {
     throw valuePath.get('left').buildCodeFrameError(
-      `The \`${DIRECTIVES.FOR}\` used on element <${elementUtil(path).getName()}> with invalid binding value. `
+      `The \`${DIRECTIVES.FOR}\` used on element <${elemUtil(path).name()}> with invalid binding value. `
       + `Usage example: \`<div ${DIRECTIVES.FOR}={(item, index) in list}>{item}</div>\``
     );
   }
@@ -50,7 +51,7 @@ function transformFor(path) {
   // 最多2个参数
   if (t.isSequenceExpression(bindingValue.left)) {
     if (bindingValue.left.expressions.length > 2) {
-      util.codeFrameWarn(
+      codeFrameWarn(
         valuePath.get('left'),
         `The \`${DIRECTIVES.FOR}\` binding value has up to 2 parameters for traversal, and the extra parameters are ignored.`
       );
@@ -73,7 +74,7 @@ function transformFor(path) {
     ]
   );
   // 非顶层Element
-  if (!elementUtil(path).isTopElement()) {
+  if (!elemUtil(path).isTopElement()) {
     replacement = t.jsxExpressionContainer(
       replacement
     );

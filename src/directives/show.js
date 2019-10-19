@@ -1,7 +1,8 @@
-const { types: t, DIRECTIVES } = require('../shared');
-const util = require('../utils/util');
+const t = require('@babel/types');
+const { DIRECTIVES } = require('../shared');
+const { codeFrameWarn } = require('../utils/util');
 const attrUtil = require('../utils/attribute');
-const elementUtil = require('../utils/element');
+const elemUtil = require('../utils/element');
 
 
 /**
@@ -9,35 +10,35 @@ const elementUtil = require('../utils/element');
  * @param path
  */
 function transformShow(path) {
-  const attrPath = elementUtil(path).findAttributeByName(DIRECTIVES.SHOW);
+  const attrPath = elemUtil(path).findAttrPath(DIRECTIVES.SHOW);
   if (!attrPath) {
     return;
   }
 
-  const bindingValue = attrUtil(attrPath).getValueExpression();
+  const bindingValue = attrUtil(attrPath).valueExpr();
 
   /* istanbul ignore next: print warn info */
   if (!bindingValue) {
-    util.codeFrameWarn(
+    codeFrameWarn(
       attrPath,
-      `\`${DIRECTIVES.SHOW}\` used on element <${elementUtil(path).getName()}> without binding value`
+      `\`${DIRECTIVES.SHOW}\` used on element <${elemUtil(path).name()}> without binding value`
     );
     attrPath.remove();
     return;
   }
 
   // 设置 `style` prop
-  elementUtil(path).mergeAttributes({
-    attrName: 'style',
+  elemUtil(path).mergeProps({
+    prop: 'style',
     directivePath: attrPath,
     find(attr, setValue) {
-      const attrName = attrUtil(attr).getName();
-      const value = attrUtil(attr).getValueExpression();
+      const attrName = attrUtil(attr).name();
+      const value = attrUtil(attr).valueExpr();
 
       /* istanbul ignore next: print warn info */
       if (attrName === 'style') {
         if (t.isStringLiteral(value)) {
-          util.codeFrameWarn(
+          codeFrameWarn(
             attr,
             'The `style` prop expected a mapping from style properties to values, not a string. For example, style={{marginRight: spacing + \'em\'}}'
           );
@@ -49,7 +50,7 @@ function transformShow(path) {
 
       /* istanbul ignore next: print warn info */
       if (/^(style)$/i.test(attrName)) {
-        util.codeFrameWarn(
+        codeFrameWarn(
           attr,
           `Non-lowercase \`style\` prop will be ignored, when use \`${DIRECTIVES.SHOW}\``
         );

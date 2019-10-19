@@ -1,9 +1,10 @@
-const { types: t, DIRECTIVES, opts } = require('../shared');
-const util = require('../utils/util');
+const t = require('@babel/types');
+const { DIRECTIVES, opts } = require('../shared');
 const attrUtil = require('../utils/attribute');
-const elementUtil = require('../utils/element');
+const elemUtil = require('../utils/element');
 const builder = require('../utils/builder');
 const template = require('../utils/template');
+const { codeFrameWarn, getReferenceStack } = require('../utils/util');
 
 
 /**
@@ -293,13 +294,13 @@ function buildHookSetStateExpression(attrPath, stateBindingStack, newValExpressi
  * @param bindingValue
  */
 function setValueProp(path, attrPath, bindingValue) {
-  elementUtil(path).mergeAttributes({
-    attrName: 'value',
+  elemUtil(path).mergeProps({
+    prop: 'value',
     directivePath: attrPath,
     find(attr) {
       /* istanbul ignore next: print warn info */
-      if (attrUtil(attr).getName() === 'value') {
-        util.codeFrameWarn(
+      if (attrUtil(attr).name() === 'value') {
+        codeFrameWarn(
           attr,
           `The \`value\` prop will be ignored, when use \`${DIRECTIVES.MODEL}\``
         );
@@ -326,15 +327,15 @@ function setOnChangeProp(path, attrPath, stateBindingStack, useType) {
     ? buildClassSetStateExpression(attrPath, stateBindingStack, valueVar)
     : buildHookSetStateExpression(attrPath, stateBindingStack, valueVar);
 
-  elementUtil(path).mergeAttributes({
-    attrName: 'onChange',
+  elemUtil(path).mergeProps({
+    prop: 'onChange',
     directivePath: attrPath,
     find(attr, setValue) {
-      if (attrUtil(attr).getName() === 'onChange') {
+      if (attrUtil(attr).name() === 'onChange') {
         setValue(t.objectExpression([
           t.objectProperty(
             t.identifier('onChange'),
-            attrUtil(attr).getValueExpression()
+            attrUtil(attr).valueExpr()
           )
         ]));
         return true;
@@ -395,17 +396,17 @@ function setOnChangeProp(path, attrPath, stateBindingStack, useType) {
  * @param path
  */
 function transformModel(path) {
-  const attrPath = elementUtil(path).findAttributeByName(DIRECTIVES.MODEL);
+  const attrPath = elemUtil(path).findAttrPath(DIRECTIVES.MODEL);
   if (!attrPath) {
     return;
   }
 
-  const bindingValue = attrUtil(attrPath).getValueExpression();
+  const bindingValue = attrUtil(attrPath).valueExpr();
   /* istanbul ignore next: print warn info */
   if (!bindingValue) {
-    util.codeFrameWarn(
+    codeFrameWarn(
       attrPath,
-      `\`${DIRECTIVES.MODEL}\` used on element <${elementUtil(path).getName()}> without binding value`
+      `\`${DIRECTIVES.MODEL}\` used on element <${elemUtil(path).name()}> without binding value`
     );
     attrPath.remove();
     return;
@@ -418,8 +419,8 @@ function transformModel(path) {
     );
   }
 
-  const valuePath = attrUtil(attrPath).getValuePath();
-  const stateBindingStack = util.getReferenceStack(valuePath);
+  const valuePath = attrUtil(attrPath).valuePath();
+  const stateBindingStack = getReferenceStack(valuePath);
 
   if (useType === 'class') {
     const thisPath = stateBindingStack.shift();

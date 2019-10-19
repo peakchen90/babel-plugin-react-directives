@@ -1,8 +1,10 @@
 const assert = require('assert');
-const types = require('@babel/types');
 
 // plugin option
-const opts = {};
+const opts = {
+  prefix: 'x',
+  pragmaType: 'React'
+};
 
 // 指令名
 const DIRECTIVES = {
@@ -28,9 +30,14 @@ const DIRECTIVES = {
 
 /**
  * 更新插件options
- * @param _opts
+ * @param options
  */
-function syncOptions(options = {}) {
+function syncOpts(options = {}) {
+  assert(
+    options && typeof options === 'object',
+    'The `react-directives` options expects a object'
+  );
+
   const {
     prefix,
     pragmaType
@@ -53,21 +60,8 @@ function syncOptions(options = {}) {
 }
 
 
-/**
- * 包含指令的信息
- */
-class DirectiveData {
-  constructor(directive, path, attrPath) {
-    this.directive = directive;
-    this.path = path;
-    this.attrPath = attrPath;
-  }
-}
-
 module.exports = {
   DIRECTIVES,
   opts,
-  types,
-  syncOptions,
-  DirectiveData
+  syncOpts,
 };

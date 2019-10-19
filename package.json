@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-react-directives",
-  "version": "0.1.1",
+  "version": "1.0.0-alpha",
   "description": "A babel plugin that provides some directives for react(any JSX), similar to directive of vue.",
   "main": "src/index.js",
   "files": [
@@ -35,14 +35,14 @@
     "url": "https://github.com/peakchen90/babel-plugin-react-directives/issues"
   },
   "keywords": [
-    "react",
-    "react-directive",
-    "directive",
-    "vue",
     "babel-plugin",
-    "v-if",
-    "v-show",
-    "v-model"
+    "react-directive",
+    "jsx-directive",
+    "directive",
+    "react",
+    "vue",
+    "x-if",
+    "v-if"
   ],
   "engines": {
     "node": ">=8.6.0"
@@ -51,12 +51,14 @@
     "@babel/code-frame": "^7.5.5",
     "@babel/template": "^7.6.0",
     "@babel/types": "^7.6.1",
-    "chalk": "^2.4.2"
+    "chalk": "^2.4.2",
+    "semver": "^6.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.6.2",
     "@babel/plugin-transform-modules-commonjs": "^7.6.0",
     "@babel/preset-react": "^7.0.0",
+    "@types/jest": "^24.0.19",
     "babel-eslint": "^10.0.3",
     "babel-jest": "^24.9.0",
     "common-tags": "^1.4.0",

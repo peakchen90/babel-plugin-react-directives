@@ -1,7 +1,20 @@
-const { types: t, DIRECTIVES, DirectiveData } = require('../shared');
-const util = require('../utils/util');
+const t = require('@babel/types');
+const { DIRECTIVES } = require('../shared');
 const attrUtil = require('../utils/attribute');
-const elementUtil = require('../utils/element');
+const elemUtil = require('../utils/element');
+const { codeFrameWarn } = require('../utils/util');
+
+
+/**
+ * 条件指令的信息
+ */
+class Condition {
+  constructor(directive, path, attrPath) {
+    this.directive = directive;
+    this.path = path;
+    this.attrPath = attrPath;
+  }
+}
 
 
 /**
@@ -24,11 +37,11 @@ let _traverseList = [];
 function traverseIf(path) {
   const nestedVisitor = {
     JSXElement(_path) {
-      const attributes = elementUtil(_path).findAllAttributes();
-      const attrs = attributes.filter((attr) => attrUtil(attr).getName() === DIRECTIVES.IF);
+      const attributes = elemUtil(_path).attributes();
+      const attrs = attributes.filter((attr) => attrUtil(attr).name() === DIRECTIVES.IF);
       if (attrs.length === 1) {
         _path.skip(); // 跳过遍历子节点
-        _traverseList.push(traverseConditional(_path, attrs[0]));
+        _traverseList.push(traverseCondition(_path, attrs[0]));
       }
     }
   };
@@ -45,44 +58,44 @@ function traverseIf(path) {
  * @param _result
  * @return {*|Array}
  */
-function traverseConditional(path, attrPath, _result) {
-  const result = _result || [];
+function traverseCondition(path, attrPath, _lastResult) {
+  const result = _lastResult || [];
 
-  if (result.length === 0 && attrUtil(attrPath).getName() === DIRECTIVES.IF) {
-    if (!attrUtil(attrPath).getValueExpression()) {
+  if (result.length === 0 && attrUtil(attrPath).name() === DIRECTIVES.IF) {
+    if (!attrUtil(attrPath).valueExpr()) {
       throw attrPath.buildCodeFrameError(
-        `\`${DIRECTIVES.IF}\` used on element <${elementUtil(path).getName()}> without binding value.`
+        `\`${DIRECTIVES.IF}\` used on element <${elemUtil(path).name()}> without binding value.`
       );
     }
     traverseIf(path);
-    result.push(new DirectiveData(DIRECTIVES.IF, path, attrPath));
+    result.push(new Condition(DIRECTIVES.IF, path, attrPath));
   }
 
   // 查找else-if指令
-  path = elementUtil(path).findNextSibling();
-  attrPath = elementUtil(path).findAttributeByName(DIRECTIVES.ELSE_IF);
+  path = elemUtil(path).nextSibling();
+  attrPath = elemUtil(path).findAttrPath(DIRECTIVES.ELSE_IF);
   if (attrPath) {
-    if (!attrUtil(attrPath).getValueExpression()) {
+    if (!attrUtil(attrPath).valueExpr()) {
       throw attrPath.buildCodeFrameError(
-        `\`${DIRECTIVES.ELSE_IF}\` used on element <${elementUtil(path).getName()}> without binding value.`
+        `\`${DIRECTIVES.ELSE_IF}\` used on element <${elemUtil(path).name()}> without binding value.`
       );
     }
     traverseIf(path);
-    result.push(new DirectiveData(DIRECTIVES.ELSE_IF, path, attrPath));
-    return traverseConditional(path, attrPath, result);
+    result.push(new Condition(DIRECTIVES.ELSE_IF, path, attrPath));
+    return traverseCondition(path, attrPath, result);
   }
 
   // 查找else指令
-  attrPath = elementUtil(path).findAttributeByName(DIRECTIVES.ELSE);
+  attrPath = elemUtil(path).findAttrPath(DIRECTIVES.ELSE);
   if (attrPath) {
-    if (attrUtil(attrPath).getValueExpression()) {
-      util.codeFrameWarn(
+    if (attrUtil(attrPath).valueExpr()) {
+      codeFrameWarn(
         attrPath,
-        `\`${DIRECTIVES.ELSE}\` used on element <${elementUtil(path).getName()}> should not have a binding value`
+        `\`${DIRECTIVES.ELSE}\` used on element <${elemUtil(path).name()}> should not have a binding value`
       );
     }
     traverseIf(path);
-    result.push(new DirectiveData(DIRECTIVES.ELSE, path, attrPath));
+    result.push(new Condition(DIRECTIVES.ELSE, path, attrPath));
   }
 
   return result;
@@ -99,10 +112,10 @@ function transform(conditions) {
   const attrPath = directiveData.attrPath;
 
   // 顶层元素
-  if (elementUtil(path).isTopElement()) {
+  if (elemUtil(path).isTopElement()) {
     path.replaceWith(
       t.conditionalExpression(
-        attrUtil(attrPath).getValueExpression(),
+        attrUtil(attrPath).valueExpr(),
         path.node,
         t.nullLiteral()
       )
@@ -114,7 +127,7 @@ function transform(conditions) {
   path.replaceWith(
     t.jSXExpressionContainer(
       conditions.reduceRight((prev, curr, index) => {
-        const test = attrUtil(curr.attrPath).getValueExpression();
+        const test = attrUtil(curr.attrPath).valueExpr();
 
         let expression;
         if (!prev) {
@@ -150,7 +163,7 @@ function transform(conditions) {
  * @param traverseList
  */
 function transformIf(path) {
-  if (elementUtil(path).findAttributeByName(DIRECTIVES.IF)) {
+  if (elemUtil(path).findAttrPath(DIRECTIVES.IF)) {
     _traverseList = [];
     traverseIf(path.parentPath);
 

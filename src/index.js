@@ -1,23 +1,27 @@
-const { DIRECTIVES, syncOptions } = require('./shared');
-const util = require('./utils/util');
+const { DIRECTIVES, syncOpts } = require('./shared');
 const attrUtil = require('./utils/attribute');
-const elementUtil = require('./utils/element');
+const elemUtil = require('./utils/element');
+const { codeFrameWarn, assertVersion } = require('./utils/util');
+
 const transformIf = require('./directives/if');
 const transformShow = require('./directives/show');
 const transformModel = require('./directives/model');
 const transformFor = require('./directives/for');
 
 
-module.exports = ({ version }) => {
-  // version is at least v6.20.0
-  util.assertVersion(version, '6.20.0', 'The version of babel supported: > 6.20.0');
+module.exports = (api) => {
+  if (api.assertVersion) {
+    api.assertVersion('>= 6.20.0');
+  } else {
+    assertVersion(api.version, '>= 6.20.0');
+  }
 
   return {
     name: 'react-directives',
 
     /* istanbul ignore next: reference third party */
+    // https://github.com/babel/babel/blob/v7.6.2/packages/babel-plugin-syntax-jsx/src/index.js
     manipulateOptions(opts, parserOpts) {
-      // https://github.com/babel/babel/blob/v7.6.2/packages/babel-plugin-syntax-jsx/src/index.js
       // If the Typescript plugin already ran, it will have decided whether
       // or not this is a TSX file.
       if (parserOpts.plugins.some((p) => (Array.isArray(p) ? p[0] : p) === 'typescript')) {
@@ -28,16 +32,15 @@ module.exports = ({ version }) => {
 
     visitor: {
       JSXElement(path, state) {
-        syncOptions(state.opts);
+        syncOpts(state.opts);
 
-        // transform directive
         transformShow(path);
         transformModel(path);
         transformFor(path);
         transformIf(path);
       },
       JSXAttribute(path) {
-        const name = attrUtil(path).getName();
+        const name = attrUtil(path).name();
         let elementPath;
 
         switch (name) {
@@ -48,15 +51,15 @@ module.exports = ({ version }) => {
 
           case DIRECTIVES.ELSE:
           case DIRECTIVES.ELSE_IF:
-            elementPath = attrUtil(path).getJSXElement();
+            elementPath = attrUtil(path).JSXElement();
             throw path.buildCodeFrameError(
-              `\`${name}\` used on element <${elementUtil(elementPath).getName()}> without corresponding \`${DIRECTIVES.IF}\`.`
+              `\`${name}\` used on element <${elemUtil(elementPath).name()}> without corresponding \`${DIRECTIVES.IF}\`.`
             );
 
           case DIRECTIVES.SHOW:
           case DIRECTIVES.MODEL:
           case DIRECTIVES.FOR:
-            util.codeFrameWarn(
+            codeFrameWarn(
               path,
               `There should be no more than one directive: \`${name}\``
             );

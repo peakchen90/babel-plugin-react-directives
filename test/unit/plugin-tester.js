@@ -268,7 +268,7 @@ function fixLineEndings(code, endOfLine, input) {
         return match[0];
       }
       default: {
-        throw new Error("Invalid 'endOfLine' value");
+        throw new Error('Invalid \'endOfLine\' value');
       }
     }
   }
@@ -374,7 +374,10 @@ const createFixtureTests = (fixturesDir, options) => {
         if (babel.transformSync) { // babel 7
           actual = formatResult(
             fixLineEndings(
-              babel.transformSync(input, { ...babelOptions, filename: codePath }).code,
+              babel.transformSync(input, {
+                ...babelOptions,
+                filename: codePath
+              }).code,
               endOfLine,
               input,
             ),
