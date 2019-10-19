@@ -60,7 +60,9 @@ function transformShow(path) {
     },
     getResult(mergeItems) {
       return t.objectExpression(
-        mergeItems.map((item) => t.spreadElement(item)).concat(
+        mergeItems.map(
+          (item) => t.spreadElement(item)
+        ).concat(
           t.objectProperty(
             t.identifier('display'),
             t.conditionalExpression(

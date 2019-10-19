@@ -108,7 +108,8 @@ class ElementUtil {
       prop, // 属性名
       directivePath, // 指令属性的NodePath
       find, // 遍历的attribute回调方法，返回值用于判断匹配成功
-      getResult // 合并结果回调方法，返回值用于设置到属性上
+      getResult, // 合并结果回调方法，返回值用于设置到属性上
+      noResolve = false // 针对getResult方法，如果是JSXSpreadAttribute直接返回绑定值，不会解析到prop的值
     }
   ) {
     const attributes = this.attributes();
@@ -132,16 +133,20 @@ class ElementUtil {
         if (lastSpreadAttrIndex === -1) {
           lastSpreadAttrIndex = i;
         }
-        mergeItems.push(
-          t.logicalExpression(
-            '&&',
-            attrPath.node.argument,
-            t.memberExpression(
+        if (noResolve) {
+          mergeItems.push(attrPath.node.argument);
+        } else {
+          mergeItems.push(
+            t.logicalExpression(
+              '&&',
               attrPath.node.argument,
-              t.identifier(prop)
+              t.memberExpression(
+                attrPath.node.argument,
+                t.identifier(prop)
+              )
             )
-          )
-        );
+          );
+        }
       } else if (lastAttrIndex === -1 && find(attrPath, setValue)) {
         lastAttrIndex = i;
         if (_value) {

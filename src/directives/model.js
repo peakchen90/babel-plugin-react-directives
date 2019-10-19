@@ -270,6 +270,7 @@ function setValueProp(path, attrPath, bindingValue) {
   elemUtil(path).mergeProps({
     prop: 'value',
     directivePath: attrPath,
+    noResolve: true,
     find(attr) {
       /* istanbul ignore next: print warn info */
       if (attrUtil(attr).name() === 'value') {
@@ -295,7 +296,6 @@ function setValueProp(path, attrPath, bindingValue) {
 function setOnChangeProp(path, attrPath, stateBindingStack, useType) {
   const argsVar = path.scope.generateUidIdentifier('args');
   const valueVar = path.scope.generateUidIdentifier('value');
-  const extraFnVar = path.scope.generateUidIdentifier('extraFn');
   const setStateExpression = useType === 'class'
     ? buildClassSetStateExpression(attrPath, stateBindingStack, valueVar)
     : buildHookSetStateExpression(attrPath, stateBindingStack, valueVar);
@@ -303,6 +303,7 @@ function setOnChangeProp(path, attrPath, stateBindingStack, useType) {
   elemUtil(path).mergeProps({
     prop: 'onChange',
     directivePath: attrPath,
+    noResolve: true,
     find(attr, setValue) {
       if (attrUtil(attr).name() === 'onChange') {
         setValue(t.objectExpression([
@@ -323,7 +324,7 @@ function setOnChangeProp(path, attrPath, stateBindingStack, useType) {
           /**
            * let _val = require('babel-plugin-react-directives').resolveValue(_args)
            */
-          template.getOnChangeVal({
+          template.defineModelValue({
             VAL: valueVar,
             ARGS: argsVar
           }),
@@ -334,26 +335,11 @@ function setOnChangeProp(path, attrPath, stateBindingStack, useType) {
           ...setStateExpression,
 
           /**
-           * let _extraFn = {}.onChange;
+           * require("babel-plugin-react-directives/lib/runtime").invokeExtraOnChange.call(this, _args, []);
            */
-          mergeItems.length > 0 && t.variableDeclaration('let', [
-            t.variableDeclarator(
-              extraFnVar,
-              builder.buildMemberExpression(
-                t.objectExpression(
-                  mergeItems.map((item) => t.spreadElement(item))
-                ),
-                t.identifier('onChange')
-              )
-            )
-          ]),
-
-          /**
-           * typeof _extraFn === "function" && _extraFn.apply(this, _args);
-           */
-          mergeItems.length > 0 && template.callExtraFn({
-            EXTRA_FN: extraFnVar,
-            ARGS: argsVar
+          mergeItems.length > 0 && template.invokeExtraOnChange({
+            ARGS: argsVar,
+            MERGE_ITEMS: t.arrayExpression(mergeItems)
           })
         ].filter(Boolean))
       );

@@ -13,12 +13,16 @@ class A extends React.Component {
               data: _value
             };
           });
-          let _extraFn = {
-            ...{
-              onChange: this.onChange
-            }
-          }.onChange;
-          typeof _extraFn === "function" && _extraFn.apply(this, _args);
+
+          require("babel-plugin-react-directives/lib/runtime").invokeExtraOnChange.call(
+            this,
+            _args,
+            [
+              {
+                onChange: this.onChange
+              }
+            ]
+          );
         }}/>
     );
   }
@@ -40,13 +44,17 @@ class B extends React.Component {
               data: _value2
             };
           });
-          let _extraFn2 = {
-            ...{
-              onChange: this.onChange
-            },
-            ...(extraProps && extraProps.onChange)
-          }.onChange;
-          typeof _extraFn2 === "function" && _extraFn2.apply(this, _args2);
+
+          require("babel-plugin-react-directives/lib/runtime").invokeExtraOnChange.call(
+            this,
+            _args2,
+            [
+              {
+                onChange: this.onChange
+              },
+              extraProps
+            ]
+          );
         }}/>
     );
   }

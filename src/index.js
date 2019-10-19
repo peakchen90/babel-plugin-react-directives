@@ -22,6 +22,8 @@ module.exports = (api) => {
     /* istanbul ignore next: reference third party */
     // https://github.com/babel/babel/blob/v7.6.2/packages/babel-plugin-syntax-jsx/src/index.js
     manipulateOptions(opts, parserOpts) {
+      parserOpts.plugins.push('objectRestSpread');
+
       // If the Typescript plugin already ran, it will have decided whether
       // or not this is a TSX file.
       if (parserOpts.plugins.some((p) => (Array.isArray(p) ? p[0] : p) === 'typescript')) {

@@ -13,7 +13,8 @@ declare interface ElementUtil {
         attrPath: NodePath<t.JSXAttribute | t.JSXSpreadAttribute>,
         setValue: (val: any) => void
       ) => any,
-      getResult: (mergeItems: t.Expression[]) => t.Expression
+      getResult: (mergeItems: t.Expression[]) => t.Expression,
+      noResolve: boolean
     }
   ) => t.Expression | null
 }
