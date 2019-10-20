@@ -374,7 +374,7 @@ class Foo extends React.Component {
 }
 ```
 
-### <span id="toc-directives-x-model">x-model-hook</span>
+### <span id="toc-directives-x-model-hook">x-model-hook</span>
 The `x-model-hook` is similar to the `x-model`, the difference is that the `x-model-hook` is used in the **useState hook function**, and the `x-model` is used in the **class component**.
 
 **Example:**
