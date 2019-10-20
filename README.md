@@ -21,6 +21,7 @@ A babel plugin that provides some directives for react(any JSX), similar to dire
   - [x-show](#toc-directives-x-show)
   - [x-for](#toc-directives-x-for)
   - [x-model](#toc-directives-x-model)
+  - [x-model-hook](#toc-directives-x-model-hook)
 - [Related Packages](#toc-related-packages)
 - [CHANGELOG](#toc-changeloog)
 - [LICENSE](#toc-license)
@@ -65,8 +66,8 @@ yarn add --dev babel-plugin-react-directives
 }
 ```
 
-- `prefix`: JSX props prefix for directive, default: "x", usage example: `x-if`
-- `pragmaType`: Help internal to correctly identify some syntax, such as hooks, default: "React"
+- `prefix`: JSX props prefix for directives. Default: "x", usage example: `x-if`
+- `pragmaType`: Help internal to correctly identify some syntax, such as hooks. Default: "React"
 
 ## <span id="toc-directives">Directives</span>
 
@@ -135,7 +136,7 @@ const foo = (
 )
 ```
 
-Of course, it will also merge other `style`, for example:
+Of course, it will also merge other `style` by calling the [runtime function](./lib/runtime.js), for example:
 ```jsx harmony
 const foo = (
   <div 
@@ -146,16 +147,19 @@ const foo = (
   </div>
 )
 ```
+
 will be converted to:
 ```jsx harmony
 const foo = (
-  <div 
-    {...extraProps} 
+  <div
+    {...extraProps}
     style={{
-      ...{ color: 'red' },
-      ...(extraProps && extraProps.style),
+      ...require("babel-plugin-react-directives/lib/runtime").mergeProps.call(this, "style", [
+        { style: { color: 'red' } },
+        extraProps
+      ]),
       display: true ? undefined : "none"
-  }}>text
+    }}>text
   </div>
 )
 ```
@@ -222,7 +226,8 @@ const foo = (
 ```
 
 ### <span id="toc-directives-x-model">x-model</span>
-The `x-model` is a syntax sugar similar to vue `v-model`, which binds a state to the `value` prop of the form element and automatically updates the state when the element is updated.
+The `x-model` is a syntax sugar similar to vue `v-model`, which binds a state to the `value` prop of the **form element** and automatically updates the state when the element is updated.
+It resolves the updated value by calling the [runtime function](./lib/runtime.js) (If the first argument `arg` is non-empty, and `arg.target` is an object, return `arg.target.value`, otherwise return `arg`).
 
 **Example:**
 ```jsx harmony
@@ -243,31 +248,24 @@ class Foo extends React.Component {
 class Foo extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      data: 'text'
-    };
+    this.state = { data: 'text' };
   }
 
   render() {
     return (
-      <input
-        value={this.state.data}
-        onChange={(..._args) => {
-          let _value = _args[0] && _args[0].target && typeof _args[0].target === "object"
-            ? _args[0].target.value
-            : _args[0];
+      <input value={this.state.data} onChange={(..._args) => {
+        let _value = require("babel-plugin-react-directives/lib/runtime").resolveValue(_args);
 
-          this.setState(_prevState => {
-            return { data: _value };
-          });
-        }}
-      />
+        this.setState(_prevState => {
+          return { data: _value };
+        });
+      }}/>
     );
   }
 }
 ```
 
-When there are other `onChange` props, merge them:
+When there are other `onChange` props, merge them by calling the [runtime function](./lib/runtime.js):
 ```jsx harmony
 class Foo extends React.Component {
   constructor(props) {
@@ -309,21 +307,17 @@ class Foo extends React.Component {
         {...this.props}
         value={this.state.data}
         onChange={(..._args) => {
-          let _value = _args[0] && _args[0].target && typeof _args[0].target === "object" 
-            ? _args[0].target.value 
-            : _args[0];
+          let _value = require("babel-plugin-react-directives/lib/runtime").resolveValue(_args);
 
           this.setState(_prevState => {
             return { data: _value };
           });
 
-          let _extraFn = {
-            ...{ onChange: this.onChange.bind(this) },
-            ...(this.props && this.props.onChange)
-          }.onChange;
-          typeof _extraFn === "function" && _extraFn.apply(this, _args);
-        }}
-      />
+          require("babel-plugin-react-directives/lib/runtime").invokeExtraOnChange.call(this, _args, [
+            { onChange: this.onChange.bind(this) },
+            this.props
+          ]);
+        }}/>
     );
   }
 }
@@ -361,33 +355,29 @@ class Foo extends React.Component {
   render() {
     const { data } = this.state;
     return (
-      <input 
-        value={data.text} 
+      <input
+        value={data.text}
         onChange={(..._args) => {
-          let _value = _args[0] && _args[0].target && typeof _args[0].target === "object" 
-            ? _args[0].target.value 
-            : _args[0];
-  
+          let _value = require("babel-plugin-react-directives/lib/runtime").resolveValue(_args);
+
           this.setState(_prevState => {
             let _val = {
               ..._prevState.data,
               text: _value
             };
-            return {
-              data: _val
-            };
+            return { data: _val };
           });
-      }}/>
+        }}
+      />
     );
   }
 }
 ```
 
-Of course you can also use **`useState`** hook
+### <span id="toc-directives-x-model">x-model-hook</span>
+The `x-model-hook` is similar to the `x-model`, the difference is that the `x-model-hook` is used in the **useState hook function**, and the `x-model` is used in the **class component**.
 
-**Note**: If you use [**ESLint**](https://eslint.org), you may receive an error that `setState` is defined but never used.
-Please install [**eslint-plugin-react-directives**](https://github.com/peakchen90/eslint-plugin-react-directives) plugin to solve it.
-
+**Example:**
 ```jsx harmony
 function Foo() {
   const [data, setData] = useState(0);
@@ -395,7 +385,7 @@ function Foo() {
 }
 ```
 
-will be converted to:
+**Converted to:**
 ```jsx harmony
 function Foo() {
   const [data, setData] = useState(0);
@@ -403,15 +393,17 @@ function Foo() {
     <input
       value={data}
       onChange={(..._args) => {
-        let _value = _args[0] && _args[0].target && typeof _args[0].target === "object" 
-          ? _args[0].target.value 
-          : _args[0];
-  
+        let _value = require("babel-plugin-react-directives/lib/runtime").resolveValue(_args);
+
         setData(_value);
-    }} />
+      }}
+    />
   );
 }
 ```
+
+**Note**: If you use [**ESLint**](https://eslint.org), you may receive an error that `setData` is defined but never used.
+Please install [**eslint-plugin-react-directives**](https://github.com/peakchen90/eslint-plugin-react-directives) plugin to solve it.
 
 
 ## <span id="toc-related-packages">Related Packages</span>

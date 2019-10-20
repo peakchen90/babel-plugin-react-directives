@@ -13,13 +13,14 @@
 - [开始使用](#toc-usage)
   - [安装](#toc-installation)
   - [添加配置 `.babelrc`](#toc-configuring)
-  - [或者使用插件options](#toc-or-use-options)
+  - [或使用插件options](#toc-or-use-options)
 - [指令](#toc-directives)
   - [x-if](#toc-directives-x-if)
   - [x-else-if 和 x-else](#toc-directives-x-else-if-and-x-else)
   - [x-show](#toc-directives-x-show)
   - [x-for](#toc-directives-x-for)
   - [x-model](#toc-directives-x-model)
+  - [x-model-hook](#toc-directives-x-model-hook)
 - [相关资源](#toc-related-packages)
 - [更新日志](#toc-changeloog)
 - [许可证](#toc-license)
@@ -117,7 +118,7 @@ const foo = (
 
 ### <span id="toc-directives-x-show">x-show</span>
 
-`x-show` 通过 `style` prop 的 `display` 属性来控制元素的显示或隐藏，如果 `x-show` 的值是**假值**，则设置 `style.display = "none"`，否则给不设置。
+`x-show` 通过 `style` prop 的 `display` 属性来控制元素的显示或隐藏，如果 `x-show` 的值是**假值**，则设置 `style.display = "none"`，否则不设置。
 
 **例子:**
 ```jsx harmony
@@ -134,7 +135,7 @@ const foo = (
 )
 ```
 
-当然，它还将合并其他 `style`，例如：
+当然，它也会通过调用 [runtime function](./lib/runtime.js) 合并其他 `style`，例如：
 ```jsx harmony
 const foo = (
   <div 
@@ -149,13 +150,15 @@ const foo = (
 将被转换成:
 ```jsx harmony
 const foo = (
-  <div 
-    {...extraProps} 
+  <div
+    {...extraProps}
     style={{
-      ...{ color: 'red' },
-      ...(extraProps && extraProps.style),
+      ...require("babel-plugin-react-directives/lib/runtime").mergeProps.call(this, "style", [
+        { style: { color: 'red' } },
+        extraProps
+      ]),
       display: true ? undefined : "none"
-  }}>text
+    }}>text
   </div>
 )
 ```
@@ -221,6 +224,7 @@ const foo = (
 
 ### <span id="toc-directives-x-model">x-model</span>
 `x-model` 是类似于 vue `v-model` 的语法糖，使用时绑定一个值到表单元素的 `value` prop 上，在表单元素更新时自动更新状态。
+通过调用 [runtime function](./lib/runtime.js) 获取更新的值（如果第一个参数 `arg` 不为空，且 `arg.target` 是一个对象，返回 `arg.target.value`，否则返回 `arg`）
 
 **例子:**
 ```jsx harmony
@@ -241,31 +245,24 @@ class Foo extends React.Component {
 class Foo extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-      data: 'text'
-    };
+    this.state = { data: 'text' };
   }
 
   render() {
     return (
-      <input
-        value={this.state.data}
-        onChange={(..._args) => {
-          let _value = _args[0] && _args[0].target && typeof _args[0].target === "object"
-            ? _args[0].target.value
-            : _args[0];
+      <input value={this.state.data} onChange={(..._args) => {
+        let _value = require("babel-plugin-react-directives/lib/runtime").resolveValue(_args);
 
-          this.setState(_prevState => {
-            return { data: _value };
-          });
-        }}
-      />
+        this.setState(_prevState => {
+          return { data: _value };
+        });
+      }}/>
     );
   }
 }
 ```
 
-当存在其他 `onChange` prop 时，将会合并这些 prop 上绑定的方法:
+当存在其他 `onChange` prop 时，将通过调用 [runtime function](./lib/runtime.js) 合并其他 `onChange` 方法:
 ```jsx harmony
 class Foo extends React.Component {
   constructor(props) {
@@ -307,21 +304,17 @@ class Foo extends React.Component {
         {...this.props}
         value={this.state.data}
         onChange={(..._args) => {
-          let _value = _args[0] && _args[0].target && typeof _args[0].target === "object" 
-            ? _args[0].target.value 
-            : _args[0];
+          let _value = require("babel-plugin-react-directives/lib/runtime").resolveValue(_args);
 
           this.setState(_prevState => {
             return { data: _value };
           });
 
-          let _extraFn = {
-            ...{ onChange: this.onChange.bind(this) },
-            ...(this.props && this.props.onChange)
-          }.onChange;
-          typeof _extraFn === "function" && _extraFn.apply(this, _args);
-        }}
-      />
+          require("babel-plugin-react-directives/lib/runtime").invokeExtraOnChange.call(this, _args, [
+            { onChange: this.onChange.bind(this) },
+            this.props
+          ]);
+        }}/>
     );
   }
 }
@@ -344,8 +337,8 @@ class Foo extends React.Component {
     return <input x-model={data.text}/>
   }
 }
-
 ```
+
 将被转换成:
 ```jsx harmony
 class Foo extends React.Component {
@@ -359,32 +352,29 @@ class Foo extends React.Component {
   render() {
     const { data } = this.state;
     return (
-      <input 
-        value={data.text} 
+      <input
+        value={data.text}
         onChange={(..._args) => {
-          let _value = _args[0] && _args[0].target && typeof _args[0].target === "object" 
-            ? _args[0].target.value 
-            : _args[0];
-  
+          let _value = require("babel-plugin-react-directives/lib/runtime").resolveValue(_args);
+
           this.setState(_prevState => {
             let _val = {
               ..._prevState.data,
               text: _value
             };
-            return {
-              data: _val
-            };
+            return { data: _val };
           });
-      }}/>
+        }}
+      />
     );
   }
 }
 ```
 
-当然也可以使用 `useState` hook 方式:
+### <span id="toc-directives-x-model">x-model-hook</span>
+`x-model-hook` 与 `x-model` 非常相似，区别在于 `x-model-hook` 用于 **useState hook function**，而 `x-model` 用于 **class component** 
 
-**提示**: 如果你在项目中使用了 [**ESLint**](https://eslint.org)，也许会提示你 `setData` 是一个从未使用的变量，请安装 [**eslint-plugin-react-directives**](https://github.com/peakchen90/eslint-plugin-react-directives) 来解决这个问题
-
+**例子:**
 ```jsx harmony
 function Foo() {
   const [data, setData] = useState(0);
@@ -392,7 +382,7 @@ function Foo() {
 }
 ```
 
-将被转换成:
+**转换成:**
 ```jsx harmony
 function Foo() {
   const [data, setData] = useState(0);
@@ -400,15 +390,16 @@ function Foo() {
     <input
       value={data}
       onChange={(..._args) => {
-        let _value = _args[0] && _args[0].target && typeof _args[0].target === "object" 
-          ? _args[0].target.value 
-          : _args[0];
-  
+        let _value = require("babel-plugin-react-directives/lib/runtime").resolveValue(_args);
+
         setData(_value);
-    }} />
+      }}
+    />
   );
 }
 ```
+
+**提示**: 如果你在项目中使用了 [**ESLint**](https://eslint.org)，也许会提示你 `setData` 是一个从未使用的变量，请安装 [**eslint-plugin-react-directives**](https://github.com/peakchen90/eslint-plugin-react-directives) 来解决这个问题
 
 
 ## <span id="toc-related-packages">相关资源</span>
