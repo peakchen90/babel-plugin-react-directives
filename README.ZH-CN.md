@@ -9,11 +9,26 @@
 
 > [**English document**](./README.md)
 
-## 开始使用
+## 目录
+- [开始使用](#toc-usage)
+  - [安装](#toc-installation)
+  - [添加配置 `.babelrc`](#toc-configuring)
+  - [或者使用插件options](#toc-or-use-options)
+- [指令](#toc-directives)
+  - [x-if](#toc-directives-x-if)
+  - [x-else-if 和 x-else](#toc-directives-x-else-if-and-x-else)
+  - [x-show](#toc-directives-x-show)
+  - [x-for](#toc-directives-x-for)
+  - [x-model](#toc-directives-x-model)
+- [相关资源](#toc-related-packages)
+- [更新日志](#toc-changeloog)
+- [许可证](#toc-license)
+
+## <span id="toc-usage">开始使用</span>
 
 需要 **node v8.6.0** 或者更高版本，**babel v6.20.0** 或者更高版本
 
-### 安装
+### <span id="toc-installation">安装</span>
 使用 npm:
 ```bash
 npm install --save-dev babel-plugin-react-directives
@@ -24,7 +39,7 @@ npm install --save-dev babel-plugin-react-directives
 yarn add --dev babel-plugin-react-directives
 ```
 
-### 添加配置 `.babelrc` 
+### <span id="toc-configuring">添加配置 `.babelrc`</span>
 ```json
 {
   "plugins": [
@@ -33,7 +48,7 @@ yarn add --dev babel-plugin-react-directives
 }
 ```
 
-### 插件选项 (<a target="_blank" href="https://babeljs.io/docs/en/plugins#plugin-options">配置说明</a>)
+### <span id="toc-or-use-options">或使用插件options (<a target="_blank" href="https://babeljs.io/docs/en/plugins#plugin-options">配置说明</a>)</span>
 
 ```json
 {
@@ -52,9 +67,9 @@ yarn add --dev babel-plugin-react-directives
 - `prefix`: 指令的 props 前缀，默认值: "x"，用法示例: `x-if`
 - `pragmaType`: 帮助内部进行正确的识别一些语法，如 hooks，默认值: "React"
 
-## 指令
+## <span id="toc-directives">指令</span>
 
-### x-if
+### <span id="toc-directives-x-if">x-if</span>
 如果 `x-if` 的值为**真值**，则将渲染此元素，否则不渲染。
 
 **例子:**
@@ -67,7 +82,7 @@ const foo = <div x-if={true}>text</div>
 const foo = true ? <div>text</div> : null
 ```
 
-### x-else-if 和 x-else
+### <span id="toc-directives-x-else-if-and-x-else">x-else-if 和 x-else</span>
 在 `x-else-if` 的同一层级元素必须有相对应的 `x-if`，如果 `x-if` 的值是**假值**，并且 `x-else-if` 的值是**真值**，则它将被渲染。
 
 在 `x-else` 的同一层级元素必须有相对应的 `x-if` 或 `x-else-if`，当 `x-if` 或者 `x-else-if` 都是**假值**时，它将被渲染。
@@ -99,7 +114,8 @@ const foo = (
   </div>
 )
 ```
-### x-show
+
+### <span id="toc-directives-x-show">x-show</span>
 
 `x-show` 通过 `style` prop 的 `display` 属性来控制元素的显示或隐藏，如果 `x-show` 的值是**假值**，则设置 `style.display = "none"`，否则给不设置。
 
@@ -144,7 +160,7 @@ const foo = (
 )
 ```
 
-### x-for
+### <span id="toc-directives-x-for">x-for</span>
 使用 `x-for` 遍历数组生成元素。
 
 绑定的值应该像这样: `(item, index) in list`
@@ -152,7 +168,7 @@ const foo = (
 - `item`: 当前的值
 - `index`: 当前的索引 (可选)
 
-**提示**: 如果你在项目中使用了 [**ESLint**](https://eslint.org)，也许会提示你: `item` 和 `index` 是未定义的变量，请安装 [`eslint-plugin-react-directives`](https://github.com/peakchen90/eslint-plugin-react-directives) 来解决这个问题
+**提示**: 如果你在项目中使用了 [**ESLint**](https://eslint.org)，也许会提示你: `item` 和 `index` 是未定义的变量，请安装 [**eslint-plugin-react-directives**](https://github.com/peakchen90/eslint-plugin-react-directives) 来解决这个问题
 
 **例子:**
 ```jsx harmony
@@ -203,7 +219,7 @@ const foo = (
 )
 ```
 
-### x-model
+### <span id="toc-directives-x-model">x-model</span>
 `x-model` 是类似于 vue `v-model` 的语法糖，使用时绑定一个值到表单元素的 `value` prop 上，在表单元素更新时自动更新状态。
 
 **例子:**
@@ -367,7 +383,7 @@ class Foo extends React.Component {
 
 当然也可以使用 `useState` hook 方式:
 
-**提示**: 如果你在项目中使用了 [**ESLint**](https://eslint.org)，也许会提示你 `setData` 是一个从未使用的变量，请安装 [`eslint-plugin-react-directives`](https://github.com/peakchen90/eslint-plugin-react-directives) 来解决这个问题
+**提示**: 如果你在项目中使用了 [**ESLint**](https://eslint.org)，也许会提示你 `setData` 是一个从未使用的变量，请安装 [**eslint-plugin-react-directives**](https://github.com/peakchen90/eslint-plugin-react-directives) 来解决这个问题
 
 ```jsx harmony
 function Foo() {
@@ -395,13 +411,13 @@ function Foo() {
 ```
 
 
-## 相关资源
+## <span id="toc-related-packages">相关资源</span>
 - [eslint-plugin-react-directives](https://github.com/peakchen90/eslint-plugin-react-directives)
 
-## 更新日志
+## <span id="toc-changeloog">更新日志</span>
 
 查看更多信息: [CHANGELOG](./CHANGELOG.md)
 
-## 许可证
+## <span id="toc-license">许可证</span>
 
 [MIT](./LICENSE)
