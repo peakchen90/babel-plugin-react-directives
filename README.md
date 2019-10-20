@@ -70,7 +70,7 @@ yarn add --dev babel-plugin-react-directives
 
 ## Directives <span id="toc-directives"></span>
 
-### x-if <span id="toc-directives-x-if"></span>
+### <div id="toc-directives-x-if">x-if</div>
 If the `x-if` value is **truthy**, this element will be rendered, otherwise do not.
 
 **Example:**
