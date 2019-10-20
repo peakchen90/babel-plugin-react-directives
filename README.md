@@ -10,11 +10,26 @@ A babel plugin that provides some directives for react(any JSX), similar to dire
 
 > 🇨🇳 [**中文文档**](./README.ZH-CN.md)
 
-## Usage
+## Table of Contents
+- [Usage](#toc-usage)
+  - [Installation](#toc-installation)
+  - [Configuring via `.babelrc`](#toc-configuring)
+  - [Or use options](#toc-or-use-options)
+- [Directives](#toc-directives)
+  - [x-if](#toc-directives-x-if)
+  - [x-else-if and x-else](#toc-directives-x-else-if-and-x-else)
+  - [x-show](#toc-directives-x-show)
+  - [x-for](#toc-directives-x-for)
+  - [x-model](#toc-directives-x-model)
+- [Related Packages](#toc-related-packages)
+- [CHANGELOG](#toc-changeloog)
+- [LICENSE](#toc-license)
+
+## Usage <span id="toc-usage"></span>
 
 Requires **node v8.6.0** or higher, **babel v6.20.0** or higher.
 
-### Installation
+### Installation <span id="toc-installation"></span>
 use npm:
 ```bash
 npm install --save-dev babel-plugin-react-directives
@@ -25,7 +40,7 @@ use yarn:
 yarn add --dev babel-plugin-react-directives
 ```
 
-### Configuring via `.babelrc`
+### Configuring via `.babelrc` <span id="toc-configuring"></span>
 ```json
 {
   "plugins": [
@@ -34,7 +49,7 @@ yarn add --dev babel-plugin-react-directives
 }
 ```
 
-### Options (<a target="_blank" href="https://babeljs.io/docs/en/plugins#plugin-options">Babel plugin options</a>)
+### Or use options (<a target="_blank" href="https://babeljs.io/docs/en/plugins#plugin-options">Babel plugin options</a>) <span id="toc-or-use-options"></span>
 
 ```json
 {
@@ -53,9 +68,9 @@ yarn add --dev babel-plugin-react-directives
 - `prefix`: JSX props prefix for directive, default: "x", usage example: `x-if`
 - `pragmaType`: Help internal to correctly identify some syntax, such as hooks, default: "React"
 
-## Directives
+## Directives <span id="toc-directives"></span>
 
-### x-if
+### x-if <span id="toc-directives-x-if"></span>
 If the `x-if` value is **truthy**, this element will be rendered, otherwise do not.
 
 **Example:**
@@ -68,7 +83,7 @@ const foo = <div x-if={true}>text</div>
 const foo = true ? <div>text</div> : null
 ```
 
-### x-else-if and x-else
+### x-else-if and x-else <span id="toc-directives-x-else-if-and-x-else"></span>
 The `x-else-if` must have a corresponding `x-if`. if `x-if` value is **falsy**, and `x-else-if` value is **truthy**, it will be rendered. 
 
 The `x-else` must have the corresponding `x-if` or `x-if-else`. When all corresponding `x-if` or `x-else-if` value are **falsy**, it will be rendered.
@@ -101,7 +116,7 @@ const foo = (
 )
 ```
 
-### x-show
+### x-show <span id="toc-directives-x-show"></span>
 The `x-show` controls the display or hiding of elements by the `display` of the `style` prop. If the `x-show` value is **falsy**, will set `style.display = "none"`, otherwise do nothing.
 
 
@@ -145,7 +160,7 @@ const foo = (
 )
 ```
 
-### x-for
+### x-for <span id="toc-directives-x-for"></span>
 The `x-for` is used to traverse arrays to generate elements.
 
 The value should like: `(item, index) in list`
@@ -206,7 +221,7 @@ const foo = (
 )
 ```
 
-### x-model
+### x-model <span id="toc-directives-x-model"></span>
 The `x-model` is a syntax sugar similar to vue `v-model`, which binds a state to the `value` prop of the form element and automatically updates the state when the element is updated.
 
 **Example:**
@@ -399,13 +414,13 @@ function Foo() {
 ```
 
 
-## Related Packages
+## Related Packages <span id="toc-related-packages"></span>
 - [eslint-plugin-react-directives](https://github.com/peakchen90/eslint-plugin-react-directives)
 
-## CHANGELOG
+## CHANGELOG <span id="toc-changeloog"></span>
 
 See more information at: [CHANGELOG](./CHANGELOG.md)
 
-## LICENSE
+## LICENSE <span id="toc-license"></span>
 
 [MIT](./LICENSE)
