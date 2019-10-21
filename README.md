@@ -79,7 +79,7 @@ If the `x-if` value is **truthy**, this element will be rendered, otherwise do n
 const foo = <div x-if={true}>text</div>
 ```
 
-**Converted to:**
+**Convert to:**
 ```jsx harmony
 const foo = true ? <div>text</div> : null
 ```
@@ -101,7 +101,7 @@ const foo = (
 )
 ```
 
-**Converted to:**
+**Convert to:**
 ```jsx harmony
 const foo = (
   <div>
@@ -126,7 +126,7 @@ The `x-show` controls the display or hiding of elements by the `display` of the 
 const foo = <div x-show={true}>text</div>
 ```
 
-**Converted to:**
+**Convert to:**
 ```jsx harmony
 const foo = (
   <div style={{
@@ -188,7 +188,7 @@ const foo = (
 )
 ```
 
-**Converted to:**
+**Convert to:**
 ```jsx harmony
 const foo = (
   <ul>
@@ -243,7 +243,7 @@ class Foo extends React.Component {
 }
 ```
 
-**Converted to:**
+**Convert to:**
 ```jsx harmony
 class Foo extends React.Component {
   constructor(props) {
@@ -385,7 +385,7 @@ function Foo() {
 }
 ```
 
-**Converted to:**
+**Convert to:**
 ```jsx harmony
 function Foo() {
   const [data, setData] = useState(0);
