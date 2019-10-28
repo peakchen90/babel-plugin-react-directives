@@ -378,7 +378,7 @@ class Foo extends React.Component {
 ```jsx harmony
 function Foo() {
   const [data, setData] = useState(0);
-  return <input x-model={data}/>
+  return <input x-model-hook={data}/>
 }
 ```
 
