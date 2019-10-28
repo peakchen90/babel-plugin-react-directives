@@ -381,7 +381,7 @@ The `x-model-hook` is similar to the `x-model`, the difference is that the `x-mo
 ```jsx harmony
 function Foo() {
   const [data, setData] = useState(0);
-  return <input x-model={data}/>
+  return <input x-model-hook={data}/>
 }
 ```
 
