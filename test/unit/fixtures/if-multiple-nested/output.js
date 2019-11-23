@@ -1,11 +1,10 @@
 const a = (
   <div>
     {testA ? (
-      <p>
-        A
+      <div>
+        <p>other1</p>
         {testAa ? (
-          <span>
-            Aa
+          <div>
             {testAa1 ? (
               <img alt="image1"/>
             ) : testAa2 ? (
@@ -13,13 +12,32 @@ const a = (
             ) : (
               <img alt="image3"/>
             )}
-          </span>
+          </div>
         ) : (
-          <span>Ab</span>
+          <div>
+            <div>
+              <p>
+                {testAb1 ? (
+                  <span>testAb1</span>
+                ) : testAb2 ? (
+                  <span>{testAb21 ? <img alt="image3"/> : null}</span>
+                ) : (
+                  <span>testAb3</span>
+                )}
+              </p>
+            </div>
+          </div>
         )}
-      </p>
+
+        <p>other2</p>
+      </div>
     ) : (
-      <p>B</p>
+      <div>
+        <p>other3</p>
+        {testBa ? <span>Ba</span> : testBb ? <span>Bb</span> : <span>Bc</span>}
+
+        <p>other4</p>
+      </div>
     )}
 
     {testC ? <p>C</p> : null}

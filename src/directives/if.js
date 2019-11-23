@@ -40,7 +40,7 @@ function traverseIf(path) {
       const attributes = elemUtil(_path).attributes();
       const attrs = attributes.filter((attr) => attrUtil(attr).name() === DIRECTIVES.IF);
       if (attrs.length === 1) {
-        _path.skip(); // 跳过遍历子节点
+        _path.stop(); // 跳过遍历子节点
         _traverseList.push(traverseCondition(_path, attrs[0]));
       }
     }
