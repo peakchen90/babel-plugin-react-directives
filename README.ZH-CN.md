@@ -22,6 +22,7 @@
   - [x-model](#toc-directives-x-model)
   - [x-model-hook](#toc-directives-x-model-hook)
 - [相关资源](#toc-related-packages)
+- [已知问题](#toc-known-issues)
 - [更新日志](#toc-changeloog)
 - [许可证](#toc-license)
 
@@ -405,10 +406,15 @@ function Foo() {
 ## <span id="toc-related-packages">相关资源</span>
 - [eslint-plugin-react-directives](https://github.com/peakchen90/eslint-plugin-react-directives)
 
-## <span id="toc-changeloog">更新日志</span>
 
+## <span id="toc-known-issues">已知问题</span>
+- 在 Typescript 中使用 `x-for` 时，绑定的值 `item` 会报一个错误。临时的解决方案是，在使用前先声明变量 `item`，
+  例如: `declare let item: any`. **不推荐在 Typescript 中使用 `x-for`**.
+
+
+## <span id="toc-changeloog">更新日志</span>
 查看更多信息: [CHANGELOG](./CHANGELOG.md)
 
-## <span id="toc-license">许可证</span>
 
+## <span id="toc-license">许可证</span>
 [MIT](./LICENSE)

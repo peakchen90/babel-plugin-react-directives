@@ -23,6 +23,7 @@ A babel plugin that provides some directives for react(any JSX), similar to dire
   - [x-model](#toc-directives-x-model)
   - [x-model-hook](#toc-directives-x-model-hook)
 - [Related Packages](#toc-related-packages)
+- [Known Issues](#toc-known-issues)
 - [CHANGELOG](#toc-changeloog)
 - [LICENSE](#toc-license)
 
@@ -409,10 +410,15 @@ Please install [**eslint-plugin-react-directives**](https://github.com/peakchen9
 ## <span id="toc-related-packages">Related Packages</span>
 - [eslint-plugin-react-directives](https://github.com/peakchen90/eslint-plugin-react-directives)
 
-## <span id="toc-changeloog">CHANGELOG</span>
 
+## <span id="toc-known-issues">Known Issues</span>
+- When using `x-for` in Typescript, the binding value `item` will report an error. The temporary solution is to declare the `item` variable before use.
+  Such as `declare let item: any`. **And it is not recommended to use `x-for` in Typescript**.
+
+
+## <span id="toc-changeloog">CHANGELOG</span>
 See more information at: [CHANGELOG](./CHANGELOG.md)
 
-## <span id="toc-license">LICENSE</span>
 
+## <span id="toc-license">LICENSE</span>
 [MIT](./LICENSE)
