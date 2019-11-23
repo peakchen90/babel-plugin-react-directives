@@ -1,6 +1,6 @@
 # CHANGELOG
 
-## v1.1.0
+## v1.0.2
 2019-11-23
 
 - Fix bug: When `x-if` is nested under `x-else` and `x-else-if`, an error is reported.
