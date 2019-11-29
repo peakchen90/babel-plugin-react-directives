@@ -3,6 +3,10 @@ language: node_js
 node_js:
   - "8.6.0"
 
+branches:
+  only:
+    - master
+
 install:
   - npm install
   - npm run test:install
