@@ -7,6 +7,7 @@ const transformIf = require('./directives/if');
 const transformShow = require('./directives/show');
 const transformModel = require('./directives/model');
 const transformFor = require('./directives/for');
+const transformClass = require('./directives/class');
 
 
 module.exports = (api) => {
@@ -39,6 +40,7 @@ module.exports = (api) => {
       JSXElement(path) {
         transformShow(path);
         transformModel(path);
+        transformClass(path);
         transformFor(path);
         transformIf(path);
       },
@@ -62,6 +64,7 @@ module.exports = (api) => {
           case DIRECTIVES.SHOW:
           case DIRECTIVES.MODEL:
           case DIRECTIVES.FOR:
+          case DIRECTIVES.CLASS:
             codeFrameWarn(
               path,
               `There should be no more than one directive: \`${name}\``

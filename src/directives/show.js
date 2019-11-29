@@ -67,7 +67,8 @@ function transformShow(path) {
     getResult(mergeItems) {
       return t.objectExpression([
         mergeItems.length > 0 && t.spreadElement(
-          template.mergeStyleProps({
+          template.getMergeProp({
+            PROP_NAME: t.stringLiteral('style'),
             MERGE_ITEMS: t.arrayExpression(mergeItems)
           }).expression
         ),

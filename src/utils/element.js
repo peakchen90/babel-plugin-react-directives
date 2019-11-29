@@ -106,10 +106,10 @@ class ElementUtil {
    */
   mergeProps(
     {
-      prop, // 属性名
+      prop, // 属性名(用于合并及修改的属性名)
       directivePath, // 指令属性的NodePath
       find, // 遍历的attribute回调方法，返回值用于判断匹配成功
-      getResult // 合并结果回调方法，返回值用于设置到属性上
+      getResult // 合并结果回调方法，返回值用于设置到属性名上
     }
   ) {
     const attributes = this.attributes();

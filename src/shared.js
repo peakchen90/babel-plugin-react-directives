@@ -28,6 +28,9 @@ const DIRECTIVES = {
   },
   get MODEL_HOOK() {
     return `${opts.prefix}-model-hook`;
+  },
+  get CLASS() {
+    return `${opts.prefix}-class`;
   }
 };
 

@@ -12,7 +12,12 @@ module.exports = {
   `),
 
   // show 合并style prop
-  mergeStyleProps: template(`
-    require("babel-plugin-react-directives/lib/runtime").mergeProps.call(this, "style", MERGE_ITEMS)
+  getMergeProp: template(`
+    require("babel-plugin-react-directives/lib/runtime").mergeProps.call(this, PROP_NAME, MERGE_ITEMS)
+  `),
+
+  // 合并className
+  getMergeClassName: template(`
+    require("babel-plugin-react-directives/lib/runtime").classNames(MERGE_ITEMS)
   `),
 };
