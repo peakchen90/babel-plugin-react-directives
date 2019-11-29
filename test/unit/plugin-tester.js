@@ -291,7 +291,7 @@ const createFixtureTests = (fixturesDir, options) => {
     const tsCodePath = path.join(fixtureDir, 'code.ts');
     const jsxCodePath = path.join(fixtureDir, 'code.jsx');
     const tsxCodePath = path.join(fixtureDir, 'code.tsx');
-    const blockTitle = caseName.replace(/__/g, ' > ').split('-').join(' ');
+    const blockTitle = caseName.replace(/__/g, ' > ').replace(/_/g, ' ');
     const codePath = (pathExists.sync(jsCodePath) && jsCodePath)
       || (pathExists.sync(tsCodePath) && tsCodePath)
       || (pathExists.sync(jsxCodePath) && jsxCodePath)
