@@ -2,8 +2,8 @@ const { default: template } = require('@babel/template');
 
 module.exports = {
   // model 调用额外onChange方法
-  invokeExtraOnChange: template(`
-    require("babel-plugin-react-directives/lib/runtime").invokeExtraOnChange.call(this, ARGS, MERGE_ITEMS)
+  invokeOnChange: template(`
+    require("babel-plugin-react-directives/lib/runtime").invokeOnChange.call(this, ARGS, MERGE_ITEMS)
   `),
 
   // model 获取onChange值

@@ -14,7 +14,7 @@ class A extends React.Component {
             };
           });
 
-          require("babel-plugin-react-directives/lib/runtime").invokeExtraOnChange.call(
+          require("babel-plugin-react-directives/lib/runtime").invokeOnChange.call(
             this,
             _args,
             [
@@ -45,7 +45,7 @@ class B extends React.Component {
             };
           });
 
-          require("babel-plugin-react-directives/lib/runtime").invokeExtraOnChange.call(
+          require("babel-plugin-react-directives/lib/runtime").invokeOnChange.call(
             this,
             _args2,
             [

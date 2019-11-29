@@ -335,9 +335,9 @@ function setOnChangeProp(path, attrPath, stateBindingStack, useType) {
           ...setStateExpression,
 
           /**
-           * require("babel-plugin-react-directives/lib/runtime").invokeExtraOnChange.call(this, _args, []);
+           * require("babel-plugin-react-directives/lib/runtime").invokeOnChange.call(this, _args, []);
            */
-          mergeItems.length > 0 && template.invokeExtraOnChange({
+          mergeItems.length > 0 && template.invokeOnChange({
             ARGS: argsVar,
             MERGE_ITEMS: t.arrayExpression(mergeItems)
           })
