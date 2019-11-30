@@ -8,7 +8,7 @@ A babel plugin that provides some directives for react(any JSX), similar to dire
 [![npm](https://img.shields.io/npm/v/babel-plugin-react-directives.svg)](https://www.npmjs.com/package/babel-plugin-react-directives)
 [![GitHub](https://img.shields.io/github/license/mashape/apistatus.svg)](https://github.com/peakchen90/babel-plugin-react-directives/blob/master/LICENSE)
 
-> 🇨🇳 [**中文文档**](./README.ZH-CN.md)
+> [**中文文档**](./README.ZH-CN.md)
 
 ## Table of Contents
 - [Usage](#toc-usage)
@@ -22,6 +22,7 @@ A babel plugin that provides some directives for react(any JSX), similar to dire
   - [x-for](#toc-directives-x-for)
   - [x-model](#toc-directives-x-model)
   - [x-model-hook](#toc-directives-x-model-hook)
+  - [x-class](#toc-directives-x-class)
 - [Related Packages](#toc-related-packages)
 - [Known Issues](#toc-known-issues)
 - [CHANGELOG](#toc-changeloog)
@@ -137,7 +138,7 @@ const foo = (
 )
 ```
 
-Of course, it will also merge other `style` by calling the [runtime function](./lib/runtime.js), for example:
+Of course, it will also merge other `style` props by calling the [mergeProps method](./runtime/merge-props.js), for example:
 ```jsx harmony
 const foo = (
   <div 
@@ -155,7 +156,7 @@ const foo = (
   <div
     {...extraProps}
     style={{
-      ...require("babel-plugin-react-directives/lib/runtime").mergeProps.call(this, "style", [
+      ...mergeProps.call(this, "style", [
         { style: { color: 'red' } },
         extraProps
       ]),
@@ -228,7 +229,7 @@ const foo = (
 
 ### <span id="toc-directives-x-model">x-model</span>
 The `x-model` is a syntax sugar similar to vue `v-model`, which binds a state to the `value` prop of the **form element** and automatically updates the state when the element is updated.
-It resolves the updated value by calling the [runtime function](./lib/runtime.js) (If the first argument `arg` is non-empty, and `arg.target` is an object, return `arg.target.value`, otherwise return `arg`).
+It resolves the updated value by calling the [resolveValue method](./runtime/resolve-value.js) (If the first argument `arg` is non-empty, and `arg.target` is an object, return `arg.target.value`, otherwise return `arg`).
 
 **Example:**
 ```jsx harmony
@@ -255,7 +256,7 @@ class Foo extends React.Component {
   render() {
     return (
       <input value={this.state.data} onChange={(..._args) => {
-        let _value = require("babel-plugin-react-directives/lib/runtime").resolveValue(_args);
+        let _value = resolveValue(_args);
 
         this.setState(_prevState => {
           return { data: _value };
@@ -266,7 +267,7 @@ class Foo extends React.Component {
 }
 ```
 
-When there are other `onChange` props, merge them by calling the [runtime function](./lib/runtime.js):
+When there are other `onChange` props, merge them by calling the [invokeOnchange method](./runtime/invoke-onchange.js):
 ```jsx harmony
 class Foo extends React.Component {
   constructor(props) {
@@ -308,13 +309,13 @@ class Foo extends React.Component {
         {...this.props}
         value={this.state.data}
         onChange={(..._args) => {
-          let _value = require("babel-plugin-react-directives/lib/runtime").resolveValue(_args);
+          let _value = resolveValue(_args);
 
           this.setState(_prevState => {
             return { data: _value };
           });
 
-          require("babel-plugin-react-directives/lib/runtime").invokeExtraOnChange.call(this, _args, [
+          invokeOnchange.call(this, _args, [
             { onChange: this.onChange.bind(this) },
             this.props
           ]);
@@ -359,7 +360,7 @@ class Foo extends React.Component {
       <input
         value={data.text}
         onChange={(..._args) => {
-          let _value = require("babel-plugin-react-directives/lib/runtime").resolveValue(_args);
+          let _value = resolveValue(_args);
 
           this.setState(_prevState => {
             let _val = {
@@ -394,7 +395,7 @@ function Foo() {
     <input
       value={data}
       onChange={(..._args) => {
-        let _value = require("babel-plugin-react-directives/lib/runtime").resolveValue(_args);
+        let _value = resolveValue(_args);
 
         setData(_value);
       }}
@@ -406,6 +407,51 @@ function Foo() {
 **Note**: If you use [**ESLint**](https://eslint.org), you may receive an error that `setData` is defined but never used.
 Please install [**eslint-plugin-react-directives**](https://github.com/peakchen90/eslint-plugin-react-directives) plugin to solve it.
 
+### <span id="toc-directives-x-class">x-class</span>
+
+> *New in 1.1.0*
+
+The `x-class` for conditionally joining classNames together by [classnames](https://github.com/JedWatson/classnames), and it is useful for dynamically generating className.
+Usage is the same as [classnames](https://github.com/JedWatson/classnames), the binding value will be passed as a parameter to the [`classNames`](https://github.com/JedWatson/classnames#usage) method.
+
+**Example:**
+```jsx harmony
+const foo = <div x-class={{ abc: true, def: false }}>
+```
+
+**Convert to:**
+```jsx harmony
+const foo = <div className={classNames({ abc: true, def: false })}>
+// className="abc"
+```
+**Note**: `classNames` method references [runtime/classnames.js](./runtime/classnames.js).
+
+Of course, it will also merge other `className` props, for example:
+**Example:**
+```jsx harmony
+const foo = <div x-class={{ abc: true, def: false }} className="xyz">
+```
+
+will be converted to:
+```jsx harmony
+const foo = <div className={classNames(["xyz", { abc: true, def: false }])}>
+// className="xyz abc"
+```
+
+The `x-class` can also be used with [css-modules](https://github.com/css-modules/css-modules), for example:
+```jsx harmony
+import styles from './style.css';
+
+const foo = (
+  <div 
+    className={styles.foo}
+    x-class={{ 
+      [styles.bar]: true,
+      [styles.qux]: false
+    }}
+  />
+)
+```
 
 ## <span id="toc-related-packages">Related Packages</span>
 - [eslint-plugin-react-directives](https://github.com/peakchen90/eslint-plugin-react-directives)

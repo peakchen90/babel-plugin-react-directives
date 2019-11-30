@@ -321,7 +321,7 @@ function setOnChangeProp(path, attrPath, stateBindingStack, useType) {
         t.blockStatement([
 
           /**
-           * let _val = require('babel-plugin-react-directives').resolveValue(_args)
+           * let _val = require('babel-plugin-react-directives/runtime/resolve-value.js')(_args)
            */
           t.variableDeclaration('let', [
             t.variableDeclarator(
@@ -339,7 +339,7 @@ function setOnChangeProp(path, attrPath, stateBindingStack, useType) {
           ...setStateExpression,
 
           /**
-           * require("babel-plugin-react-directives/lib/runtime").invokeOnChange.call(this, _args, []);
+           * require('babel-plugin-react-directives/runtime/invoke-onchange.js').call(this, _args, []);
            */
           mergeItems.length > 0 && t.expressionStatement(
             builder.buildCallRuntimeExpression(

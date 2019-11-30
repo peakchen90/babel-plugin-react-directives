@@ -21,6 +21,7 @@
   - [x-for](#toc-directives-x-for)
   - [x-model](#toc-directives-x-model)
   - [x-model-hook](#toc-directives-x-model-hook)
+  - [x-class](#toc-directives-x-class)
 - [相关资源](#toc-related-packages)
 - [已知问题](#toc-known-issues)
 - [更新日志](#toc-changeloog)
@@ -136,7 +137,7 @@ const foo = (
 )
 ```
 
-当然，它也会通过调用 [runtime function](./lib/runtime.js) 合并其他 `style`，例如：
+当然，它也会通过调用 [mergeProps 方法](./runtime/merge-props.js) 合并其他 `style` props，例如：
 ```jsx harmony
 const foo = (
   <div 
@@ -154,7 +155,7 @@ const foo = (
   <div
     {...extraProps}
     style={{
-      ...require("babel-plugin-react-directives/lib/runtime").mergeProps.call(this, "style", [
+      ...mergeProps.call(this, "style", [
         { style: { color: 'red' } },
         extraProps
       ]),
@@ -225,7 +226,7 @@ const foo = (
 
 ### <span id="toc-directives-x-model">x-model</span>
 `x-model` 是类似于 vue `v-model` 的语法糖，使用时绑定一个值到表单元素的 `value` prop 上，在表单元素更新时自动更新状态。
-通过调用 [runtime function](./lib/runtime.js) 获取更新的值（如果第一个参数 `arg` 不为空，且 `arg.target` 是一个对象，返回 `arg.target.value`，否则返回 `arg`）
+通过调用 [resolveValue 方法](./runtime/resolve-value.js) 获取更新的值（如果第一个参数 `arg` 不为空，且 `arg.target` 是一个对象，返回 `arg.target.value`，否则返回 `arg`）
 
 **例子:**
 ```jsx harmony
@@ -252,7 +253,7 @@ class Foo extends React.Component {
   render() {
     return (
       <input value={this.state.data} onChange={(..._args) => {
-        let _value = require("babel-plugin-react-directives/lib/runtime").resolveValue(_args);
+        let _value = resolveValue(_args);
 
         this.setState(_prevState => {
           return { data: _value };
@@ -263,7 +264,7 @@ class Foo extends React.Component {
 }
 ```
 
-当存在其他 `onChange` prop 时，将通过调用 [runtime function](./lib/runtime.js) 合并其他 `onChange` 方法:
+当存在其他 `onChange` prop 时，将通过调用 [invokeOnchange 方法](./runtime/invoke-onchange.js) 合并其他 `onChange` 方法:
 ```jsx harmony
 class Foo extends React.Component {
   constructor(props) {
@@ -305,13 +306,13 @@ class Foo extends React.Component {
         {...this.props}
         value={this.state.data}
         onChange={(..._args) => {
-          let _value = require("babel-plugin-react-directives/lib/runtime").resolveValue(_args);
+          let _value = resolveValue(_args);
 
           this.setState(_prevState => {
             return { data: _value };
           });
 
-          require("babel-plugin-react-directives/lib/runtime").invokeExtraOnChange.call(this, _args, [
+          invokeOnchange.call(this, _args, [
             { onChange: this.onChange.bind(this) },
             this.props
           ]);
@@ -356,7 +357,7 @@ class Foo extends React.Component {
       <input
         value={data.text}
         onChange={(..._args) => {
-          let _value = require("babel-plugin-react-directives/lib/runtime").resolveValue(_args);
+          let _value = resolveValue(_args);
 
           this.setState(_prevState => {
             let _val = {
@@ -391,7 +392,7 @@ function Foo() {
     <input
       value={data}
       onChange={(..._args) => {
-        let _value = require("babel-plugin-react-directives/lib/runtime").resolveValue(_args);
+        let _value = resolveValue(_args);
 
         setData(_value);
       }}
@@ -402,6 +403,50 @@ function Foo() {
 
 **提示**: 如果你在项目中使用了 [**ESLint**](https://eslint.org)，也许会提示你 `setData` 是一个从未使用的变量，请安装 [**eslint-plugin-react-directives**](https://github.com/peakchen90/eslint-plugin-react-directives) 来解决这个问题
 
+### <span id="toc-directives-x-class">x-class</span>
+
+> *1.1.0版本新增*
+
+`x-class` 通过 [classnames](https://github.com/JedWatson/classnames) 有条件的生成 className, 这对于动态生成 className 非常有用。
+用法与 [classnames](https://github.com/JedWatson/classnames) 相同，绑定值将作为参数传给 [`classNames`](https://github.com/JedWatson/classnames#usage) 方法。
+
+**例子:**
+```jsx harmony
+const foo = <div x-class={{ abc: true, def: false }}>
+```
+
+**转换成:**
+```jsx harmony
+const foo = <div className={classNames({ abc: true, def: false })}>
+// className="abc"
+```
+**提示**: `classNames` 方法引用于 [runtime/classnames.js](./runtime/classnames.js).
+
+当然，它也将合并其他的 `className` props, 例如:
+```jsx harmony
+const foo = <div x-class={{ abc: true, def: false }} className="xyz">
+```
+
+将被转换成:
+```jsx harmony
+const foo = <div className={classNames(["xyz", { abc: true, def: false }])}>
+// className="xyz abc"
+```
+
+`x-class` 也可以与 [css-modules](https://github.com/css-modules/css-modules) 一起使用，例如：
+```jsx harmony
+import styles from './style.css';
+
+const foo = (
+  <div 
+    className={styles.foo}
+    x-class={{ 
+      [styles.bar]: true,
+      [styles.qux]: false
+    }}
+  />
+)
+```
 
 ## <span id="toc-related-packages">相关资源</span>
 - [eslint-plugin-react-directives](https://github.com/peakchen90/eslint-plugin-react-directives)
