@@ -3,6 +3,10 @@ language: node_js
 os:
   - linux
 
+node_js:
+  - "8.6.0"
+  - "12"
+
 stages:
   - test
   - name: releaseNpm
@@ -38,5 +42,3 @@ jobs:
 notifications:
   slack:
     if: branch = master
-    on_success: always
-    on_error: always
