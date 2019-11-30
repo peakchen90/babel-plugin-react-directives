@@ -435,7 +435,7 @@ const foo = <div className={classNames(["xyz", { abc: true, def: false }])}>
 // className="xyz abc"
 ```
 
-The `x-class` can also be used with [css-modules](https://github.com/css-modules/css-modules), for example:
+`x-class` 也可以与 [css-modules](https://github.com/css-modules/css-modules) 一起使用，例如：
 ```jsx harmony
 import styles from './style.css';
 
