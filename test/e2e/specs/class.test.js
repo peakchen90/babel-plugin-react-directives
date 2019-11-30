@@ -44,7 +44,6 @@ describe('directive: class', () => {
     wrapper.setProps({
       classNames: [
         'foo',
-        'bar',
         { bar: null },
         [
           'baz',
@@ -66,7 +65,7 @@ describe('directive: class', () => {
           bar: false
         }
       ],
-      className: 'foo bar'
+      className: 'foo'
     });
     expect(wrapper.find('div').prop('className')).toBe('foo baz');
   });
