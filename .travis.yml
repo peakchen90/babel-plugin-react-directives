@@ -3,29 +3,27 @@ language: node_js
 os:
   - linux
 
-node_js:
-  - "8.6.0"
-  - "12"
-
-install:
-  - npm install
-  - npm run test:install
-  - npm install -g codecov
-
 stages:
   - test
-  - name: releaseNpm
+  - name: deploy
     if: branch = master
 
 jobs:
   include:
     - stage: test
       name: "Run test scripts"
+      node_js:
+        - "8.6.0"
+        - "12"
+      install:
+        - npm install
+        - npm run test:install
+        - npm install -g codecov
       script:
         - npm run test
         - codecov
 
-    - stage: releaseNpm
+    - stage: deploy
       name: "Release npm package"
       node_js: "12"
       script:
@@ -38,6 +36,4 @@ jobs:
           branch: master
 
 notifications:
-  slack:
-    on_success: never
-    on_error: always
+  email: false
