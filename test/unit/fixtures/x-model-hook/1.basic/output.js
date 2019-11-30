@@ -4,7 +4,7 @@ const A = () => {
     <input
       value={data}
       onChange={(..._args) => {
-        let _value = require("babel-plugin-react-directives/lib/runtime").resolveValue(
+        let _value = require("babel-plugin-react-directives/runtime/resolve-value.js")(
           _args
         );
 
@@ -19,7 +19,7 @@ const B = () => {
     <input
       value={data[0]}
       onChange={(..._args2) => {
-        let _value2 = require("babel-plugin-react-directives/lib/runtime").resolveValue(
+        let _value2 = require("babel-plugin-react-directives/runtime/resolve-value.js")(
           _args2
         );
 

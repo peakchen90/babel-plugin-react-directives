@@ -1,6 +1,6 @@
 const a = (
   <div
-    className={require("babel-plugin-react-directives/lib/runtime").classNames(
+    className={require("babel-plugin-react-directives/runtime/classnames.js")(
       "bar"
     )}/>
 );

@@ -20,7 +20,7 @@ module.exports = (api) => {
   return {
     name: 'react-directives',
 
-    /* istanbul ignore next: reference third party */
+    /* istanbul ignore next: reference third party lib */
     // https://github.com/babel/babel/blob/v7.6.2/packages/babel-plugin-syntax-jsx/src/index.js
     manipulateOptions(opts, parserOpts) {
       parserOpts.plugins.push('objectRestSpread');

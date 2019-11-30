@@ -17,7 +17,7 @@ class D {
       <input
         value={this.state.testD}
         onChange={(..._args) => {
-          let _value = require("babel-plugin-react-directives/lib/runtime").resolveValue(
+          let _value = require("babel-plugin-react-directives/runtime/resolve-value.js")(
             _args
           );
 

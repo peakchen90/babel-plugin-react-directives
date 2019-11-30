@@ -3,7 +3,6 @@ const { DIRECTIVES, opts } = require('../shared');
 const attrUtil = require('../utils/attribute');
 const elemUtil = require('../utils/element');
 const builder = require('../utils/builder');
-const template = require('../utils/template');
 const { codeFrameWarn, getReferenceStack } = require('../utils/util');
 
 
@@ -324,10 +323,15 @@ function setOnChangeProp(path, attrPath, stateBindingStack, useType) {
           /**
            * let _val = require('babel-plugin-react-directives').resolveValue(_args)
            */
-          template.defineModelValue({
-            VAL: valueVar,
-            ARGS: argsVar
-          }),
+          t.variableDeclaration('let', [
+            t.variableDeclarator(
+              valueVar,
+              builder.buildCallRuntimeExpression(
+                'resolve-value.js',
+                [argsVar]
+              )
+            )
+          ]),
 
           /**
            * 执行更新state方法
@@ -337,10 +341,16 @@ function setOnChangeProp(path, attrPath, stateBindingStack, useType) {
           /**
            * require("babel-plugin-react-directives/lib/runtime").invokeOnChange.call(this, _args, []);
            */
-          mergeItems.length > 0 && template.invokeOnChange({
-            ARGS: argsVar,
-            MERGE_ITEMS: t.arrayExpression(mergeItems)
-          })
+          mergeItems.length > 0 && t.expressionStatement(
+            builder.buildCallRuntimeExpression(
+              'invoke-onchange.js',
+              [
+                argsVar,
+                t.arrayExpression(mergeItems)
+              ],
+              t.thisExpression()
+            )
+          )
         ].filter(Boolean))
       );
     },

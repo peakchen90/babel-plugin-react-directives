@@ -4,7 +4,7 @@ class A extends React.Component {
       <input
         value={this.state.data}
         onChange={(..._args) => {
-          let _value = require("babel-plugin-react-directives/lib/runtime").resolveValue(
+          let _value = require("babel-plugin-react-directives/runtime/resolve-value.js")(
             _args
           );
 
@@ -14,7 +14,7 @@ class A extends React.Component {
             };
           });
 
-          require("babel-plugin-react-directives/lib/runtime").invokeOnChange.call(
+          require("babel-plugin-react-directives/runtime/invoke-onchange.js").call(
             this,
             _args,
             [
@@ -35,7 +35,7 @@ class B extends React.Component {
         {...extraProps}
         value={this.state.data}
         onChange={(..._args2) => {
-          let _value2 = require("babel-plugin-react-directives/lib/runtime").resolveValue(
+          let _value2 = require("babel-plugin-react-directives/runtime/resolve-value.js")(
             _args2
           );
 
@@ -45,7 +45,7 @@ class B extends React.Component {
             };
           });
 
-          require("babel-plugin-react-directives/lib/runtime").invokeOnChange.call(
+          require("babel-plugin-react-directives/runtime/invoke-onchange.js").call(
             this,
             _args2,
             [

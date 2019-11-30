@@ -1,5 +1,5 @@
 node_modules
 test/coverage
 test/unit/fixtures
-lib
+runtime
 *.d.ts

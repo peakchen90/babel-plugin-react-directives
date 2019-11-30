@@ -1,9 +1,29 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { DemoShow } from './Demo';
+
+class Demo extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      visible: true,
+      extraProps: {}
+    };
+  }
+
+  render() {
+    return (
+      <div
+        className="test"
+        style={{ color: 'red' }}
+        x-show={this.state.visible}
+        {...this.state.extraProps}
+      />
+    );
+  }
+}
 
 describe('directive: show', () => {
-  const wrapper = shallow(<DemoShow/>);
+  const wrapper = shallow(<Demo/>);
 
   test('show', () => {
     wrapper.setState({ visible: true });

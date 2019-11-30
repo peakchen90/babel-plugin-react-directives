@@ -2,7 +2,7 @@ const t = require('@babel/types');
 const { DIRECTIVES } = require('../shared');
 const attrUtil = require('../utils/attribute');
 const elemUtil = require('../utils/element');
-const template = require('../utils/template');
+const builder = require('../utils/builder');
 const { codeFrameWarn } = require('../utils/util');
 
 /**
@@ -38,21 +38,12 @@ function transformClass(path) {
       const valueExpr = attrUtil(attr).valueExpr();
 
       if (attrName === 'className') {
-        if (t.isStringLiteral(valueExpr)) {
-          setValue(t.objectExpression([
-            t.objectProperty(
-              t.identifier('className'),
-              valueExpr
-            )
-          ]));
-        } else if (t.isJSXExpressionContainer(valueExpr)) {
-          setValue(t.objectExpression([
-            t.objectProperty(
-              t.identifier('className'),
-              valueExpr.expression
-            )
-          ]));
-        }
+        setValue(t.objectExpression([
+          t.objectProperty(
+            t.identifier('className'),
+            valueExpr
+          )
+        ]));
 
         return true;
       }
@@ -62,22 +53,28 @@ function transformClass(path) {
 
     getResult(mergeItems) {
       if (mergeItems.length > 0) {
-        return template.getMergeClassName({
-          MERGE_ITEMS: t.arrayExpression([
-            mergeItems.length > 0 && t.spreadElement(
-              template.getMergeProp({
-                PROP_NAME: t.stringLiteral('className'),
-                MERGE_ITEMS: t.arrayExpression(mergeItems)
-              }).expression
-            ),
-            bindingValue
-          ].filter(Boolean))
-        }).expression;
+        return builder.buildCallRuntimeExpression(
+          'classnames.js',
+          [
+            t.arrayExpression([
+              mergeItems.length > 0 && builder.buildCallRuntimeExpression(
+                'merge-props.js',
+                [
+                  t.stringLiteral('className'),
+                  t.arrayExpression(mergeItems)
+                ],
+                t.thisExpression()
+              ),
+              bindingValue
+            ].filter(Boolean))
+          ]
+        );
       }
 
-      return template.getMergeClassName({
-        MERGE_ITEMS: bindingValue
-      }).expression;
+      return builder.buildCallRuntimeExpression(
+        'classnames.js',
+        [bindingValue]
+      );
     },
   });
 
