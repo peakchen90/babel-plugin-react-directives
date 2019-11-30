@@ -7,6 +7,11 @@ node_js:
   - "8.6.0"
   - "12"
 
+install:
+  - npm install
+  - npm run test:install
+  - npm install -g codecov
+
 stages:
   - test
   - name: releaseNpm
@@ -16,13 +21,6 @@ jobs:
   include:
     - stage: test
       name: "Run test scripts"
-      node_js:
-        - "8.6.0"
-        - "12"
-      install:
-        - npm install
-        - npm run test:install
-        - npm install -g codecov
       script:
         - npm run test
         - codecov
@@ -41,4 +39,5 @@ jobs:
 
 notifications:
   slack:
-    if: branch = master
+    on_success: never
+    on_error: always
