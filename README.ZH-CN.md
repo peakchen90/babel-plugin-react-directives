@@ -137,7 +137,7 @@ const foo = (
 )
 ```
 
-当然，它也会通过调用 [runtime function](./lib/runtime.js) 合并其他 `style`，例如：
+当然，它也会通过调用 [mergeProps 方法](./runtime/merge-props.js) 合并其他 `style` props，例如：
 ```jsx harmony
 const foo = (
   <div 
@@ -155,7 +155,7 @@ const foo = (
   <div
     {...extraProps}
     style={{
-      ...require("babel-plugin-react-directives/lib/runtime").mergeProps.call(this, "style", [
+      ...mergeProps.call(this, "style", [
         { style: { color: 'red' } },
         extraProps
       ]),
@@ -226,7 +226,7 @@ const foo = (
 
 ### <span id="toc-directives-x-model">x-model</span>
 `x-model` 是类似于 vue `v-model` 的语法糖，使用时绑定一个值到表单元素的 `value` prop 上，在表单元素更新时自动更新状态。
-通过调用 [runtime function](./lib/runtime.js) 获取更新的值（如果第一个参数 `arg` 不为空，且 `arg.target` 是一个对象，返回 `arg.target.value`，否则返回 `arg`）
+通过调用 [resolveValue 方法](./runtime/resolve-value.js) 获取更新的值（如果第一个参数 `arg` 不为空，且 `arg.target` 是一个对象，返回 `arg.target.value`，否则返回 `arg`）
 
 **例子:**
 ```jsx harmony
@@ -253,7 +253,7 @@ class Foo extends React.Component {
   render() {
     return (
       <input value={this.state.data} onChange={(..._args) => {
-        let _value = require("babel-plugin-react-directives/lib/runtime").resolveValue(_args);
+        let _value = resolveValue(_args);
 
         this.setState(_prevState => {
           return { data: _value };
@@ -264,7 +264,7 @@ class Foo extends React.Component {
 }
 ```
 
-当存在其他 `onChange` prop 时，将通过调用 [runtime function](./lib/runtime.js) 合并其他 `onChange` 方法:
+当存在其他 `onChange` prop 时，将通过调用 [invokeOnchange 方法](./runtime/invoke-onchange.js) 合并其他 `onChange` 方法:
 ```jsx harmony
 class Foo extends React.Component {
   constructor(props) {
@@ -306,13 +306,13 @@ class Foo extends React.Component {
         {...this.props}
         value={this.state.data}
         onChange={(..._args) => {
-          let _value = require("babel-plugin-react-directives/lib/runtime").resolveValue(_args);
+          let _value = resolveValue(_args);
 
           this.setState(_prevState => {
             return { data: _value };
           });
 
-          require("babel-plugin-react-directives/lib/runtime").invokeExtraOnChange.call(this, _args, [
+          invokeOnchange.call(this, _args, [
             { onChange: this.onChange.bind(this) },
             this.props
           ]);
@@ -357,7 +357,7 @@ class Foo extends React.Component {
       <input
         value={data.text}
         onChange={(..._args) => {
-          let _value = require("babel-plugin-react-directives/lib/runtime").resolveValue(_args);
+          let _value = resolveValue(_args);
 
           this.setState(_prevState => {
             let _val = {
@@ -392,7 +392,7 @@ function Foo() {
     <input
       value={data}
       onChange={(..._args) => {
-        let _value = require("babel-plugin-react-directives/lib/runtime").resolveValue(_args);
+        let _value = resolveValue(_args);
 
         setData(_value);
       }}
@@ -420,16 +420,14 @@ const foo = <div x-class={{ abc: true, def: false }}>
 const foo = <div className={classNames({ abc: true, def: false })}>
 // className="abc"
 ```
-**提示**: `classNames` 方法引用于一个 [运行时方法](https://github.com/peakchen90/babel-plugin-react-directives/blob/master/runtime/classnames.js).
+**提示**: `classNames` 方法引用于 [runtime/classnames.js](./runtime/classnames.js).
 
-当然，它也将合并其他的 `className` props.
-
-**例子:**
+当然，它也将合并其他的 `className` props, 例如:
 ```jsx harmony
 const foo = <div x-class={{ abc: true, def: false }} className="xyz">
 ```
 
-**转换成:**
+将被转换成:
 ```jsx harmony
 const foo = <div className={classNames(["xyz", { abc: true, def: false }])}>
 // className="xyz abc"

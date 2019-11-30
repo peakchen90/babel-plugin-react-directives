@@ -138,7 +138,7 @@ const foo = (
 )
 ```
 
-Of course, it will also merge other `style` by calling the [runtime function](./lib/runtime.js), for example:
+Of course, it will also merge other `style` props by calling the [mergeProps method](./runtime/merge-props.js), for example:
 ```jsx harmony
 const foo = (
   <div 
@@ -156,7 +156,7 @@ const foo = (
   <div
     {...extraProps}
     style={{
-      ...require("babel-plugin-react-directives/lib/runtime").mergeProps.call(this, "style", [
+      ...mergeProps.call(this, "style", [
         { style: { color: 'red' } },
         extraProps
       ]),
@@ -229,7 +229,7 @@ const foo = (
 
 ### <span id="toc-directives-x-model">x-model</span>
 The `x-model` is a syntax sugar similar to vue `v-model`, which binds a state to the `value` prop of the **form element** and automatically updates the state when the element is updated.
-It resolves the updated value by calling the [runtime function](./lib/runtime.js) (If the first argument `arg` is non-empty, and `arg.target` is an object, return `arg.target.value`, otherwise return `arg`).
+It resolves the updated value by calling the [resolveValue method](./runtime/resolve-value.js) (If the first argument `arg` is non-empty, and `arg.target` is an object, return `arg.target.value`, otherwise return `arg`).
 
 **Example:**
 ```jsx harmony
@@ -256,7 +256,7 @@ class Foo extends React.Component {
   render() {
     return (
       <input value={this.state.data} onChange={(..._args) => {
-        let _value = require("babel-plugin-react-directives/lib/runtime").resolveValue(_args);
+        let _value = resolveValue(_args);
 
         this.setState(_prevState => {
           return { data: _value };
@@ -267,7 +267,7 @@ class Foo extends React.Component {
 }
 ```
 
-When there are other `onChange` props, merge them by calling the [runtime function](./lib/runtime.js):
+When there are other `onChange` props, merge them by calling the [invokeOnchange method](./runtime/invoke-onchange.js):
 ```jsx harmony
 class Foo extends React.Component {
   constructor(props) {
@@ -309,13 +309,13 @@ class Foo extends React.Component {
         {...this.props}
         value={this.state.data}
         onChange={(..._args) => {
-          let _value = require("babel-plugin-react-directives/lib/runtime").resolveValue(_args);
+          let _value = resolveValue(_args);
 
           this.setState(_prevState => {
             return { data: _value };
           });
 
-          require("babel-plugin-react-directives/lib/runtime").invokeExtraOnChange.call(this, _args, [
+          invokeOnchange.call(this, _args, [
             { onChange: this.onChange.bind(this) },
             this.props
           ]);
@@ -360,7 +360,7 @@ class Foo extends React.Component {
       <input
         value={data.text}
         onChange={(..._args) => {
-          let _value = require("babel-plugin-react-directives/lib/runtime").resolveValue(_args);
+          let _value = resolveValue(_args);
 
           this.setState(_prevState => {
             let _val = {
@@ -395,7 +395,7 @@ function Foo() {
     <input
       value={data}
       onChange={(..._args) => {
-        let _value = require("babel-plugin-react-directives/lib/runtime").resolveValue(_args);
+        let _value = resolveValue(_args);
 
         setData(_value);
       }}
@@ -424,16 +424,15 @@ const foo = <div x-class={{ abc: true, def: false }}>
 const foo = <div className={classNames({ abc: true, def: false })}>
 // className="abc"
 ```
-**Note**: `classNames` method references a [runtime method](https://github.com/peakchen90/babel-plugin-react-directives/blob/master/runtime/classnames.js).
+**Note**: `classNames` method references [runtime/classnames.js](./runtime/classnames.js).
 
-Of course, it will also merge other `className` props.
-
+Of course, it will also merge other `className` props, for example:
 **Example:**
 ```jsx harmony
 const foo = <div x-class={{ abc: true, def: false }} className="xyz">
 ```
 
-**Convert to:**
+will be converted to:
 ```jsx harmony
 const foo = <div className={classNames(["xyz", { abc: true, def: false }])}>
 // className="xyz abc"
