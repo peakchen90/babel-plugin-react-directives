@@ -2,19 +2,42 @@ language: node_js
 
 node_js:
   - "8.6.0"
+  - "12"
 
-branches:
-  only:
-    - master
+os:
+  - linux
 
-install:
-  - npm install
-  - npm run test:install
-  - npm install -g codecov
+stages:
+  - test
+  - name: releaseNpm
+    if: branch = master
 
-script:
-  - npm run test
-  - codecov
+jobs:
+  include:
+    - stage: test
+      name: "Run test scripts"
+      install:
+        - npm install
+        - npm run test:install
+        - npm install -g codecov
+      script:
+        - npm run test
+        - codecov
+
+    - stage: releaseNpm
+      name: "Release npm package"
+      node_js: "12"
+      script:
+        - echo "Deploying to npm ..."
+      deploy:
+        provider: npm
+        email: 1558267774@qq.com
+        api_key: "$NPM_TOKEN"
+        on:
+          branch: master
 
 notifications:
-  email: false
+  slack:
+    if: branch = master
+    on_success: always
+    on_error: always
