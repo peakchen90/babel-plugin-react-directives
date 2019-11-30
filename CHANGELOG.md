@@ -1,7 +1,7 @@
 # CHANGELOG
 
 ## v1.1.0
-2019-11-30
+2019-12-01
 
 - **Feature**: Added `x-class` directive for conditionally joining classNames together.
 - **Optimization**: Split the runtime into multiple independent files to reduce runtime bundle size.
