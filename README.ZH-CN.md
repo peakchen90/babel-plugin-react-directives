@@ -420,7 +420,7 @@ const foo = <div x-class={{ abc: true, def: false }}>
 const foo = <div className={classNames({ abc: true, def: false })}>
 // className="abc"
 ```
-**Note**: `classNames` 方法引用于一个 [runtime method](https://github.com/peakchen90/babel-plugin-react-directives/blob/master/runtime/classnames.js).
+**提示**: `classNames` 方法引用于一个 [运行时方法](https://github.com/peakchen90/babel-plugin-react-directives/blob/master/runtime/classnames.js).
 
 当然，它也将合并其他的 `className` props.
 
