@@ -1,21 +1,8 @@
-const a = <div>{testA ? <p>Aa</p> : testAb ? <p>Ab</p> : <p>Ac</p>}</div>;
-
-const b = (
-  <div
-    style={{
-      display: testB ? undefined : "none"
-    }}>
-    B
-  </div>
-);
-
-const c = list.map(item => <div>{item}</div>);
-
-class D {
+class A extends React.Component {
   render() {
     return (
       <input
-        value={this.state.testD}
+        value={this.state.data}
         onChange={(..._args) => {
           let _value = require("babel-plugin-react-directives/runtime/resolve-value.js")(
             _args
@@ -23,7 +10,7 @@ class D {
 
           this.setState(_prevState => {
             return {
-              testD: _value
+              data: _value
             };
           });
         }}/>

@@ -1,4 +1,6 @@
 const assert = require('assert');
+const Ajv = require('ajv');
+const ajvErrors = require('ajv-errors');
 
 // plugin option
 const opts = {
@@ -28,8 +30,13 @@ const DIRECTIVES = {
   },
   get MODEL_HOOK() {
     return `${opts.prefix}-model-hook`;
+  },
+  get CLASS() {
+    return `${opts.prefix}-class`;
   }
 };
+
+let optionsValidate;
 
 /**
  * 更新插件options
@@ -41,19 +48,34 @@ function syncOpts(options = {}) {
     pragmaType
   } = options;
 
-  assert(
-    prefix === undefined || (typeof prefix === 'string' && /^[A-Za-z$_][A-Za-z0-9$_]*$/.test(prefix)),
-    'The `prefix` option should be a string which javascript identifier, example: `foo`, `$abc`, `_abc123`.'
-  );
+  if (!optionsValidate) {
+    const ajv = new Ajv({ allErrors: true, jsonPointers: true });
+    optionsValidate = ajvErrors(ajv).compile({
+      properties: {
+        prefix: {
+          type: 'string',
+          pattern: '^[A-Za-z$_][A-Za-z0-9$_]*$',
+          errorMessage: 'The `prefix` option should be a string which javascript identifier, example: `foo`, `$abc`, `_abc123`.',
+        },
+        pragmaType: {
+          type: 'string',
+          minLength: 1,
+          errorMessage: 'The `pragmaType` option should be a non-empty string.'
+        }
+      }
+    });
+  }
 
   assert(
-    pragmaType === undefined || (typeof pragmaType === 'string' && pragmaType.length > 0),
-    'The `pragmaType` option should be a non-empty string.'
+    optionsValidate(options),
+    optionsValidate.errors
+    && optionsValidate.errors[0]
+    && optionsValidate.errors[0].message
   );
 
   Object.assign(opts, {
     prefix: prefix || 'x',
-    pragmaType: pragmaType || 'React',
+    pragmaType: pragmaType || 'React'
   });
 }
 

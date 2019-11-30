@@ -41,11 +41,14 @@
     "babel-plugin",
     "react-directive",
     "jsx-directive",
+    "jsx-plus",
     "directive",
     "react",
     "vue",
     "x-if",
-    "v-if"
+    "x-for",
+    "v-if",
+    "v-for"
   ],
   "engines": {
     "node": ">=8.6.0"
@@ -53,8 +56,9 @@
   "dependencies": {
     "@babel/code-frame": "^7.5.5",
     "@babel/generator": "^7.6.4",
-    "@babel/template": "^7.6.0",
     "@babel/types": "^7.6.1",
+    "ajv": "^6.10.2",
+    "ajv-errors": "^1.0.1",
     "chalk": "^2.4.2",
     "semver": "^6.3.0"
   },

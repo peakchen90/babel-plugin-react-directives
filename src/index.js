@@ -7,6 +7,7 @@ const transformIf = require('./directives/if');
 const transformShow = require('./directives/show');
 const transformModel = require('./directives/model');
 const transformFor = require('./directives/for');
+const transformClass = require('./directives/class');
 
 
 module.exports = (api) => {
@@ -19,7 +20,7 @@ module.exports = (api) => {
   return {
     name: 'react-directives',
 
-    /* istanbul ignore next: reference third party */
+    /* istanbul ignore next: reference third party lib */
     // https://github.com/babel/babel/blob/v7.6.2/packages/babel-plugin-syntax-jsx/src/index.js
     manipulateOptions(opts, parserOpts) {
       parserOpts.plugins.push('objectRestSpread');
@@ -39,6 +40,7 @@ module.exports = (api) => {
       JSXElement(path) {
         transformShow(path);
         transformModel(path);
+        transformClass(path);
         transformFor(path);
         transformIf(path);
       },
@@ -62,6 +64,7 @@ module.exports = (api) => {
           case DIRECTIVES.SHOW:
           case DIRECTIVES.MODEL:
           case DIRECTIVES.FOR:
+          case DIRECTIVES.CLASS:
             codeFrameWarn(
               path,
               `There should be no more than one directive: \`${name}\``

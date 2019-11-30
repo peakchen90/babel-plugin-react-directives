@@ -3,7 +3,7 @@ const { DIRECTIVES } = require('../shared');
 const { codeFrameWarn } = require('../utils/util');
 const attrUtil = require('../utils/attribute');
 const elemUtil = require('../utils/element');
-const template = require('../utils/template');
+const builder = require('../utils/builder');
 
 
 /**
@@ -67,9 +67,14 @@ function transformShow(path) {
     getResult(mergeItems) {
       return t.objectExpression([
         mergeItems.length > 0 && t.spreadElement(
-          template.mergeStyleProps({
-            MERGE_ITEMS: t.arrayExpression(mergeItems)
-          }).expression
+          builder.buildCallRuntimeExpression(
+            'merge-props.js',
+            [
+              t.stringLiteral('style'),
+              t.arrayExpression(mergeItems)
+            ],
+            t.thisExpression()
+          )
         ),
         t.objectProperty(
           t.identifier('display'),
