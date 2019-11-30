@@ -22,6 +22,7 @@ A babel plugin that provides some directives for react(any JSX), similar to dire
   - [x-for](#toc-directives-x-for)
   - [x-model](#toc-directives-x-model)
   - [x-model-hook](#toc-directives-x-model-hook)
+  - [x-class](#toc-directives-x-class)
 - [Related Packages](#toc-related-packages)
 - [Known Issues](#toc-known-issues)
 - [CHANGELOG](#toc-changeloog)
@@ -406,6 +407,52 @@ function Foo() {
 **Note**: If you use [**ESLint**](https://eslint.org), you may receive an error that `setData` is defined but never used.
 Please install [**eslint-plugin-react-directives**](https://github.com/peakchen90/eslint-plugin-react-directives) plugin to solve it.
 
+### <span id="toc-directives-x-class">x-class</span>
+
+> *New in 1.1.0*
+
+The `x-class` for conditionally joining classNames together by [classnames](https://github.com/JedWatson/classnames), and it is useful for dynamically generating className.
+Usage is the same as [classnames](https://github.com/JedWatson/classnames), the binding value will be passed as a parameter to the [`classNames`](https://github.com/JedWatson/classnames#usage) method.
+
+**Example:**
+```jsx harmony
+const foo = <div x-class={{ abc: true, def: false }}>
+```
+
+**Convert to:**
+```jsx harmony
+const foo = <div className={classNames({ abc: true, def: false })}>
+// className="abc"
+```
+**Note**: `classNames` method references a [runtime method](https://github.com/peakchen90/babel-plugin-react-directives/blob/master/runtime/classnames.js).
+
+Of course, it will also merge other `className` props.
+
+**Example:**
+```jsx harmony
+const foo = <div x-class={{ abc: true, def: false }} className="xyz">
+```
+
+**Convert to:**
+```jsx harmony
+const foo = <div className={classNames(["xyz", { abc: true, def: false }])}>
+// className="xyz abc"
+```
+
+The `x-class` can also be used with [css-modules](https://github.com/css-modules/css-modules), for example:
+```jsx harmony
+import styles from './style.css';
+
+const foo = (
+  <div 
+    className={styles.foo}
+    x-class={{ 
+      [styles.bar]: true,
+      [styles.qux]: false
+    }}
+  />
+)
+```
 
 ## <span id="toc-related-packages">Related Packages</span>
 - [eslint-plugin-react-directives](https://github.com/peakchen90/eslint-plugin-react-directives)

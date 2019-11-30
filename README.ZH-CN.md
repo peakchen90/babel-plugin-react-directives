@@ -21,6 +21,7 @@
   - [x-for](#toc-directives-x-for)
   - [x-model](#toc-directives-x-model)
   - [x-model-hook](#toc-directives-x-model-hook)
+  - [x-class](#toc-directives-x-class)
 - [相关资源](#toc-related-packages)
 - [已知问题](#toc-known-issues)
 - [更新日志](#toc-changeloog)
@@ -402,6 +403,52 @@ function Foo() {
 
 **提示**: 如果你在项目中使用了 [**ESLint**](https://eslint.org)，也许会提示你 `setData` 是一个从未使用的变量，请安装 [**eslint-plugin-react-directives**](https://github.com/peakchen90/eslint-plugin-react-directives) 来解决这个问题
 
+### <span id="toc-directives-x-class">x-class</span>
+
+> *1.1.0版本新增*
+
+`x-class` 通过 [classnames](https://github.com/JedWatson/classnames) 有条件的生成 className, 这对于动态生成 className 非常有用。
+用法与 [classnames](https://github.com/JedWatson/classnames) 相同，绑定值将作为参数传给 [`classNames`](https://github.com/JedWatson/classnames#usage) 方法。
+
+**例子:**
+```jsx harmony
+const foo = <div x-class={{ abc: true, def: false }}>
+```
+
+**转换成:**
+```jsx harmony
+const foo = <div className={classNames({ abc: true, def: false })}>
+// className="abc"
+```
+**Note**: `classNames` 方法引用于一个 [runtime method](https://github.com/peakchen90/babel-plugin-react-directives/blob/master/runtime/classnames.js).
+
+当然，它也将合并其他的 `className` props.
+
+**例子:**
+```jsx harmony
+const foo = <div x-class={{ abc: true, def: false }} className="xyz">
+```
+
+**转换成:**
+```jsx harmony
+const foo = <div className={classNames(["xyz", { abc: true, def: false }])}>
+// className="xyz abc"
+```
+
+The `x-class` can also be used with [css-modules](https://github.com/css-modules/css-modules), for example:
+```jsx harmony
+import styles from './style.css';
+
+const foo = (
+  <div 
+    className={styles.foo}
+    x-class={{ 
+      [styles.bar]: true,
+      [styles.qux]: false
+    }}
+  />
+)
+```
 
 ## <span id="toc-related-packages">相关资源</span>
 - [eslint-plugin-react-directives](https://github.com/peakchen90/eslint-plugin-react-directives)
