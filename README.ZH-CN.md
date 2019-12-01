@@ -13,7 +13,7 @@
 - [开始使用](#toc-usage)
   - [安装](#toc-installation)
   - [添加配置 `.babelrc`](#toc-configuring)
-  - [或使用插件options](#toc-or-use-options)
+  - [插件options](#toc-plugin-options)
 - [指令](#toc-directives)
   - [x-if](#toc-directives-x-if)
   - [x-else-if 和 x-else](#toc-directives-x-else-if-and-x-else)
@@ -51,7 +51,7 @@ yarn add --dev babel-plugin-react-directives
 }
 ```
 
-### <span id="toc-or-use-options">或使用插件options (<a target="_blank" href="https://babeljs.io/docs/en/plugins#plugin-options">配置说明</a>)</span>
+### <span id="toc-plugin-options">插件options</span>
 
 ```json
 {
@@ -226,7 +226,7 @@ const foo = (
 
 ### <span id="toc-directives-x-model">x-model</span>
 `x-model` 是类似于 vue `v-model` 的语法糖，使用时绑定一个值到表单元素的 `value` prop 上，在表单元素更新时自动更新状态。
-通过调用 [resolveValue 方法](./runtime/resolve-value.js) 获取更新的值（如果第一个参数 `arg` 不为空，且 `arg.target` 是一个对象，返回 `arg.target.value`，否则返回 `arg`）
+通过调用 [resolveValue 方法](./runtime/resolve-value.js) 获取更新的值（如果第一个参数 `arg` 不为空，且 `arg.target` 是一个 HTMLElement, 返回 `arg.target.value`，否则返回 `arg`）
 
 **例子:**
 ```jsx harmony
@@ -374,7 +374,7 @@ class Foo extends React.Component {
 ```
 
 ### <span id="toc-directives-x-model-hook">x-model-hook</span>
-`x-model-hook` 与 `x-model` 非常相似，区别在于 `x-model-hook` 用于 **useState hook function**，而 `x-model` 用于 **class component** 
+`x-model-hook` 与 `x-model` 非常相似，区别在于 `x-model-hook` 用于使用了 **useState hook** 的函数组件，而 `x-model` 用于 class component 
 
 **例子:**
 ```jsx harmony

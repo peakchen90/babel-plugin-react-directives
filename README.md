@@ -14,7 +14,7 @@ A babel plugin that provides some directives for react(any JSX), similar to dire
 - [Usage](#toc-usage)
   - [Installation](#toc-installation)
   - [Configuring via `.babelrc`](#toc-configuring)
-  - [Or use options](#toc-or-use-options)
+  - [Plugin options](#toc-plugin-options)
 - [Directives](#toc-directives)
   - [x-if](#toc-directives-x-if)
   - [x-else-if and x-else](#toc-directives-x-else-if-and-x-else)
@@ -52,7 +52,7 @@ yarn add --dev babel-plugin-react-directives
 }
 ```
 
-### <span id="toc-or-use-options">Or use options (<a target="_blank" href="https://babeljs.io/docs/en/plugins#plugin-options">Babel plugin options</a>)</span>
+### <span id="toc-or-use-options">Plugin options</span>
 
 ```json
 {
@@ -68,7 +68,7 @@ yarn add --dev babel-plugin-react-directives
 }
 ```
 
-- `prefix`: JSX props prefix for directives. Default: "x", usage example: `x-if`
+- `prefix`: JSX props prefix for directives. Default: "x", example usage: `x-if`
 - `pragmaType`: Help internal to correctly identify some syntax, such as hooks. Default: "React"
 
 ## <span id="toc-directives">Directives</span>
@@ -120,7 +120,7 @@ const foo = (
 ```
 
 ### <span id="toc-directives-x-show">x-show</span>
-The `x-show` controls the display or hiding of elements by the `display` of the `style` prop. If the `x-show` value is **falsy**, will set `style.display = "none"`, otherwise do nothing.
+The `x-show` controls the display or hiding of elements through the `display` of the `style` prop. If the `x-show` value is **falsy**, will set `style.display = "none"`, otherwise do nothing.
 
 
 **Example:**
@@ -229,7 +229,7 @@ const foo = (
 
 ### <span id="toc-directives-x-model">x-model</span>
 The `x-model` is a syntax sugar similar to vue `v-model`, which binds a state to the `value` prop of the **form element** and automatically updates the state when the element is updated.
-It resolves the updated value by calling the [resolveValue method](./runtime/resolve-value.js) (If the first argument `arg` is non-empty, and `arg.target` is an object, return `arg.target.value`, otherwise return `arg`).
+It resolves the updated value by calling the [resolveValue method](./runtime/resolve-value.js) (If the first argument `arg` is non-null, and `arg.target` is a HTMLElement, return `arg.target.value`, otherwise return `arg`).
 
 **Example:**
 ```jsx harmony
@@ -377,7 +377,7 @@ class Foo extends React.Component {
 ```
 
 ### <span id="toc-directives-x-model-hook">x-model-hook</span>
-The `x-model-hook` is similar to the `x-model`, the difference is that the `x-model-hook` is used in the **useState hook function**, and the `x-model` is used in the **class component**.
+The `x-model-hook` is similar to the `x-model`, the difference is that the `x-model-hook` is used in the function component with **useState hook**, and the `x-model` is used in the class component.
 
 **Example:**
 ```jsx harmony
@@ -427,7 +427,6 @@ const foo = <div className={classNames({ abc: true, def: false })}>
 **Note**: `classNames` method references [runtime/classnames.js](./runtime/classnames.js).
 
 Of course, it will also merge other `className` props, for example:
-**Example:**
 ```jsx harmony
 const foo = <div x-class={{ abc: true, def: false }} className="xyz">
 ```
@@ -438,7 +437,7 @@ const foo = <div className={classNames(["xyz", { abc: true, def: false }])}>
 // className="xyz abc"
 ```
 
-The `x-class` can also be used with [css-modules](https://github.com/css-modules/css-modules), for example:
+The `x-class` can also be used with [css-modules](https://github.com/css-modules/css-modules), the usage is as follows:
 ```jsx harmony
 import styles from './style.css';
 
