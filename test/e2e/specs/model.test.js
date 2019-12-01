@@ -1,5 +1,6 @@
 import React from 'react';
 import { mount } from 'enzyme';
+import { createInputNode } from '../util';
 
 class Demo1 extends React.Component {
   constructor(props) {
@@ -62,30 +63,30 @@ function Demo4({ fn, extraProps }) {
 }
 
 describe('directive: model', () => {
-  test('in class', () => {
+  test('use in class: x-model', () => {
     const wrapper = mount(<Demo1/>);
-    wrapper.find('input').simulate('change', { target: { value: 'new value' } });
+    wrapper.find('input').simulate('change', createInputNode('new value'));
     expect(wrapper.find('.text').text()).toBe('new value');
     expect(wrapper.find('.extra').text()).toBe('B');
   });
 
-  test('use hook', () => {
+  test('use in hook: x-model-hook', () => {
     const wrapper = mount(<Demo2/>);
-    wrapper.find('input').simulate('change', { target: { value: 'new value' } });
+    wrapper.find('input').simulate('change', createInputNode('new value'));
     expect(wrapper.find('.text').text()).toBe('new value');
     expect(wrapper.find('.extra').text()).toBe('foo');
   });
 
   test('custom onChange event', () => {
     const wrapper = mount(<Demo3/>);
-    wrapper.find('input').simulate('change', { target: { value: 'custom value' } });
+    wrapper.find('input').simulate('change', createInputNode('custom value'));
     expect(wrapper.find('.text').text()).toBe('custom value');
   });
 
   test('merge onChange', () => {
     const fn = jest.fn();
     const wrapper = mount(<Demo4 fn={fn}/>);
-    wrapper.find('input').simulate('change', { target: { value: 'custom value' } });
+    wrapper.find('input').simulate('change', createInputNode('custom value'));
     expect(wrapper.find('.text').text()).toBe('custom value');
     expect(fn.mock.calls.length).toBe(1);
     expect(fn.mock.calls[0][0].target.value).toBe('custom value');
@@ -98,7 +99,7 @@ describe('directive: model', () => {
       onChange: fn2
     };
     const wrapper = mount(<Demo4 fn={fn} extraProps={extraProps}/>);
-    wrapper.find('input').simulate('change', { target: { value: 'custom value' } });
+    wrapper.find('input').simulate('change', createInputNode('custom value'));
     expect(wrapper.find('.text').text()).toBe('custom value');
     expect(fn.mock.calls.length).toBe(0);
     expect(fn2.mock.calls.length).toBe(1);
