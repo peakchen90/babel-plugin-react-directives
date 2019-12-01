@@ -3,18 +3,18 @@
 ## v1.1.0
 2019-12-01
 
-- **Feature**: Added `x-class` directive for conditionally joining classNames together.
-- **Optimization**: Split the runtime into multiple independent files to reduce runtime bundle size.
+- **Feature**: Added `x-class` directive for conditionally joining classNames together
+- **Optimization**: Split the runtime into multiple independent files to reduce runtime bundle size
 
 ## v1.0.2
 2019-11-23
 
-- **Bug**: fix bug that when `x-if` is nested under `x-else` and `x-else-if`, an error is reported.
+- **Bug**: fix bug that when `x-if` is nested under `x-else` and `x-else-if`, an error is reported
 
 ## v1.0.0
 2019-10-20
 
-- **Feature**: Added `x-model-hook` directive for **useState hook function**, and the `x-model` can only be used in **class component** now
+- **Feature**: Added `x-model-hook` directive for function component with *useState hook*, and the `x-model` can only be used in *class component* now
 - **Optimization**: In some cases use the runtime instead of the AST code
 - **Optimization**: Fix some problem of `x-model`
 - **Optimization**: Improved stability
