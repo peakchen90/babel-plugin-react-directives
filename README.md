@@ -52,7 +52,7 @@ yarn add --dev babel-plugin-react-directives
 }
 ```
 
-### <span id="toc-or-use-options">Plugin options</span>
+### <span id="toc-plugin-options">Plugin options</span>
 
 ```json
 {

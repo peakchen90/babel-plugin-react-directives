@@ -374,7 +374,7 @@ class Foo extends React.Component {
 ```
 
 ### <span id="toc-directives-x-model-hook">x-model-hook</span>
-`x-model-hook` 与 `x-model` 非常相似，区别在于 `x-model-hook` 用于使用了 **useState hook** 的函数组件，而 `x-model` 用于 class component 
+`x-model-hook` 与 `x-model` 非常相似，区别在于 `x-model-hook` 用于使用了 *useState hook* 的函数组件，而 `x-model` 用于 *class component* 
 
 **例子:**
 ```jsx harmony
