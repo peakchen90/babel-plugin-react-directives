@@ -12,7 +12,7 @@
 ## 目录
 - [开始使用](#toc-usage)
   - [安装](#toc-installation)
-  - [添加配置 `.babelrc`](#toc-configuring)
+  - [添加配置 .babelrc](#toc-configuring)
   - [插件options](#toc-plugin-options)
 - [指令](#toc-directives)
   - [x-if](#toc-directives-x-if)
