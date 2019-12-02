@@ -13,7 +13,7 @@ A babel plugin that provides some directives for react(any JSX), similar to dire
 ## Table of Contents
 - [Usage](#toc-usage)
   - [Installation](#toc-installation)
-  - [Configuring via `.babelrc`](#toc-configuring)
+  - [Configuring via .babelrc](#toc-configuring)
   - [Plugin options](#toc-plugin-options)
 - [Directives](#toc-directives)
   - [x-if](#toc-directives-x-if)
