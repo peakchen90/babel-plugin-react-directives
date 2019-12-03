@@ -3,7 +3,7 @@
 ## v1.1.1
 2019-12-03
 
-- **Optimization**: Optimized for x-model warning messages
+- **Optimization**: Optimized for `x-model` warning messages
 
 ## v1.1.0
 2019-12-01
