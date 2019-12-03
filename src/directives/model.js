@@ -3,7 +3,11 @@ const { DIRECTIVES, opts } = require('../shared');
 const attrUtil = require('../utils/attribute');
 const elemUtil = require('../utils/element');
 const builder = require('../utils/builder');
-const { codeFrameWarn, getReferenceStack } = require('../utils/util');
+const {
+  codeFrameWarn,
+  getReferenceStack,
+  isThisExpression
+} = require('../utils/util');
 
 
 /**
@@ -184,7 +188,7 @@ function buildHookSetStateExpression(attrPath, stateBindingStack, newValExpressi
   /* istanbul ignore next: unknown exception */
   if (!t.isVariableDeclarator(defineVar && defineVar.node)) {
     throw attrPath.buildCodeFrameError(
-      `You seem to use \`${DIRECTIVES.MODEL}\` in the hook method, this is invalid for \`${DIRECTIVES.MODEL}\`.`
+      `You seem to use \`${DIRECTIVES.MODEL_HOOK}\` in the hook method, this is invalid for \`${DIRECTIVES.MODEL_HOOK}\`.`
     );
   }
 
@@ -222,7 +226,7 @@ function buildHookSetStateExpression(attrPath, stateBindingStack, newValExpressi
 
   if (!t.isIdentifier(updateFn) && !t.isMemberExpression(updateFn)) {
     throw defineVarId.buildCodeFrameError(
-      `You seem to use \`${DIRECTIVES.MODEL}\` in the hook method, cannot found method to update state.`
+      `You seem to use \`${DIRECTIVES.MODEL_HOOK}\` in the hook method, cannot found method to update state.`
     );
   }
 
@@ -234,7 +238,7 @@ function buildHookSetStateExpression(attrPath, stateBindingStack, newValExpressi
     result = newValExpression;
   } else if (!canMerge) {
     throw defineVarId.buildCodeFrameError(
-      `You seem to use \`${DIRECTIVES.MODEL}\` in the hook method, which cannot be merged with the previous value.`
+      `You seem to use \`${DIRECTIVES.MODEL_HOOK}\` in the hook method, which cannot be merged with the previous value.`
     );
   } else {
     const mergeResult = getMergeValueExpression({
@@ -275,13 +279,13 @@ function setValueProp(path, attrPath, bindingValue) {
       if (attrUtil(attr).name() === 'value') {
         codeFrameWarn(
           attr,
-          `The \`value\` prop will be ignored, when use \`${DIRECTIVES.MODEL}\``
+          `The \`value\` prop will be ignored, when use \`${attrUtil(attrPath).name()}\``
         );
         return true;
       }
       return false;
     },
-    getResult: () => bindingValue,
+    getResult: () => bindingValue
   });
 }
 
@@ -353,7 +357,7 @@ function setOnChangeProp(path, attrPath, stateBindingStack, useType) {
           )
         ].filter(Boolean))
       );
-    },
+    }
   });
 }
 
@@ -373,11 +377,12 @@ function transformModel(path) {
   }
 
   const bindingValue = attrUtil(attrPath).valueExpr();
+
   /* istanbul ignore next: print warn info */
   if (!bindingValue) {
     codeFrameWarn(
       attrPath,
-      `\`${DIRECTIVES.MODEL}\` used on element <${elemUtil(path).name()}> without binding value`
+      `\`${attrUtil(attrPath).name()}\` used on element <${elemUtil(path).name()}> without binding value`
     );
     attrPath.remove();
     return;
@@ -390,7 +395,7 @@ function transformModel(path) {
     const thisPath = stateBindingStack.shift();
     const statePath = stateBindingStack.shift();
     if (
-      !t.isThisExpression(thisPath && thisPath.node)
+      !isThisExpression(thisPath && thisPath.node)
       || (
         !t.isIdentifier(statePath && statePath.node, { name: 'state' })
         && !t.isStringLiteral(statePath && statePath.node, { value: 'state' })
@@ -429,8 +434,8 @@ function transformModel(path) {
     }
     if (!valid) {
       throw valuePath.buildCodeFrameError(
-        `You seem to use \`${DIRECTIVES.MODEL}\` in the hook method, `
-        + `the \`${DIRECTIVES.MODEL}\` binding value cannot be found in the returned of \`${opts.pragmaType}.useState()\`.`
+        `You seem to use \`${DIRECTIVES.MODEL_HOOK}\` in the hook method, `
+        + `the \`${DIRECTIVES.MODEL_HOOK}\` binding value cannot be found in the returned of \`${opts.pragmaType}.useState()\`.`
       );
     }
 
@@ -440,8 +445,8 @@ function transformModel(path) {
       || stateValuePath.node.value !== 0
     ) {
       throw valuePath.buildCodeFrameError(
-        `You seem to use \`${DIRECTIVES.MODEL}\` in the hook method, `
-        + `the \`${DIRECTIVES.MODEL}\` binding value cannot be found in the first returned of \`${opts.pragmaType}.useState()\`. `
+        `You seem to use \`${DIRECTIVES.MODEL_HOOK}\` in the hook method, `
+        + `the \`${DIRECTIVES.MODEL_HOOK}\` binding value cannot be found in the first returned of \`${opts.pragmaType}.useState()\`. `
         + 'Usage example: `let [data, setData] = useState(initialValue)`, `data` should be used as the binding value.'
       );
     }

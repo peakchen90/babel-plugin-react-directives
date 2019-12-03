@@ -107,7 +107,7 @@ function findDeconstructionPathStack(path, identifierName) {
           ...t.numericLiteral(index),
           start: targetPath.node.start,
           end: targetPath.node.end,
-          loc: targetPath.node.loc,
+          loc: targetPath.node.loc
         };
         likeNumericLiteral.hub = targetPath.hub;
         likeNumericLiteral.type = likeNumericLiteral.node.type;
@@ -168,7 +168,7 @@ function getReferenceStack(path) {
 
   // 判断最后一个标识符是否引用了其他值
   let first = bindingStack[0];
-  while (first && !t.isThisExpression(first.node)) {
+  while (first && !isThisExpression(first.node)) {
     const refsStack = getReferenceStack(first);
     first = refsStack[0];
     if (refsStack.length > 0) {
@@ -179,11 +179,30 @@ function getReferenceStack(path) {
   return bindingStack;
 }
 
+/**
+ * 判断是否是this表达式
+ * @param node
+ * @return {Boolean}
+ */
+function isThisExpression(node) {
+  return t.isThisExpression(node) || t.isIdentifier(node, { name: 'this' });
+}
+
+/**
+ * 判断是否是null表达式
+ * @param node
+ * @return {Boolean}
+ */
+function isNullLiteral(node) {
+  return t.isNullLiteral(node) || t.isIdentifier(node, { name: 'null' });
+}
 
 module.exports = {
   codeFrameWarn,
   assertVersion,
   getMemberPathStack,
   findDeconstructionPathStack,
-  getReferenceStack
+  getReferenceStack,
+  isThisExpression,
+  isNullLiteral
 };
