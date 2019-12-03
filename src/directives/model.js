@@ -3,7 +3,11 @@ const { DIRECTIVES, opts } = require('../shared');
 const attrUtil = require('../utils/attribute');
 const elemUtil = require('../utils/element');
 const builder = require('../utils/builder');
-const { codeFrameWarn, getReferenceStack } = require('../utils/util');
+const {
+  codeFrameWarn,
+  getReferenceStack,
+  isThisExpression
+} = require('../utils/util');
 
 
 /**
@@ -281,7 +285,7 @@ function setValueProp(path, attrPath, bindingValue) {
       }
       return false;
     },
-    getResult: () => bindingValue,
+    getResult: () => bindingValue
   });
 }
 
@@ -353,7 +357,7 @@ function setOnChangeProp(path, attrPath, stateBindingStack, useType) {
           )
         ].filter(Boolean))
       );
-    },
+    }
   });
 }
 
@@ -390,7 +394,7 @@ function transformModel(path) {
     const thisPath = stateBindingStack.shift();
     const statePath = stateBindingStack.shift();
     if (
-      !t.isThisExpression(thisPath && thisPath.node)
+      !isThisExpression(thisPath && thisPath.node)
       || (
         !t.isIdentifier(statePath && statePath.node, { name: 'state' })
         && !t.isStringLiteral(statePath && statePath.node, { value: 'state' })
