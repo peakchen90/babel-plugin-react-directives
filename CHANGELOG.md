@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v1.1.1
+2019-12-03
+
+- **Optimization**: Optimized for x-model warning messages
+
 ## v1.1.0
 2019-12-01
 
@@ -9,7 +14,7 @@
 ## v1.0.2
 2019-11-23
 
-- **Bug**: fix bug that when `x-if` is nested under `x-else` and `x-else-if`, an error is reported
+- **Bug**: Fix bug that when `x-if` is nested under `x-else` and `x-else-if`, an error is reported
 
 ## v1.0.0
 2019-10-20
