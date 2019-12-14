@@ -4,8 +4,8 @@
   "version": "0.1.0",
   "description": "A playground for babel-plugin-react-directives",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development webpack-dev-server",
-    "build": "cross-env NODE_ENV=production webpack"
+    "dev": "webpack-dev-server",
+    "build": "webpack"
   },
   "dependencies": {
     "js-tabs": "^1.0.1",

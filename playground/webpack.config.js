@@ -67,7 +67,7 @@ module.exports = {
   plugins: [
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
-      template: path.join(__dirname, 'index.html'),
+      template: path.join(__dirname, 'public/index.html'),
       filename: path.join(__dirname, 'dist/index.html'),
       chunks: ['runtime', 'vendor', 'main'],
       minify: __DEV__ ? false : {
@@ -76,10 +76,10 @@ module.exports = {
         removeAttributeQuotes: false
       },
       chunksSortMode: 'dependency',
-      favicon: path.join(__dirname, 'favicon.ico')
+      favicon: path.join(__dirname, 'public/favicon.ico')
     }),
     new HtmlWebpackPlugin({
-      template: path.join(__dirname, 'playground.html'),
+      template: path.join(__dirname, 'public/playground.html'),
       filename: path.join(__dirname, 'dist/playground.html'),
       chunks: ['runtime', 'vendor', 'playground'],
       minify: __DEV__ ? false : {
@@ -88,7 +88,7 @@ module.exports = {
         removeAttributeQuotes: false
       },
       chunksSortMode: 'dependency',
-      favicon: path.join(__dirname, 'favicon.ico')
+      favicon: path.join(__dirname, 'public/favicon.ico')
     }),
     new MiniCssExtractPlugin({
       filename: 'css/[name].[contenthash:10].css',

@@ -14,6 +14,9 @@
     "test": "jest",
     "test:clear-cache": "jest --clearCache",
     "test:install": "node test/install.js",
+    "pg:install": "node playground/install.js",
+    "pg:dev": "node playground/build.js dev",
+    "pg:build": "node playground/build.js",
     "prepublishOnly": "npm run test"
   },
   "husky": {
