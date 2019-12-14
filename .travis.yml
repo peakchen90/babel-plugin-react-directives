@@ -16,8 +16,9 @@ install:
 stages:
   - test
   - name: deploy
-    if: branch = master
+    if: (branch = master) AND (NOT (type IN (pull_request)))
   - gh-pages
+    if: (branch = master OR branch = playground) AND (NOT (type IN (pull_request)))
 
 jobs:
   include:
@@ -44,6 +45,7 @@ jobs:
       name: "Deploying to GitHub Pages"
       node_js: "12"
       github_token: $GITHUB_TOKEN
+      skip_cleanup: true
       local_dir: playground/dist
       script:
         - npm run pg:install
