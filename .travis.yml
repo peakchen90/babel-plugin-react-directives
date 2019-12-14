@@ -17,6 +17,7 @@ stages:
   - test
   - name: deploy
     if: branch = master
+  - gh-pages
 
 jobs:
   include:
@@ -29,8 +30,8 @@ jobs:
 
     - stage: deploy
       name: "Release npm package"
-      node_js: "8.6.0"
-      script: echo "Deploying to npm ..."
+      node_js: "12"
+      script: echo "Release npm package..."
       deploy:
         provider: npm
         email: 1558267774@qq.com
@@ -38,6 +39,15 @@ jobs:
         skip_cleanup: true
         on:
           branch: master
+
+    - stage: gh-pages
+      name: "Deploying to GitHub Pages"
+      node_js: "12"
+      github_token: $GITHUB_TOKEN
+      local_dir: playground/dist
+      script:
+        - npm run pg:install
+        - npm run pg:build
 
 notifications:
   email: false
