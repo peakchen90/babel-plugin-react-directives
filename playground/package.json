@@ -1,0 +1,28 @@
+{
+  "name": "playground",
+  "private": true,
+  "version": "0.1.0",
+  "description": "A playground for babel-plugin-react-directives",
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development webpack-dev-server",
+    "build": "cross-env NODE_ENV=production webpack"
+  },
+  "dependencies": {
+    "js-tabs": "^1.0.1",
+    "monaco-themes": "^0.3.3"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.7.6",
+    "autoprefixer": "^9.7.3",
+    "babel-loader": "^8.0.6",
+    "cross-env": "^6.0.3",
+    "css-loader": "^3.3.2",
+    "html-webpack-plugin": "^3.2.0",
+    "mini-css-extract-plugin": "^0.8.0",
+    "postcss-import": "^12.0.1",
+    "postcss-loader": "^3.0.0",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10",
+    "webpack-dev-server": "^3.9.0"
+  }
+}
