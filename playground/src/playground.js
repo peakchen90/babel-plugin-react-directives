@@ -1,3 +1,5 @@
+import './style/playground.css';
+
 const root = document.getElementById('app');
 const previewError = document.querySelector('.preview-render-error');
 const renderNull = () => null;

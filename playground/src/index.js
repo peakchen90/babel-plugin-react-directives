@@ -1,7 +1,7 @@
 import JsTabs from 'js-tabs';
 import debounce from 'lodash/debounce';
 import 'js-tabs/dist/main/js-tabs-base.css';
-import './index.css';
+import './style/index.css';
 
 import editors from './editor';
 import { renderPreview, updateCSS } from './preview';
@@ -17,7 +17,6 @@ function getRenderValues() {
 renderPreview(getRenderValues());
 
 editors.cssEditor.onDidChangeModelContent(debounce(() => {
-  console.log(Date.now());
   updateCSS(editors.cssEditor.getValue());
 }, 600));
 const _renderPreview = debounce(() => {

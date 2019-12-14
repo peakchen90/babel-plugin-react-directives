@@ -1,6 +1,9 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const TerserPlugin = require('terser-webpack-plugin');
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 const __DEV__ = process.env.NODE_ENV === 'development';
 
@@ -18,7 +21,8 @@ module.exports = {
     publicPath: ''
   },
   externals: {
-    'monaco-editor': 'monaco'
+    'monaco-editor': 'monaco',
+    monaco: 'monaco'
   },
   module: {
     rules: [
@@ -32,13 +36,9 @@ module.exports = {
               presets: [
                 [
                   '@babel/preset-env',
-                  {
-                    modules: false
-                  }
-                ],
-                '@babel/preset-react'
-              ],
-              plugins: []
+                  { modules: false }
+                ]
+              ]
             }
           }
         ],
@@ -65,17 +65,30 @@ module.exports = {
     ]
   },
   plugins: [
+    new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
       template: path.join(__dirname, 'index.html'),
       filename: path.join(__dirname, 'dist/index.html'),
-      chunks: ['main'],
-      chunksSortMode: 'dependency'
+      chunks: ['runtime', 'vendor', 'main'],
+      minify: __DEV__ ? false : {
+        removeComments: true,
+        collapseWhitespace: true,
+        removeAttributeQuotes: false
+      },
+      chunksSortMode: 'dependency',
+      favicon: path.join(__dirname, 'favicon.ico')
     }),
     new HtmlWebpackPlugin({
       template: path.join(__dirname, 'playground.html'),
       filename: path.join(__dirname, 'dist/playground.html'),
-      chunks: ['playground'],
-      chunksSortMode: 'dependency'
+      chunks: ['runtime', 'vendor', 'playground'],
+      minify: __DEV__ ? false : {
+        removeComments: true,
+        collapseWhitespace: true,
+        removeAttributeQuotes: false
+      },
+      chunksSortMode: 'dependency',
+      favicon: path.join(__dirname, 'favicon.ico')
     }),
     new MiniCssExtractPlugin({
       filename: 'css/[name].[contenthash:10].css',
@@ -92,5 +105,34 @@ module.exports = {
       errors: true
     },
     publicPath: '/'
+  },
+  optimization: {
+    minimize: !__DEV__,
+    // 压缩配置
+    minimizer: [
+      new TerserPlugin(),
+      new OptimizeCssAssetsPlugin({
+        cssProcessorOptions: {
+          safe: true,
+          discardComments: {
+            removeAll: true
+          }
+        }
+      })
+    ],
+    splitChunks: {
+      name: true,
+      cacheGroups: {
+        vendor: {
+          name: 'vendor',
+          test: /[\\/]node_modules[\\/]|[\\/]lib[\\/]/,
+          priority: -10,
+          chunks: 'all',
+          enforce: true
+        }
+      }
+    },
+    // runtime
+    runtimeChunk: 'single'
   }
 };

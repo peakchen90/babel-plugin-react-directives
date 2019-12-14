@@ -29,17 +29,13 @@ function render(js, options) {
   try {
     let { code } = Babel.transform(js, {
       presets: [
-        [
-          require('@babel/preset-env'),
-          { modules: false }
-        ],
-        require('@babel/preset-react')
+        Babel.availablePresets.es2017,
+        Babel.availablePresets.react
       ],
       plugins: [
-        [
-          require('../../src/index'),
-          JSON.parse(options)
-        ]
+        [require('../../src/index'), JSON.parse(options)],
+        Babel.availablePlugins['proposal-object-rest-spread'],
+        Babel.availablePlugins['proposal-class-properties'],
       ]
     });
 
@@ -52,7 +48,6 @@ function render(js, options) {
     code = code.replace(/module.exports/g, 'window.__App__');
 
     previewWindow.__render__(code);
-    console.log(code);
   } catch (e) {
     previewWindow.__catchError__(e);
   }
