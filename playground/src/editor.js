@@ -1,11 +1,11 @@
-import debounce from 'lodash/debounce';
+import throttle from 'lodash/throttle';
 import defaultJsCode from './code/js';
 import defaultCssCode from './code/css';
 import defaultOptionsCode from './code/options';
 
-monaco.editor.defineTheme('solarized-light', require('monaco-themes/themes/Eiffel'));
+monaco.editor.defineTheme('default-theme', require('monaco-themes/themes/Chrome DevTools'));
 
-monaco.editor.setTheme('solarized-light');
+monaco.editor.setTheme('default-theme');
 
 const editorStyle = {
   fontSize: 14,
@@ -69,7 +69,7 @@ function refreshActiveEditor() {
   });
 }
 
-window.addEventListener('resize', debounce(() => {
+window.addEventListener('resize', throttle(() => {
   refreshActiveEditor();
 }, 10));
 

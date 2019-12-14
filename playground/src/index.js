@@ -1,17 +1,31 @@
 import JsTabs from 'js-tabs';
+import debounce from 'lodash/debounce';
 import 'js-tabs/dist/main/js-tabs-base.css';
 import './index.css';
 
 import editors from './editor';
-import { renderPreview } from './preview';
+import { renderPreview, updateCSS } from './preview';
 
-document.querySelector('.run-btn').addEventListener('click', () => {
-  renderPreview({
+function getRenderValues() {
+  return {
     js: editors.jsEditor.getValue(),
     css: editors.cssEditor.getValue(),
     options: editors.optionsEditor.getValue()
-  });
-});
+  };
+}
+
+renderPreview(getRenderValues());
+
+editors.cssEditor.onDidChangeModelContent(debounce(() => {
+  console.log(Date.now());
+  updateCSS(editors.cssEditor.getValue());
+}, 600));
+const _renderPreview = debounce(() => {
+  renderPreview(getRenderValues());
+}, 600);
+editors.jsEditor.onDidChangeModelContent(_renderPreview);
+editors.optionsEditor.onDidChangeModelContent(_renderPreview);
+
 
 // init tabs
 new JsTabs({ elm: '.left-section' }).init();

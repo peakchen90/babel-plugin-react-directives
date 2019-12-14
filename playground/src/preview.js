@@ -1,19 +1,24 @@
 import runtimeResolver from './runtime';
 
-const preview = document.querySelector('.preview-iframe');
+const preview = document.querySelector('.preview-render');
 
 let style = null;
 let ready = false;
 let previewWindow = null;
 let previewDocument = null;
+let _autoRender = null;
 
 preview.addEventListener('load', () => {
   ready = true;
   previewWindow = preview.contentWindow;
   previewDocument = preview.contentWindow.document;
+  document.querySelector('.preview-render-loading').style.display = 'none';
+  if (typeof _autoRender === 'function') {
+    _autoRender();
+  }
 });
 
-function updateCSS(css = '') {
+export function updateCSS(css = '') {
   if (!style) {
     style = previewDocument.getElementById('style');
   }
@@ -57,5 +62,10 @@ export function renderPreview({ js, css, options }) {
   if (ready) {
     render(js, options);
     updateCSS(css);
+  } else {
+    _autoRender = () => {
+      render(js, options);
+      updateCSS(css);
+    };
   }
 }
