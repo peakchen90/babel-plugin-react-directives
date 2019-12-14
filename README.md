@@ -1,6 +1,5 @@
 # babel-plugin-react-directives
-A babel plugin that provides some directives for react(any JSX), similar to directive of vue.
-
+A babel plugin that provides some directives for react(any JSX), similar to directives of vue. And you can now try it online at [playground](https://peakchen90.github.io/babel-plugin-react-directives/).
 
 [![Travis (.org) branch](https://img.shields.io/travis/peakchen90/babel-plugin-react-directives/master.svg)](https://travis-ci.org/peakchen90/babel-plugin-react-directives)
 [![Codecov](https://img.shields.io/codecov/c/github/peakchen90/babel-plugin-react-directives.svg)](https://codecov.io/gh/peakchen90/babel-plugin-react-directives)

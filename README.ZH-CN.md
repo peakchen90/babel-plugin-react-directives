@@ -1,5 +1,5 @@
 # babel-plugin-react-directives
-一个给react(任何JSX)提供一些类似vue指令的Babel转换插件
+一个给react (任何 JSX ) 提供一些类似 vue 指令的 Babel 转换插件。现在你可以在 [playground](https://peakchen90.github.io/babel-plugin-react-directives/) 上在线尝试。
 
 [![Travis (.org) branch](https://img.shields.io/travis/peakchen90/babel-plugin-react-directives/master.svg)](https://travis-ci.org/peakchen90/babel-plugin-react-directives)
 [![Codecov](https://img.shields.io/codecov/c/github/peakchen90/babel-plugin-react-directives.svg)](https://codecov.io/gh/peakchen90/babel-plugin-react-directives)
