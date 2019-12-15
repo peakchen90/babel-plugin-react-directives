@@ -11,15 +11,28 @@ html, body {
   left: 0;
   right: 0;
   background: rgba(255, 255, 255, 0.95);
-  color: #ca3939;
+  color: #ec4a4d;
   z-index: 999999;
-  font-size: 13px;
-  padding: 20px;
+  font-size: 16px;
+  padding: 2em;
   margin: 0;
-  line-height: 18px;
+  line-height: 22px;
   box-sizing: border-box;
   font-family: Menlo, Consolas, monospace, Arial, "Helvetica Neue", Helvetica, sans-serif;
   white-space: pre-wrap;
   overflow: auto;
   display: none;
+}
+
+.app-loading {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #ffffff;
+  z-index: 99999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

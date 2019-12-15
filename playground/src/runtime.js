@@ -13,8 +13,21 @@ Object.keys(runtimeMap).forEach((name) => {
   window[runtimeNames] = runtimeMap[name];
   runtimeResolver.push({
     code: `require("babel-plugin-react-directives/runtime/${name}")`,
-    resolve: `window.top['${runtimeNames}']`
+    realName: `window['${runtimeNames}']`,
+    beautifyName: name.replace(/^([A-Za-z0-9]+)(?:-([A-Za-z0-9]+))?\.js$/, (match, $1, $2) => {
+      if (!$2) return $1;
+      return $1 + $2.charAt(0).toUpperCase() + $2.substr(1);
+    })
   });
 });
 
-export default runtimeResolver;
+export function transformRuntime(code, beautify = false) {
+  runtimeResolver.forEach((item) => {
+    if (beautify) {
+      code = code.replace(item.code, item.beautifyName);
+    } else {
+      code = code.replace(item.code, item.realName);
+    }
+  });
+  return code;
+}

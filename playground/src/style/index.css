@@ -23,28 +23,27 @@ html, body {
   float: left;
   width: 50%;
   height: 100%;
-  border-left: 1px solid #d2cfc6;
+  border-left: 1px solid #9c9b96;
   box-sizing: border-box;
+}
+
+.app-loading {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff2f2;
+  z-index: 99999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .preview-render {
   border: 0;
   width: 100%;
   height: 100%;
-}
-
-.preview-render-loading {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: #ffffff;
-  z-index: 3;
-  font-size: 16px;
-  color: #666;
-  padding: 20px;
-  box-sizing: border-box;
 }
 
 .tabs-wrapper {
@@ -96,6 +95,11 @@ html, body {
   right: 12px;
 }
 
+.js-tabs__nav {
+  background: rgba(0, 0, 0, 0.86);
+  color: #fff;
+}
+
 .js-tabs__content-container {
   height: calc(100% - 47px);
 }
@@ -116,7 +120,7 @@ html, body {
 }
 
 .js-tabs__tab.active {
-  background: #f9f9f9;
+  background: rgba(0, 0, 0, 0.9);
   color: #c55f2d;
   transition: all 0.2s;
 }

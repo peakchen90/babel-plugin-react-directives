@@ -20,10 +20,7 @@ module.exports = {
     chunkFilename: 'js/[name].[chunkhash:10].js',
     publicPath: __DEV__ ? '' : '/babel-plugin-react-directives/'
   },
-  externals: {
-    'monaco-editor': 'monaco',
-    monaco: 'monaco'
-  },
+  externals: {},
   module: {
     rules: [
       {
