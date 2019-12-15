@@ -6,8 +6,8 @@ let previewWindow = null;
 let previewDocument = null;
 let _autoRender = null;
 
-// deyay load
-preview.src = './playground.html';
+// delay load with no-cache
+preview.src = `./playground.html?${Date.now()}`;
 
 preview.addEventListener('load', () => {
   ready = true;
