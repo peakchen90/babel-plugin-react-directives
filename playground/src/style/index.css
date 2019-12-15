@@ -23,7 +23,7 @@ html, body {
   float: left;
   width: 50%;
   height: 100%;
-  border-left: 1px solid #d2cfc6;
+  border-left: 1px solid #9c9b96;
   box-sizing: border-box;
 }
 
@@ -96,6 +96,11 @@ html, body {
   right: 12px;
 }
 
+.js-tabs__nav {
+  background: rgba(0, 0, 0, 0.86);
+  color: #fff;
+}
+
 .js-tabs__content-container {
   height: calc(100% - 47px);
 }
@@ -116,7 +121,7 @@ html, body {
 }
 
 .js-tabs__tab.active {
-  background: #f9f9f9;
+  background: rgba(0, 0, 0, 0.9);
   color: #c55f2d;
   transition: all 0.2s;
 }

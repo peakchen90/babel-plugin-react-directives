@@ -9,8 +9,8 @@ const renderNull = () => null;
 function transformCode(code) {
   code = transformRuntime(code);
   code = code.replace(/export[\s\S]+default/g, 'window.__App__ =');
+  code = code.replace(/module\.exports/g, 'window.__App__');
   code = code.replace(/export/g, '');
-  code = code.replace(/module.exports/g, 'window.__App__');
 
   return code;
 }

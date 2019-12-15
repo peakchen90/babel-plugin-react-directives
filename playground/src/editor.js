@@ -3,7 +3,7 @@ import defaultJsCode from './code/js';
 import defaultCssCode from './code/css';
 import defaultOptionsCode from './code/options';
 
-monaco.editor.defineTheme('default-theme', require('monaco-themes/themes/Chrome DevTools'));
+monaco.editor.defineTheme('default-theme', require('monaco-themes/themes/Solarized-light'));
 
 monaco.editor.setTheme('default-theme');
 
