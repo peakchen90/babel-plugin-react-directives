@@ -1,5 +1,3 @@
-import runtimeResolver from './runtime';
-
 const preview = document.querySelector('.preview-render');
 
 let style = null;
@@ -29,7 +27,7 @@ export function updateCSS(css = '') {
 
 function render(js, options) {
   try {
-    let { code } = Babel.transform(js, {
+    const { code } = Babel.transform(js, {
       presets: [
         Babel.availablePresets.es2017,
         Babel.availablePresets.react
@@ -40,14 +38,6 @@ function render(js, options) {
         Babel.availablePlugins['proposal-class-properties'],
       ]
     });
-
-    runtimeResolver.forEach((item) => {
-      code = code.replace(item.code, item.resolve);
-    });
-
-    code = code.replace(/export[\s\S]+default/g, 'window.__App__ =');
-    code = code.replace(/export/g, '');
-    code = code.replace(/module.exports/g, 'window.__App__');
 
     previewWindow.__render__(code);
   } catch (e) {
