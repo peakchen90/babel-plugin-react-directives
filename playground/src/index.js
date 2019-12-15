@@ -24,7 +24,9 @@ const _renderPreview = debounce(() => {
 editors.jsEditor.onDidChangeModelContent(_renderPreview);
 editors.optionsEditor.onDidChangeModelContent(_renderPreview);
 
-renderPreview(getRenderValues());
+setTimeout(() => {
+  renderPreview(getRenderValues());
+});
 
 // init tabs
 new JsTabs({ elm: '.left-section' }).init();
