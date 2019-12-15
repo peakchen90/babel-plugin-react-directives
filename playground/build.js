@@ -1,7 +1,7 @@
 const { spawn } = require('child_process');
 const { join } = require('path');
 
-const __isDEV__ = process.argv[2] === 'dev';
+const __isDEV__ = process.argv[2] === '--dev';
 
 function build(command) {
   return new Promise((resolve) => {
