@@ -8,11 +8,13 @@ let previewWindow = null;
 let previewDocument = null;
 let _autoRender = null;
 
+// deyay load
+preview.src = './playground.html';
+
 preview.addEventListener('load', () => {
   ready = true;
   previewWindow = preview.contentWindow;
   previewDocument = preview.contentWindow.document;
-  document.querySelector('.preview-render-loading').style.display = 'none';
   if (typeof _autoRender === 'function') {
     _autoRender();
   }

@@ -27,24 +27,24 @@ html, body {
   box-sizing: border-box;
 }
 
-.preview-render {
-  border: 0;
-  width: 100%;
-  height: 100%;
-}
 
-.preview-render-loading {
-  position: absolute;
+.app-loading {
+  position: fixed;
   top: 0;
   bottom: 0;
   left: 0;
   right: 0;
-  background: #ffffff;
-  z-index: 3;
-  font-size: 16px;
-  color: #666;
-  padding: 20px;
-  box-sizing: border-box;
+  background: #fff2f2;
+  z-index: 99999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.preview-render {
+  border: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .tabs-wrapper {

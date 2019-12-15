@@ -6,22 +6,6 @@
         content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Playground - babel-plugin-react-directives</title>
-  <link rel="stylesheet" href="https://unpkg.com/monaco-editor@0.18.1/min/vs/editor/editor.main.css">
-
-  <script>var require = { paths: { 'vs': 'https://unpkg.com/monaco-editor@0.18.1/min/vs' } };</script>
-  <script crossorigin src="https://unpkg.com/@babel/standalone@7.7.6/babel.min.js"></script>
-  <script crossorigin src="https://unpkg.com/monaco-editor@0.18.1/min/vs/loader.js"></script>
-  <script crossorigin src="https://unpkg.com/monaco-editor@0.18.1/min/vs/editor/editor.main.nls.js"></script>
-  <script crossorigin src="https://unpkg.com/monaco-editor@0.18.1/min/vs/editor/editor.main.js"></script>
-
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-154545110-1"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() {dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'UA-154545110-1');
-  </script>
 </head>
 <body>
 <div class="app-container">
@@ -56,11 +40,30 @@
     </nav>
     <ul class="js-tabs__content-container">
       <li class="js-tabs__content active">
-        <iframe class="preview-render" src="playground.html">loading</iframe>
-        <div class="preview-render-loading">loading...</div>
+        <iframe class="preview-render"></iframe>
       </li>
     </ul>
   </div>
 </div>
+
+<div class="app-loading">
+  <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+</div>
+
+<link rel="stylesheet" href="https://unpkg.com/monaco-editor@0.18.1/min/vs/editor/editor.main.css">
+<script>var require = { paths: { 'vs': 'https://unpkg.com/monaco-editor@0.18.1/min/vs' } };</script>
+<script crossorigin src="https://unpkg.com/@babel/standalone@7.7.6/babel.min.js"></script>
+<script crossorigin src="https://unpkg.com/monaco-editor@0.18.1/min/vs/loader.js"></script>
+<script crossorigin src="https://unpkg.com/monaco-editor@0.18.1/min/vs/editor/editor.main.nls.js"></script>
+<script crossorigin src="https://unpkg.com/monaco-editor@0.18.1/min/vs/editor/editor.main.js"></script>
+
+<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-154545110-1"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag() {dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', 'UA-154545110-1');
+</script>
 </body>
 </html>

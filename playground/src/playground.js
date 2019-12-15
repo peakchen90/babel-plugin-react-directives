@@ -1,4 +1,5 @@
 import './style/playground.css';
+import './style/loading.css';
 
 const root = document.getElementById('app');
 const previewError = document.querySelector('.preview-render-error');
@@ -24,8 +25,13 @@ window.__render__ = function render(code) {
 window.__catchError__ = function catchError(err) {
   if (err) {
     previewError.style.display = 'block';
-    previewError.innerText = err.stack || err.message || 'Unexpected Error.';
+    previewError.innerText = typeof err.toString === 'function'
+      ? err.toString()
+      : 'Error: unknown exception';
   }
 
   console.error(err);
 };
+
+// hide app loading
+document.querySelector('.app-loading').style.display = 'none';
