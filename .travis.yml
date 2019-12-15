@@ -15,10 +15,10 @@ install:
 
 stages:
   - test
-  - name: deploy
-    if: (branch = master) AND (NOT (type IN (pull_request)))
-  - gh-pages
-    if: (branch = master OR branch = playground) AND (NOT (type IN (pull_request)))
+  - name: releaseNpm
+    if: branch = master
+  - name: ghPages
+    if: branch = master
 
 jobs:
   include:
@@ -29,7 +29,7 @@ jobs:
         - npm run test
         - codecov
 
-    - stage: deploy
+    - stage: releaseNpm
       name: "Release npm package"
       node_js: "12"
       script: echo "Release npm package..."
@@ -41,15 +41,19 @@ jobs:
         on:
           branch: master
 
-    - stage: gh-pages
-      name: "Deploying to GitHub Pages"
+    - stage: ghPages
+      name: "Deploying to github pages"
       node_js: "12"
-      github_token: $GITHUB_TOKEN
-      skip_cleanup: true
-      local_dir: playground/dist
       script:
         - npm run pg:install
         - npm run pg:build
+      deploy:
+        provider: pages
+        github_token: $GITHUB_TOKEN
+        skip_cleanup: true
+        local_dir: playground/dist
+        on:
+          branch: master
 
 notifications:
   email: false
