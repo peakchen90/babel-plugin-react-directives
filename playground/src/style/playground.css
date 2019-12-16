@@ -19,7 +19,6 @@ html, body {
   line-height: 22px;
   box-sizing: border-box;
   font-family: Menlo, Consolas, monospace, Arial, "Helvetica Neue", Helvetica, sans-serif;
-  white-space: pre-wrap;
   overflow: auto;
   display: none;
 }
