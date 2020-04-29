@@ -197,6 +197,15 @@ function isNullLiteral(node) {
   return t.isNullLiteral(node) || t.isIdentifier(node, { name: 'null' });
 }
 
+/**
+ * 弃用指令错误
+ * @param name
+ * @return {Error}
+ */
+function deprecatedError(name) {
+  return new Error(`The deprecated directive \`${name}\` cannot be used in strict mode`);
+}
+
 module.exports = {
   codeFrameWarn,
   assertVersion,
@@ -204,5 +213,6 @@ module.exports = {
   findDeconstructionPathStack,
   getReferenceStack,
   isThisExpression,
-  isNullLiteral
+  isNullLiteral,
+  deprecatedError
 };

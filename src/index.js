@@ -1,4 +1,4 @@
-const { DIRECTIVES, syncOpts } = require('./shared');
+const { DIRECTIVES, updateOpts } = require('./shared');
 const attrUtil = require('./utils/attribute');
 const elemUtil = require('./utils/element');
 const { codeFrameWarn, assertVersion } = require('./utils/util');
@@ -12,30 +12,19 @@ const transformClass = require('./directives/class');
 
 module.exports = (api) => {
   if (api.assertVersion) {
-    api.assertVersion('>= 6.20.0');
+    api.assertVersion('>= 7.0.0');
   } else {
-    assertVersion(api.version, '>= 6.20.0');
+    assertVersion(api.version, '>= 7.0.0');
   }
 
   return {
     name: 'react-directives',
 
-    /* istanbul ignore next: reference third party lib */
-    // https://github.com/babel/babel/blob/v7.6.2/packages/babel-plugin-syntax-jsx/src/index.js
-    manipulateOptions(opts, parserOpts) {
-      parserOpts.plugins.push('objectRestSpread');
-
-      // If the Typescript plugin already ran, it will have decided whether
-      // or not this is a TSX file.
-      if (parserOpts.plugins.some((p) => (Array.isArray(p) ? p[0] : p) === 'typescript')) {
-        return;
-      }
-      parserOpts.plugins.push('jsx');
-    },
+    inherits: require('@babel/plugin-syntax-jsx').default,
 
     visitor: {
       Program(path, state) {
-        syncOpts(state.opts);
+        updateOpts(state.opts);
       },
       JSXElement(path) {
         transformShow(path);
@@ -62,7 +51,7 @@ module.exports = (api) => {
             );
 
           case DIRECTIVES.SHOW:
-          case DIRECTIVES.MODEL:
+          case DIRECTIVES.DEPRECATED_MODEL:
           case DIRECTIVES.FOR:
           case DIRECTIVES.CLASS:
             codeFrameWarn(

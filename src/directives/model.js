@@ -6,7 +6,8 @@ const builder = require('../utils/builder');
 const {
   codeFrameWarn,
   getReferenceStack,
-  isThisExpression
+  isThisExpression,
+  deprecatedError
 } = require('../utils/util');
 
 
@@ -188,7 +189,7 @@ function buildHookSetStateExpression(attrPath, stateBindingStack, newValExpressi
   /* istanbul ignore next: unknown exception */
   if (!t.isVariableDeclarator(defineVar && defineVar.node)) {
     throw attrPath.buildCodeFrameError(
-      `You seem to use \`${DIRECTIVES.MODEL_HOOK}\` in the hook method, this is invalid for \`${DIRECTIVES.MODEL_HOOK}\`.`
+      `You seem to use \`${DIRECTIVES.DEPRECATED_MODEL_HOOK}\` in the hook method, this is invalid for \`${DIRECTIVES.DEPRECATED_MODEL_HOOK}\`.`
     );
   }
 
@@ -226,7 +227,7 @@ function buildHookSetStateExpression(attrPath, stateBindingStack, newValExpressi
 
   if (!t.isIdentifier(updateFn) && !t.isMemberExpression(updateFn)) {
     throw defineVarId.buildCodeFrameError(
-      `You seem to use \`${DIRECTIVES.MODEL_HOOK}\` in the hook method, cannot found method to update state.`
+      `You seem to use \`${DIRECTIVES.DEPRECATED_MODEL_HOOK}\` in the hook method, cannot found method to update state.`
     );
   }
 
@@ -238,7 +239,7 @@ function buildHookSetStateExpression(attrPath, stateBindingStack, newValExpressi
     result = newValExpression;
   } else if (!canMerge) {
     throw defineVarId.buildCodeFrameError(
-      `You seem to use \`${DIRECTIVES.MODEL_HOOK}\` in the hook method, which cannot be merged with the previous value.`
+      `You seem to use \`${DIRECTIVES.DEPRECATED_MODEL_HOOK}\` in the hook method, which cannot be merged with the previous value.`
     );
   } else {
     const mergeResult = getMergeValueExpression({
@@ -368,9 +369,15 @@ function setOnChangeProp(path, attrPath, stateBindingStack, useType) {
 function transformModel(path) {
   let useType = null; // 'class' | 'hook' | null
   let attrPath;
-  if (attrPath = elemUtil(path).findAttrPath(DIRECTIVES.MODEL)) {
+  if (attrPath = elemUtil(path).findAttrPath(DIRECTIVES.DEPRECATED_MODEL)) {
+    if (opts.strict) {
+      throw deprecatedError(DIRECTIVES.DEPRECATED_MODEL);
+    }
     useType = 'class';
-  } else if (attrPath = elemUtil(path).findAttrPath(DIRECTIVES.MODEL_HOOK)) {
+  } else if (attrPath = elemUtil(path).findAttrPath(DIRECTIVES.DEPRECATED_MODEL_HOOK)) {
+    if (opts.strict) {
+      throw deprecatedError(DIRECTIVES.DEPRECATED_MODEL_HOOK);
+    }
     useType = 'hook';
   } else {
     return;
@@ -402,17 +409,17 @@ function transformModel(path) {
       )
     ) {
       throw valuePath.buildCodeFrameError(
-        `The \`${DIRECTIVES.MODEL}\` binding value should define in \`this.state\`.`
+        `The \`${DIRECTIVES.DEPRECATED_MODEL}\` binding value should define in \`this.state\`.`
       );
     }
     if (stateBindingStack.length === 0) {
       throw valuePath.buildCodeFrameError(
-        `The \`${DIRECTIVES.MODEL}\` binding value cannot be \`this.state\`.`
+        `The \`${DIRECTIVES.DEPRECATED_MODEL}\` binding value cannot be \`this.state\`.`
       );
     }
     if (t.isNumericLiteral(stateBindingStack[0].node)) {
       throw valuePath.buildCodeFrameError(
-        `The \`${DIRECTIVES.MODEL}\` binding value cannot use \`this.state\` as an array.`
+        `The \`${DIRECTIVES.DEPRECATED_MODEL}\` binding value cannot use \`this.state\` as an array.`
       );
     }
   } else if (useType === 'hook') {
@@ -434,8 +441,8 @@ function transformModel(path) {
     }
     if (!valid) {
       throw valuePath.buildCodeFrameError(
-        `You seem to use \`${DIRECTIVES.MODEL_HOOK}\` in the hook method, `
-        + `the \`${DIRECTIVES.MODEL_HOOK}\` binding value cannot be found in the returned of \`${opts.pragmaType}.useState()\`.`
+        `You seem to use \`${DIRECTIVES.DEPRECATED_MODEL_HOOK}\` in the hook method, `
+        + `the \`${DIRECTIVES.DEPRECATED_MODEL_HOOK}\` binding value cannot be found in the returned of \`${opts.pragmaType}.useState()\`.`
       );
     }
 
@@ -445,8 +452,8 @@ function transformModel(path) {
       || stateValuePath.node.value !== 0
     ) {
       throw valuePath.buildCodeFrameError(
-        `You seem to use \`${DIRECTIVES.MODEL_HOOK}\` in the hook method, `
-        + `the \`${DIRECTIVES.MODEL_HOOK}\` binding value cannot be found in the first returned of \`${opts.pragmaType}.useState()\`. `
+        `You seem to use \`${DIRECTIVES.DEPRECATED_MODEL_HOOK}\` in the hook method, `
+        + `the \`${DIRECTIVES.DEPRECATED_MODEL_HOOK}\` binding value cannot be found in the first returned of \`${opts.pragmaType}.useState()\`. `
         + 'Usage example: `let [data, setData] = useState(initialValue)`, `data` should be used as the binding value.'
       );
     }

@@ -1,11 +1,13 @@
 const assert = require('assert');
 const Ajv = require('ajv');
 const ajvErrors = require('ajv-errors');
+const { deprecatedError } = require('./utils/util');
 
 // plugin option
 const opts = {
   prefix: 'x',
-  pragmaType: 'React'
+  pragmaType: 'React',
+  strict: false
 };
 
 // 指令名
@@ -25,15 +27,17 @@ const DIRECTIVES = {
   get FOR() {
     return `${opts.prefix}-for`;
   },
-  get MODEL() {
-    return `${opts.prefix}-model`;
-  },
-  get MODEL_HOOK() {
-    return `${opts.prefix}-model-hook`;
-  },
   get CLASS() {
     return `${opts.prefix}-class`;
-  }
+  },
+
+  /* TODO 以下即将弃用 */
+  get DEPRECATED_MODEL() {
+    return `${opts.prefix}-model`;
+  },
+  get DEPRECATED_MODEL_HOOK() {
+    return `${opts.prefix}-model-hook`;
+  },
 };
 
 let optionsValidate;
@@ -42,14 +46,18 @@ let optionsValidate;
  * 更新插件options
  * @param options
  */
-function syncOpts(options = {}) {
+function updateOpts(options = {}) {
   const {
     prefix,
-    pragmaType
+    pragmaType,
+    strict
   } = options;
 
   if (!optionsValidate) {
-    const ajv = new Ajv({ allErrors: true, jsonPointers: true });
+    const ajv = new Ajv({
+      allErrors: true,
+      jsonPointers: true
+    });
     optionsValidate = ajvErrors(ajv).compile({
       properties: {
         prefix: {
@@ -61,6 +69,10 @@ function syncOpts(options = {}) {
           type: 'string',
           minLength: 1,
           errorMessage: 'The `pragmaType` option should be a non-empty string.'
+        },
+        strict: {
+          type: 'boolean',
+          errorMessage: 'The `strict` option should be a boolean.'
         }
       }
     });
@@ -75,7 +87,8 @@ function syncOpts(options = {}) {
 
   Object.assign(opts, {
     prefix: prefix || 'x',
-    pragmaType: pragmaType || 'React'
+    pragmaType: pragmaType || 'React',
+    strict: strict || false
   });
 }
 
@@ -83,5 +96,5 @@ function syncOpts(options = {}) {
 module.exports = {
   DIRECTIVES,
   opts,
-  syncOpts,
+  updateOpts,
 };
