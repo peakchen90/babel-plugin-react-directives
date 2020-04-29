@@ -15,7 +15,6 @@ function install(pathname) {
 }
 
 Promise.all([
-  install('unit/babel6'),
   install('unit/babel7')
 ]).then(() => {
   console.log('Babel installed successfully');

@@ -4,7 +4,7 @@ module.exports = {
   verbose: true,
   rootDir: path.join(__dirname),
   transform: {
-    '\\.js$': ['babel-jest']
+    '\\.js$': 'babel-jest'
   },
   setupFilesAfterEnv: ['<rootDir>/test/setup.js'],
   collectCoverage: true,

@@ -5,7 +5,6 @@ const pluginTester = require('./plugin-tester');
 
 // 各版本babel
 const babelMap = {
-  6: require('./babel6/node_modules/babel-core'),
   7: require('./babel7/node_modules/@babel/core')
 };
 
@@ -33,5 +32,4 @@ function runTest(versionNum) {
   });
 }
 
-runTest(6);
 runTest(7);
