@@ -25,8 +25,10 @@ class Condition {
  */
 
 
-// 保存遍历列表（二维数组，每个属性是包含一组条件的数组）
-let _traverseList = [];
+/**
+ * 保存遍历列表（二维数组，每个属性是包含一组条件的数组）
+ */
+let traverseList = [];
 
 
 /**
@@ -41,14 +43,14 @@ function traverseIf(path) {
       const attrs = attributes.filter((attr) => attrUtil(attr).name() === DIRECTIVES.IF);
       if (attrs.length === 1) {
         _path.stop(); // 跳过遍历子节点
-        _traverseList.push(traverseCondition(_path, attrs[0]));
+        traverseList.push(traverseCondition(_path, attrs[0]));
       }
     }
   };
 
   path.traverse(nestedVisitor);
 
-  return _traverseList;
+  return traverseList;
 }
 
 /**
@@ -164,10 +166,10 @@ function transform(conditions) {
  */
 function transformIf(path) {
   if (elemUtil(path).findAttrPath(DIRECTIVES.IF)) {
-    _traverseList = [];
+    traverseList = [];
     traverseIf(path.parentPath);
 
-    _traverseList.forEach((conditions) => transform(conditions));
+    traverseList.forEach((conditions) => transform(conditions));
   }
 }
 
