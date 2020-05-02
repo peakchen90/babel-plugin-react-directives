@@ -1,7 +1,6 @@
 const assert = require('assert');
 const Ajv = require('ajv');
 const ajvErrors = require('ajv-errors');
-const { deprecatedError } = require('./utils/util');
 
 // plugin option
 const opts = {
