@@ -4,14 +4,12 @@ os:
   - linux
 
 node_js:
-  - "11"
+  - "10"
   - "12"
-  - "13"
+  - "14"
 
 install:
   - npm install
-  - npm run test:install
-  - npm install -g codecov
 
 stages:
   - test
@@ -31,7 +29,7 @@ jobs:
 
     - stage: releaseNpm
       name: "Release npm package"
-      node_js: "12"
+      node_js: "14"
       script: echo "Release npm package..."
       deploy:
         provider: npm
@@ -43,9 +41,8 @@ jobs:
 
     - stage: ghPages
       name: "Deploying to github pages"
-      node_js: "12"
+      node_js: "14"
       script:
-        - npm run pg:install
         - npm run pg:build
       deploy:
         provider: pages

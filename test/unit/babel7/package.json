@@ -1,5 +1,5 @@
 {
   "dependencies": {
-    "@babel/core": "7.6.2"
+    "@babel/core": "7"
   }
 }
