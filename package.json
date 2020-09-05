@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-react-directives",
-  "version": "1.2.0-alpha.1",
+  "version": "1.1.2",
   "description": "A babel plugin that provides some directives for react(any JSX), similar to directive of vue.",
   "main": "src/index.js",
   "files": [
@@ -13,16 +13,14 @@
   "scripts": {
     "test": "jest",
     "test:clear-cache": "jest --clearCache",
-    "test:install": "node test/install.js",
-    "pg:install": "node playground/install.js",
     "pg:dev": "node playground/build.js --dev",
     "pg:build": "node playground/build.js",
-    "postinstall": "npm run test:install && npm run pg:install"
+    "prepublishOnly": "npm run test",
+    "postinstall": "node test/install.js && node playground/install.js"
   },
   "husky": {
     "hooks": {
-      "pre-commit": "lint-staged",
-      "pre-push": "npm run test"
+      "pre-commit": "lint-staged"
     }
   },
   "lint-staged": {
@@ -30,6 +28,10 @@
       "eslint --fix",
       "git add"
     ]
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
   },
   "author": "peakchen90 <1558267774@qq.com>",
   "license": "MIT",
@@ -50,43 +52,43 @@
     "vue",
     "x-if",
     "x-for",
-    "x-class"
+    "v-if",
+    "v-for"
   ],
   "engines": {
-    "node": ">=8.6.0"
+    "node": ">=10.0.0"
   },
   "dependencies": {
-    "@babel/code-frame": "^7.8.3",
-    "@babel/generator": "^7.9.5",
-    "@babel/plugin-syntax-jsx": "^7.8.3",
-    "@babel/types": "^7.9.5",
-    "ajv": "^6.12.2",
+    "@babel/code-frame": "^7.10.4",
+    "@babel/generator": "^7.11.6",
+    "@babel/types": "^7.11.5",
+    "ajv": "^6.12.4",
     "ajv-errors": "^1.0.1",
-    "chalk": "^4.0.0",
-    "semver": "^7.3.2"
+    "chalk": "^4.1.0",
+    "semver": "^6.3.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.9.0",
-    "@babel/plugin-transform-modules-commonjs": "^7.9.0",
-    "@babel/preset-react": "^7.9.4",
-    "@types/jest": "^25.2.1",
+    "@babel/core": "^7.11.6",
+    "@babel/plugin-transform-modules-commonjs": "^7.10.4",
+    "@babel/preset-react": "^7.10.4",
+    "@types/jest": "^26.0.13",
     "babel-eslint": "^10.1.0",
-    "babel-jest": "^25.5.0",
+    "babel-jest": "^26.3.0",
     "common-tags": "^1.8.0",
     "enzyme": "^3.11.0",
-    "enzyme-adapter-react-16": "^1.15.2",
-    "eslint": "^6.8.0",
-    "eslint-config-airbnb-base": "^14.1.0",
-    "eslint-plugin-import": "^2.20.2",
-    "eslint-plugin-react": "^7.19.0",
+    "enzyme-adapter-react-16": "^1.15.4",
+    "eslint": "^7.8.1",
+    "eslint-config-airbnb-base": "^14.2.0",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-react": "^7.20.6",
     "eslint-plugin-react-directives": "^1.0.1",
     "husky": "^4.2.5",
     "invariant": "^2.2.4",
-    "jest": "^25.5.0",
-    "lint-staged": "^10.2.0",
+    "jest": "^26.4.2",
+    "lint-staged": "^10.3.0",
     "lodash.mergewith": "^4.6.2",
     "path-exists": "^4.0.0",
-    "prettier": "^1.19.1",
+    "prettier": "^1.18.2",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "strip-indent": "^3.0.0"

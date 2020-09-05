@@ -6,7 +6,6 @@ os:
 node_js:
   - "10"
   - "12"
-  - "14"
 
 install:
   - npm install
@@ -23,7 +22,7 @@ jobs:
   include:
     - stage: test
       name: "Run test scripts"
-      node_js: "8.6.0"
+      node_js: "14"
       script:
         - npm run test
         - codecov
@@ -43,7 +42,8 @@ jobs:
     - stage: ghPages
       name: "Deploying to github pages"
       node_js: "14"
-      script: npm run pg:build
+      script:
+        - npm run pg:build
       deploy:
         provider: pages
         github_token: $GITHUB_TOKEN
