@@ -29,7 +29,7 @@ A babel plugin that provides some directives for react(any JSX), similar to dire
 
 ## <span id="toc-usage">Usage</span>
 
-Requires **node v8.6.0** or higher, **babel v6.20.0** or higher.
+Requires **node v10.0.0** or higher, **babel v6.20.0** or higher.
 
 ### <span id="toc-installation">Installation</span>
 use npm:
@@ -86,7 +86,7 @@ const foo = true ? <div>text</div> : null
 ```
 
 ### <span id="toc-directives-x-else-if-and-x-else">x-else-if and x-else</span>
-The `x-else-if` must have a corresponding `x-if`. if `x-if` value is **falsy**, and `x-else-if` value is **truthy**, it will be rendered. 
+The `x-else-if` must have a corresponding `x-if`. if `x-if` value is **falsy**, and `x-else-if` value is **truthy**, it will be rendered.
 
 The `x-else` must have the corresponding `x-if` or `x-if-else`. When all corresponding `x-if` or `x-else-if` value are **falsy**, it will be rendered.
 
@@ -94,10 +94,10 @@ The `x-else` must have the corresponding `x-if` or `x-if-else`. When all corresp
 ```jsx harmony
 const foo = (
   <div>
-    <p x-if={data === 'a'}>A</p>  
-    <p x-else-if={data === 'b'}>B</p>  
-    <p x-else-if={data === 'c'}>C</p>  
-    <p x-else>D</p>  
+    <p x-if={data === 'a'}>A</p>
+    <p x-else-if={data === 'b'}>B</p>
+    <p x-else-if={data === 'c'}>C</p>
+    <p x-else>D</p>
   </div>
 )
 ```
@@ -106,12 +106,12 @@ const foo = (
 ```jsx harmony
 const foo = (
   <div>
-    {data === 'a' 
-      ? <p>A</p> 
-      : data === 'b' 
-        ? <p>B</p> 
-        : data === 'c' 
-          ? <p>C</p> 
+    {data === 'a'
+      ? <p>A</p>
+      : data === 'b'
+        ? <p>B</p>
+        : data === 'c'
+          ? <p>C</p>
           : <p>D</p>
     }
   </div>
@@ -140,9 +140,9 @@ const foo = (
 Of course, it will also merge other `style` props by calling the [mergeProps method](./runtime/merge-props.js), for example:
 ```jsx harmony
 const foo = (
-  <div 
+  <div
     style={{ color: 'red' }}
-    x-show={true} 
+    x-show={true}
     {...extraProps}>
     text
   </div>
@@ -181,7 +181,7 @@ Please install [**eslint-plugin-react-directives**](https://github.com/peakchen9
 ```jsx harmony
 const foo = (
   <ul>
-    <li 
+    <li
       x-for={item in list}
       key={item.id}>{item.name}
     </li>
@@ -218,8 +218,8 @@ will be converted to:
 const foo = (
   <ul>
     {list.map(item => (
-      item.name === 'alice' 
-        ? <li key={item.id}>{item.name}</li> 
+      item.name === 'alice'
+        ? <li key={item.id}>{item.name}</li>
         : null
     ))}
   </ul>
@@ -237,7 +237,7 @@ class Foo extends React.Component {
     super(props);
     this.state = { data: 'text' }
   }
-  
+
   render() {
     return <input x-model={this.state.data}/>
   }
@@ -273,11 +273,11 @@ class Foo extends React.Component {
     super(props);
     this.state = { data: 'text' }
   }
-  
+
   onChange(e) {
     console.log(e.target.value);
   }
-  
+
   render() {
     return (
       <input
@@ -285,7 +285,7 @@ class Foo extends React.Component {
         x-model={this.state.data}
         {...this.props}
       />
-    ) 
+    )
   }
 }
 ```
@@ -441,9 +441,9 @@ The `x-class` can also be used with [css-modules](https://github.com/css-modules
 import styles from './style.css';
 
 const foo = (
-  <div 
+  <div
     className={styles.foo}
-    x-class={{ 
+    x-class={{
       [styles.bar]: true,
       [styles.qux]: false
     }}

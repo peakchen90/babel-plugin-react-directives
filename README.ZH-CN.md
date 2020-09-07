@@ -29,7 +29,7 @@
 
 ## <span id="toc-usage">开始使用</span>
 
-需要 **node v8.6.0** 或者更高版本，**babel v6.20.0** 或者更高版本
+需要 **node v10.0.0** 或者更高版本，**babel v6.20.0** 或者更高版本
 
 ### <span id="toc-installation">安装</span>
 使用 npm:
@@ -94,10 +94,10 @@ const foo = true ? <div>text</div> : null
 ```jsx harmony
 const foo = (
   <div>
-    <p x-if={data === 'a'}>A</p>  
-    <p x-else-if={data === 'b'}>B</p>  
-    <p x-else-if={data === 'c'}>C</p>  
-    <p x-else>D</p>  
+    <p x-if={data === 'a'}>A</p>
+    <p x-else-if={data === 'b'}>B</p>
+    <p x-else-if={data === 'c'}>C</p>
+    <p x-else>D</p>
   </div>
 )
 ```
@@ -106,12 +106,12 @@ const foo = (
 ```jsx harmony
 const foo = (
   <div>
-    {data === 'a' 
-      ? <p>A</p> 
-      : data === 'b' 
-        ? <p>B</p> 
-        : data === 'c' 
-          ? <p>C</p> 
+    {data === 'a'
+      ? <p>A</p>
+      : data === 'b'
+        ? <p>B</p>
+        : data === 'c'
+          ? <p>C</p>
           : <p>D</p>
     }
   </div>
@@ -140,9 +140,9 @@ const foo = (
 当然，它也会通过调用 [mergeProps 方法](./runtime/merge-props.js) 合并其他 `style` props，例如：
 ```jsx harmony
 const foo = (
-  <div 
+  <div
     style={{ color: 'red' }}
-    x-show={true} 
+    x-show={true}
     {...extraProps}>
     text
   </div>
@@ -179,7 +179,7 @@ const foo = (
 ```jsx harmony
 const foo = (
   <ul>
-    <li 
+    <li
       x-for={item in list}
       key={item.id}>{item.name}
     </li>
@@ -216,8 +216,8 @@ const foo = (
 const foo = (
   <ul>
     {list.map(item => (
-      item.name === 'alice' 
-        ? <li key={item.id}>{item.name}</li> 
+      item.name === 'alice'
+        ? <li key={item.id}>{item.name}</li>
         : null
     ))}
   </ul>
@@ -235,7 +235,7 @@ class Foo extends React.Component {
     super(props);
     this.state = { data: 'text' }
   }
-  
+
   render() {
     return <input x-model={this.state.data}/>
   }
@@ -271,11 +271,11 @@ class Foo extends React.Component {
     super(props);
     this.state = { data: 'text' }
   }
-  
+
   onChange(e) {
     console.log(e.target.value);
   }
-  
+
   render() {
     return (
       <input
@@ -283,7 +283,7 @@ class Foo extends React.Component {
         x-model={this.state.data}
         {...this.props}
       />
-    ) 
+    )
   }
 }
 ```
@@ -374,7 +374,7 @@ class Foo extends React.Component {
 ```
 
 ### <span id="toc-directives-x-model-hook">x-model-hook</span>
-`x-model-hook` 与 `x-model` 非常相似，区别在于 `x-model-hook` 用于使用了 *useState hook* 的函数组件，而 `x-model` 用于 *class component* 
+`x-model-hook` 与 `x-model` 非常相似，区别在于 `x-model-hook` 用于使用了 *useState hook* 的函数组件，而 `x-model` 用于 *class component*
 
 **例子:**
 ```jsx harmony
@@ -438,9 +438,9 @@ const foo = <div className={classNames(["xyz", { abc: true, def: false }])}>
 import styles from './style.css';
 
 const foo = (
-  <div 
+  <div
     className={styles.foo}
-    x-class={{ 
+    x-class={{
       [styles.bar]: true,
       [styles.qux]: false
     }}
