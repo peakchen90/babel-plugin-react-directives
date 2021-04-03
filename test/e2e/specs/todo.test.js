@@ -1,6 +1,6 @@
 import React from 'react';
-import { mount } from 'enzyme';
-import { createInputNode } from '../util';
+import {mount} from 'enzyme';
+import {createInputNode} from '../util';
 
 class Todo extends React.Component {
   constructor(props) {
@@ -12,25 +12,25 @@ class Todo extends React.Component {
   }
 
   onAdd() {
-    const { list, searchText } = this.state;
+    const {list, searchText} = this.state;
     this.setState({
       list: list.concat(searchText)
     });
   }
 
   onRemove(index) {
-    const { list } = this.state;
+    const {list} = this.state;
     this.setState({
       list: list.filter((_, i) => i !== index)
     });
   }
 
   render() {
-    const { searchText, list } = this.state;
+    const {searchText, list} = this.state;
 
     return (
       <div>
-        <input className="input" type="text" x-model={searchText}/>
+        <input className="input" type="text" value={searchText} onChange={(e) => this.setState({searchText: e.target.value})}/>
         <button className="add" onClick={this.onAdd.bind(this)}>Add</button>
         <button x-show={list.length > 0} className="clear">Clear</button>
 

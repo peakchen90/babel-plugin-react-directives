@@ -4,7 +4,6 @@ const attrUtil = require('../utils/attribute');
 const elemUtil = require('../utils/element');
 const { codeFrameWarn } = require('../utils/util');
 
-
 /**
  * 条件指令的信息
  */
@@ -16,7 +15,6 @@ class Condition {
   }
 }
 
-
 /**
  * 1. 先找到一个包含if指令的JSXElement，并以它的父节点开始遍历JSXElement
  *    1.1 如果找到包含if指令时，查找其后的else-if及else指令
@@ -24,12 +22,10 @@ class Condition {
  * 2. 递归查找完成时，将栈里的每组条件指令依次转为为对应的条件表达式
  */
 
-
 /**
  * 保存遍历列表（二维数组，每个属性是包含一组条件的数组）
  */
 let traverseList = [];
-
 
 /**
  * 遍历包含 if 指令的 JSXElement

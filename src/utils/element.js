@@ -1,7 +1,6 @@
 const t = require('@babel/types');
 const { default: generator } = require('@babel/generator');
 
-
 class ElementUtil {
   constructor(path) {
     this.path = path;
@@ -168,7 +167,6 @@ class ElementUtil {
     return !t.isJSXElement(this.path.parent) && !t.isJSXFragment(this.path.parent);
   }
 }
-
 
 module.exports = function elemUtil(path) {
   const elementUtil = new ElementUtil(path);

@@ -8,7 +8,6 @@ const babelMap = {
   7: require('./babel7/node_modules/@babel/core')
 };
 
-
 /**
  * 执行测试
  * @param versionNum

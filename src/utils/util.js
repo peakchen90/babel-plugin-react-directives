@@ -4,7 +4,6 @@ const assert = require('assert');
 const chalk = require('chalk');
 const semver = require('semver');
 
-
 /**
  * 打印附带代码位置的警告信息
  * @param path
@@ -33,7 +32,6 @@ function codeFrameWarn(path, message) {
     ));
   }
 }
-
 
 /**
  * 断言babel版本是否支持

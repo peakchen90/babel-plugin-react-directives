@@ -5,7 +5,6 @@ const attrUtil = require('../utils/attribute');
 const elemUtil = require('../utils/element');
 const builder = require('../utils/builder');
 
-
 /**
  * 转换show指令
  * @param path

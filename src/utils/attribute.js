@@ -1,6 +1,5 @@
 const t = require('@babel/types');
 
-
 class AttributeUtil {
   constructor(path) {
     this.path = path;
@@ -62,7 +61,6 @@ class AttributeUtil {
     );
   }
 }
-
 
 module.exports = function attrUtil(path) {
   const attributeUtil = new AttributeUtil(path);

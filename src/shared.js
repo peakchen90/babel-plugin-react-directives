@@ -4,9 +4,7 @@ const ajvErrors = require('ajv-errors');
 
 // plugin option
 const opts = {
-  prefix: 'x',
-  pragmaType: 'React',
-  strict: false
+  prefix: 'x'
 };
 
 // 指令名
@@ -29,14 +27,6 @@ const DIRECTIVES = {
   get CLASS() {
     return `${opts.prefix}-class`;
   },
-
-  /* TODO 以下即将弃用 */
-  get DEPRECATED_MODEL() {
-    return `${opts.prefix}-model`;
-  },
-  get DEPRECATED_MODEL_HOOK() {
-    return `${opts.prefix}-model-hook`;
-  },
 };
 
 let optionsValidate;
@@ -46,11 +36,7 @@ let optionsValidate;
  * @param options
  */
 function updateOpts(options = {}) {
-  const {
-    prefix,
-    pragmaType,
-    strict
-  } = options;
+  const {prefix} = options;
 
   if (!optionsValidate) {
     const ajv = new Ajv({
@@ -63,15 +49,6 @@ function updateOpts(options = {}) {
           type: 'string',
           pattern: '^[A-Za-z$_][A-Za-z0-9$_]*$',
           errorMessage: 'The `prefix` option should be a string which javascript identifier, example: `foo`, `$abc`, `_abc123`.',
-        },
-        pragmaType: {
-          type: 'string',
-          minLength: 1,
-          errorMessage: 'The `pragmaType` option should be a non-empty string.'
-        },
-        strict: {
-          type: 'boolean',
-          errorMessage: 'The `strict` option should be a boolean.'
         }
       }
     });
@@ -86,11 +63,8 @@ function updateOpts(options = {}) {
 
   Object.assign(opts, {
     prefix: prefix || 'x',
-    pragmaType: pragmaType || 'React',
-    strict: strict || false
   });
 }
-
 
 module.exports = {
   DIRECTIVES,

@@ -1,4 +1,4 @@
-import {NodePath, Node, types as t} from "@babel/core";
+import {NodePath, types as t} from "@babel/core";
 
 declare interface ElementUtil {
   name: () => string | null

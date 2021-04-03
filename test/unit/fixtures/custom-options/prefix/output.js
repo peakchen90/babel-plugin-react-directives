@@ -10,23 +10,3 @@ const b = (
 );
 
 const c = list.map(item => <div>{item}</div>);
-
-class D {
-  render() {
-    return (
-      <input
-        value={this.state.testD}
-        onChange={(..._args) => {
-          let _value = require("babel-plugin-react-directives/runtime/resolve-value.js")(
-            _args
-          );
-
-          this.setState(_prevState => {
-            return {
-              testD: _value
-            };
-          });
-        }}/>
-    );
-  }
-}
