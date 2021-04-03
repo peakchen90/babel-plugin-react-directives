@@ -9,7 +9,6 @@ const transformModel = require('./directives/model');
 const transformFor = require('./directives/for');
 const transformClass = require('./directives/class');
 
-
 module.exports = (api) => {
   if (api.assertVersion) {
     api.assertVersion('>= 7.0.0');

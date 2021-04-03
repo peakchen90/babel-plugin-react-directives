@@ -8,8 +8,8 @@ node_js:
   - "12"
 
 install:
-  - npm install
-  - npm install -g codecov
+  - npm install --registry=https://registry.npmjs.org
+  - npm install -g codecov --registry=https://registry.npmjs.org
   - npm run test:install
 
 stages:

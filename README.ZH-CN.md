@@ -19,8 +19,6 @@
   - [x-else-if 和 x-else](#toc-directives-x-else-if-and-x-else)
   - [x-show](#toc-directives-x-show)
   - [x-for](#toc-directives-x-for)
-  - [x-model](#toc-directives-x-model)
-  - [x-model-hook](#toc-directives-x-model-hook)
   - [x-class](#toc-directives-x-class)
 - [相关资源](#toc-related-packages)
 - [已知问题](#toc-known-issues)
@@ -29,7 +27,7 @@
 
 ## <span id="toc-usage">开始使用</span>
 
-需要 **node v10.0.0** 或者更高版本，**babel v6.20.0** 或者更高版本
+需要 **node v10.0.0** 或者更高版本，**babel v7.0.0** 或者更高版本
 
 ### <span id="toc-installation">安装</span>
 使用 npm:
@@ -59,8 +57,7 @@ yarn add --dev babel-plugin-react-directives
     [
       "react-directives",
       {
-        "prefix": "x",
-        "pragmaType": "React"
+        "prefix": "x"
       }
     ]
   ]
@@ -68,7 +65,6 @@ yarn add --dev babel-plugin-react-directives
 ```
 
 - `prefix`: 指令的 props 前缀，默认值: "x"，用法示例: `x-if`
-- `pragmaType`: 帮助内部进行正确的识别一些语法，如 hooks，默认值: "React"
 
 ## <span id="toc-directives">指令</span>
 
@@ -224,188 +220,7 @@ const foo = (
 )
 ```
 
-### <span id="toc-directives-x-model">x-model</span>
-`x-model` 是类似于 vue `v-model` 的语法糖，使用时绑定一个值到表单元素的 `value` prop 上，在表单元素更新时自动更新状态。
-通过调用 [resolveValue 方法](./runtime/resolve-value.js) 获取更新的值（如果第一个参数 `arg` 不为空，且 `arg.target` 是一个 HTMLElement, 返回 `arg.target.value`，否则返回 `arg`）
-
-**例子:**
-```jsx harmony
-class Foo extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { data: 'text' }
-  }
-
-  render() {
-    return <input x-model={this.state.data}/>
-  }
-}
-```
-
-**转换成:**
-```jsx harmony
-class Foo extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { data: 'text' };
-  }
-
-  render() {
-    return (
-      <input value={this.state.data} onChange={(..._args) => {
-        let _value = resolveValue(_args);
-
-        this.setState(_prevState => {
-          return { data: _value };
-        });
-      }}/>
-    );
-  }
-}
-```
-
-当存在其他 `onChange` prop 时，将通过调用 [invokeOnchange 方法](./runtime/invoke-onchange.js) 合并其他 `onChange` 方法:
-```jsx harmony
-class Foo extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { data: 'text' }
-  }
-
-  onChange(e) {
-    console.log(e.target.value);
-  }
-
-  render() {
-    return (
-      <input
-        onChange={this.onChange.bind(this)}
-        x-model={this.state.data}
-        {...this.props}
-      />
-    )
-  }
-}
-```
-
-将被转换成:
-```jsx harmony
-class Foo extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { data: 'text' };
-  }
-
-  onChange(e) {
-    console.log(e.target.value);
-  }
-
-  render() {
-    return (
-      <input
-        {...this.props}
-        value={this.state.data}
-        onChange={(..._args) => {
-          let _value = resolveValue(_args);
-
-          this.setState(_prevState => {
-            return { data: _value };
-          });
-
-          invokeOnchange.call(this, _args, [
-            { onChange: this.onChange.bind(this) },
-            this.props
-          ]);
-        }}/>
-    );
-  }
-}
-```
-
-如果 `x-model` 的值是一个对象上的属性，那么当更新时将创建一个新对象，并将对象上旧的属性值合并到新对象上，比如:
-```jsx harmony
-class Foo extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      data: {
-        text: 'bar'
-      }
-    }
-  }
-
-  render() {
-    const { data } = this.state;
-    return <input x-model={data.text}/>
-  }
-}
-```
-
-将被转换成:
-```jsx harmony
-class Foo extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      data: { text: 'bar' }
-    };
-  }
-
-  render() {
-    const { data } = this.state;
-    return (
-      <input
-        value={data.text}
-        onChange={(..._args) => {
-          let _value = resolveValue(_args);
-
-          this.setState(_prevState => {
-            let _val = {
-              ..._prevState.data,
-              text: _value
-            };
-            return { data: _val };
-          });
-        }}
-      />
-    );
-  }
-}
-```
-
-### <span id="toc-directives-x-model-hook">x-model-hook</span>
-`x-model-hook` 与 `x-model` 非常相似，区别在于 `x-model-hook` 用于使用了 *useState hook* 的函数组件，而 `x-model` 用于 *class component*
-
-**例子:**
-```jsx harmony
-function Foo() {
-  const [data, setData] = useState(0);
-  return <input x-model-hook={data}/>
-}
-```
-
-**转换成:**
-```jsx harmony
-function Foo() {
-  const [data, setData] = useState(0);
-  return (
-    <input
-      value={data}
-      onChange={(..._args) => {
-        let _value = resolveValue(_args);
-
-        setData(_value);
-      }}
-    />
-  );
-}
-```
-
-**提示**: 如果你在项目中使用了 [**ESLint**](https://eslint.org)，也许会提示你 `setData` 是一个从未使用的变量，请安装 [**eslint-plugin-react-directives**](https://github.com/peakchen90/eslint-plugin-react-directives) 来解决这个问题
-
 ### <span id="toc-directives-x-class">x-class</span>
-
-> *1.1.0版本新增*
 
 `x-class` 通过 [classnames](https://github.com/JedWatson/classnames) 有条件的生成 className, 这对于动态生成 className 非常有用。
 用法与 [classnames](https://github.com/JedWatson/classnames) 相同，绑定值将作为参数传给 [`classNames`](https://github.com/JedWatson/classnames#usage) 方法。

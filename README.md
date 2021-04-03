@@ -19,8 +19,6 @@ A babel plugin that provides some directives for react(any JSX), similar to dire
   - [x-else-if and x-else](#toc-directives-x-else-if-and-x-else)
   - [x-show](#toc-directives-x-show)
   - [x-for](#toc-directives-x-for)
-  - [x-model](#toc-directives-x-model)
-  - [x-model-hook](#toc-directives-x-model-hook)
   - [x-class](#toc-directives-x-class)
 - [Related Packages](#toc-related-packages)
 - [Known Issues](#toc-known-issues)
@@ -29,7 +27,7 @@ A babel plugin that provides some directives for react(any JSX), similar to dire
 
 ## <span id="toc-usage">Usage</span>
 
-Requires **node v10.0.0** or higher, **babel v6.20.0** or higher.
+Requires **node v10.0.0** or higher, **babel v7.0.0** or higher.
 
 ### <span id="toc-installation">Installation</span>
 use npm:
@@ -59,8 +57,7 @@ yarn add --dev babel-plugin-react-directives
     [
       "react-directives",
       {
-        "prefix": "x",
-        "pragmaType": "React"
+        "prefix": "x"
       }
     ]
   ]
@@ -68,8 +65,6 @@ yarn add --dev babel-plugin-react-directives
 ```
 
 - `prefix`: JSX props prefix for directives. Default: "x", example usage: `x-if`
-- `pragmaType`: Help internal to correctly identify some syntax, such as hooks. Default: "React"
-
 ## <span id="toc-directives">Directives</span>
 
 ### <span id="toc-directives-x-if">x-if</span>
@@ -226,189 +221,7 @@ const foo = (
 )
 ```
 
-### <span id="toc-directives-x-model">x-model</span>
-The `x-model` is a syntax sugar similar to vue `v-model`, which binds a state to the `value` prop of the **form element** and automatically updates the state when the element is updated.
-It resolves the updated value by calling the [resolveValue method](./runtime/resolve-value.js) (If the first argument `arg` is non-null, and `arg.target` is a HTMLElement, return `arg.target.value`, otherwise return `arg`).
-
-**Example:**
-```jsx harmony
-class Foo extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { data: 'text' }
-  }
-
-  render() {
-    return <input x-model={this.state.data}/>
-  }
-}
-```
-
-**Convert to:**
-```jsx harmony
-class Foo extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { data: 'text' };
-  }
-
-  render() {
-    return (
-      <input value={this.state.data} onChange={(..._args) => {
-        let _value = resolveValue(_args);
-
-        this.setState(_prevState => {
-          return { data: _value };
-        });
-      }}/>
-    );
-  }
-}
-```
-
-When there are other `onChange` props, merge them by calling the [invokeOnchange method](./runtime/invoke-onchange.js):
-```jsx harmony
-class Foo extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { data: 'text' }
-  }
-
-  onChange(e) {
-    console.log(e.target.value);
-  }
-
-  render() {
-    return (
-      <input
-        onChange={this.onChange.bind(this)}
-        x-model={this.state.data}
-        {...this.props}
-      />
-    )
-  }
-}
-```
-
-will be converted to:
-```jsx harmony
-class Foo extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { data: 'text' };
-  }
-
-  onChange(e) {
-    console.log(e.target.value);
-  }
-
-  render() {
-    return (
-      <input
-        {...this.props}
-        value={this.state.data}
-        onChange={(..._args) => {
-          let _value = resolveValue(_args);
-
-          this.setState(_prevState => {
-            return { data: _value };
-          });
-
-          invokeOnchange.call(this, _args, [
-            { onChange: this.onChange.bind(this) },
-            this.props
-          ]);
-        }}/>
-    );
-  }
-}
-```
-
-If the `x-model` value is an object's property, a new object is created when it is updated, and the object's old property values are merged. For example:
-```jsx harmony
-class Foo extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      data: {
-        text: 'bar'
-      }
-    }
-  }
-
-  render() {
-    const { data } = this.state;
-    return <input x-model={data.text}/>
-  }
-}
-```
-
-will be converted to:
-```jsx harmony
-class Foo extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      data: { text: 'bar' }
-    };
-  }
-
-  render() {
-    const { data } = this.state;
-    return (
-      <input
-        value={data.text}
-        onChange={(..._args) => {
-          let _value = resolveValue(_args);
-
-          this.setState(_prevState => {
-            let _val = {
-              ..._prevState.data,
-              text: _value
-            };
-            return { data: _val };
-          });
-        }}
-      />
-    );
-  }
-}
-```
-
-### <span id="toc-directives-x-model-hook">x-model-hook</span>
-The `x-model-hook` is similar to the `x-model`, the difference is that the `x-model-hook` is used in the function component with *useState hook*, and the `x-model` is used in the *class component*.
-
-**Example:**
-```jsx harmony
-function Foo() {
-  const [data, setData] = useState(0);
-  return <input x-model-hook={data}/>
-}
-```
-
-**Convert to:**
-```jsx harmony
-function Foo() {
-  const [data, setData] = useState(0);
-  return (
-    <input
-      value={data}
-      onChange={(..._args) => {
-        let _value = resolveValue(_args);
-
-        setData(_value);
-      }}
-    />
-  );
-}
-```
-
-**Note**: If you use [**ESLint**](https://eslint.org), you may receive an error that `setData` is defined but never used.
-Please install [**eslint-plugin-react-directives**](https://github.com/peakchen90/eslint-plugin-react-directives) plugin to solve it.
-
 ### <span id="toc-directives-x-class">x-class</span>
-
-> *New in 1.1.0*
 
 The `x-class` for conditionally joining classNames together by [classnames](https://github.com/JedWatson/classnames), and it is useful for dynamically generating className.
 Usage is the same as [classnames](https://github.com/JedWatson/classnames), the binding value will be passed as a parameter to the [`classNames`](https://github.com/JedWatson/classnames#usage) method.
