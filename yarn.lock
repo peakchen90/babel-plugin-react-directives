@@ -1819,10 +1819,10 @@ eslint-plugin-import@^2.22.1:
     resolve "^1.17.0"
     tsconfig-paths "^3.9.0"
 
-eslint-plugin-react-directives@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.npm.taobao.org/eslint-plugin-react-directives/download/eslint-plugin-react-directives-1.0.1.tgz#76528aa7c557cd728eeffafefceb7dfa490221dc"
-  integrity sha1-dlKKp8VXzXKO7/r+/Ot9+kkCIdw=
+eslint-plugin-react-directives@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.npm.taobao.org/eslint-plugin-react-directives/download/eslint-plugin-react-directives-2.0.0.tgz?cache=0&sync_timestamp=1617442618998&other_urls=https%3A%2F%2Fregistry.npm.taobao.org%2Feslint-plugin-react-directives%2Fdownload%2Feslint-plugin-react-directives-2.0.0.tgz#798d928cca4b28603c72f79613cf6a77acbbb247"
+  integrity sha1-eY2SjMpLKGA8cveWE89qd6y7skc=
 
 eslint-plugin-react@^7.23.1:
   version "7.23.1"

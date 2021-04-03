@@ -3,3 +3,4 @@ test/coverage
 test/unit/fixtures
 runtime
 *.d.ts
+/*.js

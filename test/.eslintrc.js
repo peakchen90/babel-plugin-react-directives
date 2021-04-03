@@ -9,7 +9,6 @@ module.exports = {
   rules: {
     'react/prop-types': 'off',
     'max-classes-per-file': 'off',
-    'no-undef': 'off',
-    'no-unused-vars': 'off',
+    'no-undef': 'off'
   }
 };

@@ -81,7 +81,7 @@
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.22.1",
     "eslint-plugin-react": "^7.23.1",
-    "eslint-plugin-react-directives": "^1.0.1",
+    "eslint-plugin-react-directives": "^2.0.0",
     "husky": "^4.3.8",
     "invariant": "^2.2.4",
     "jest": "^26.6.3",
