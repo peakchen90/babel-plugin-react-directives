@@ -1,6 +1,5 @@
 const options = `{
-  "prefix": "x",
-  "pragmaType": "React"
+  "prefix": "x"
 }`;
 
 export default options;
