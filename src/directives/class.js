@@ -54,7 +54,7 @@ function transformClass(path) {
     getResult(mergeItems) {
       if (mergeItems.length > 0) {
         return builder.buildCallRuntimeExpression(
-          'lib-classnames.js',
+          'classnames.js',
           [
             t.arrayExpression([
               mergeItems.length > 0 && builder.buildCallRuntimeExpression(
@@ -72,7 +72,7 @@ function transformClass(path) {
       }
 
       return builder.buildCallRuntimeExpression(
-        'lib-classnames.js',
+        'classnames.js',
         [bindingValue]
       );
     },
