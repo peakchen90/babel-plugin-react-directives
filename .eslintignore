@@ -1,6 +1,6 @@
-node_modules
-test/coverage
-test/unit/fixtures
-runtime
+node_modules/
+test/coverage/
+fixtures/
+runtime/
 *.d.ts
 /*.js

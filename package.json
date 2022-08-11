@@ -66,6 +66,7 @@
     "ajv": "^6.12.6",
     "ajv-errors": "^1.0.1",
     "chalk": "^4.1.0",
+    "classnames": "2",
     "semver": "^6.3.0"
   },
   "devDependencies": {
@@ -89,7 +90,7 @@
     "lint-staged": "^10.5.4",
     "lodash.mergewith": "^4.6.2",
     "path-exists": "^4.0.0",
-    "prettier": "^1.19.1",
+    "prettier": "1.19.1",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "strip-indent": "^3.0.0"

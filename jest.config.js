@@ -1,7 +1,7 @@
 const path = require('path');
 
 module.exports = {
-  verbose: true,
+  verbose: false,
   rootDir: path.join(__dirname),
   transform: {
     '\\.js$': 'babel-jest'

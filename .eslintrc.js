@@ -13,8 +13,8 @@ module.exports = {
     'import/no-mutable-exports': 'off',
     'import/no-extraneous-dependencies': 'off',
     'no-console': 'off',
-    'no-empty': ['error', { allowEmptyCatch: true }],
-    'no-use-before-define': ['error', { 'functions': false }],
+    'no-empty': ['error', {allowEmptyCatch: true}],
+    'no-use-before-define': ['error', {'functions': false}],
     'no-underscore-dangle': 'off',
     'no-param-reassign': 'off',
     'no-plusplus': 'off',
@@ -37,5 +37,20 @@ module.exports = {
     'generator-star-spacing': 'off',
     'new-cap': 'off',
     'no-cond-assign': 'off'
-  }
+  },
+  overrides: [{
+    files: ["test/**"],
+    env: {
+      jest: true
+    },
+    extends: [
+      'plugin:react/recommended',
+      'plugin:react-directives/recommended'
+    ],
+    rules: {
+      'react/prop-types': 'off',
+      'max-classes-per-file': 'off',
+      'no-undef': 'off'
+    }
+  }]
 };

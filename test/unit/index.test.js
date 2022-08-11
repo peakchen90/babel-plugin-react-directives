@@ -26,7 +26,8 @@ function runTest(versionNum) {
     fixtures: path.join(__dirname, './fixtures'),
     formatResult: (result) => prettier.format(result, {
       parser: 'babel',
-      endOfLine: 'lf'
+      endOfLine: 'lf',
+      bracketSpacing: false
     }).replace(/\s+(\/>|>)/g, '$1')
   });
 }

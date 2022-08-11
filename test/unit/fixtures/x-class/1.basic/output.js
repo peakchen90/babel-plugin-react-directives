@@ -1,9 +1,11 @@
 const a = (
   <div
-    className={require("babel-plugin-react-directives/runtime/classnames.js")({
-      foo: false,
-      bar: true
-    })}>
+    className={require("babel-plugin-react-directives/runtime/lib-classnames.js")(
+      {
+        foo: false,
+        bar: true
+      }
+    )}>
     A
   </div>
 );
