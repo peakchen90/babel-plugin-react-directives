@@ -1,7 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
@@ -33,21 +33,26 @@ module.exports = {
               presets: [
                 [
                   '@babel/preset-env',
-                  { modules: false }
+                  {modules: false}
                 ]
               ]
             }
           }
         ],
         exclude: [
-          path.join(__dirname, 'node_modules')
+          /[\\/]node_modules[\\/]/
         ]
+      },
+      {
+        include: /node_modules/,
+        test: /\.mjs$/,
+        type: 'javascript/auto'
       },
       {
         test: /\.css$/,
         use: [
-          { loader: MiniCssExtractPlugin.loader },
-          { loader: 'css-loader' },
+          {loader: MiniCssExtractPlugin.loader},
+          {loader: 'css-loader'},
           {
             loader: 'postcss-loader',
             options: {
