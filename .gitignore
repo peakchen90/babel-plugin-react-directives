@@ -9,3 +9,5 @@ dist/
 
 npm-debug.log*
 yarn-debug.log*
+
+playground/yarn.lock

@@ -1,7 +1,7 @@
 const a = (
   <div
     style={{
-      ...require("babel-plugin-react-directives/runtime/merge-props.js").call(
+      ...require("react-directives-runtime/merge-props.js").call(
         this,
         "style",
         [
@@ -20,7 +20,7 @@ const a = (
 const b = (
   <div
     style={{
-      ...require("babel-plugin-react-directives/runtime/merge-props.js").call(
+      ...require("react-directives-runtime/merge-props.js").call(
         this,
         "style",
         [

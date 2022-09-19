@@ -32,7 +32,7 @@ function buildCallRuntimeExpression(fileName, args = [], contextExpr = null) {
 
   const runtimeMethodExpr = t.callExpression(
     t.identifier('require'),
-    [t.stringLiteral(`babel-plugin-react-directives/runtime/${fileName}`)]
+    [t.stringLiteral(`react-directives-runtime/${fileName}`)]
   );
 
   let callee = runtimeMethodExpr;

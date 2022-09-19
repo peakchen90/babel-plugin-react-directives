@@ -16,6 +16,7 @@
     "test:install": "node test/install.js && node playground/install.js",
     "pg:dev": "node playground/build.js --dev",
     "pg:build": "node playground/build.js",
+    "release-runtime": "(cd runtime && npm publish)",
     "prepublishOnly": "npm run test"
   },
   "husky": {
@@ -66,7 +67,7 @@
     "ajv": "^6.12.6",
     "ajv-errors": "^1.0.1",
     "chalk": "^4.1.0",
-    "classnames": "2",
+    "react-directives-runtime": "^0.0.1",
     "semver": "^6.3.0"
   },
   "devDependencies": {

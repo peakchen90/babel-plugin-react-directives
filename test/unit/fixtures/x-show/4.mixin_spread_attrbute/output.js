@@ -2,7 +2,7 @@ const a = (
   <div
     {...spreadA}
     style={{
-      ...require("babel-plugin-react-directives/runtime/merge-props.js").call(
+      ...require("react-directives-runtime/merge-props.js").call(
         this,
         "style",
         [spreadA]
@@ -18,7 +18,7 @@ const b = (
     {...spreadBa}
     {...spreadBb}
     style={{
-      ...require("babel-plugin-react-directives/runtime/merge-props.js").call(
+      ...require("react-directives-runtime/merge-props.js").call(
         this,
         "style",
         [spreadBa, spreadBb]

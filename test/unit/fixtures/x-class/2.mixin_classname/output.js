@@ -1,7 +1,7 @@
 const a = (
   <div
-    className={require("babel-plugin-react-directives/runtime/classnames.js")([
-      require("babel-plugin-react-directives/runtime/merge-props.js").call(
+    className={require("react-directives-runtime/classnames.js")([
+      require("react-directives-runtime/merge-props.js").call(
         this,
         "className",
         [

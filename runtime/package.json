@@ -1,0 +1,35 @@
+{
+  "name": "react-directives-runtime",
+  "version": "0.0.1",
+  "description": "The runtime code for babel-plugin-react-directives.",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org"
+  },
+  "author": "peakchen90 <1558267774@qq.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/peakchen90/babel-plugin-react-directives"
+  },
+  "bugs": {
+    "url": "https://github.com/peakchen90/babel-plugin-react-directives/issues"
+  },
+  "keywords": [
+    "runtime",
+    "react-directive",
+    "jsx-directive",
+    "jsx-plus",
+    "directive",
+    "react",
+    "vue",
+    "x-if",
+    "x-for"
+  ],
+  "engines": {
+    "node": ">=10.0.0"
+  },
+  "dependencies": {
+    "classnames": "^2.0.0"
+  }
+}
