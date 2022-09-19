@@ -4158,10 +4158,10 @@ randexp@0.4.6:
     discontinuous-range "1.0.0"
     ret "~0.1.10"
 
-react-directives-runtime@^0.0.1:
-  version "0.0.1"
-  resolved "https://registry.npmmirror.com/react-directives-runtime/-/react-directives-runtime-0.0.1.tgz#cb27bb4c69054f80d76b56f8f5764af96207172e"
-  integrity sha512-iXplbLjytgHiQyOOUJprJJppQe5RkpyLJOC48byzsyQtzhMU+APzljr9EbX88RxnVrSGtH1IlBsDirDWJ1kRhw==
+react-directives-runtime@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.npmmirror.com/react-directives-runtime/-/react-directives-runtime-1.0.0.tgz#d990eab3954a5769c5a6d053d6c12ef097615ea7"
+  integrity sha512-tdW3KqaHLaaSjL/y+q6M+npd7+TjMnTou5QOipZN7HMujnyuNgT27SAW6FQiLwsfMZWPVVFNuhoMBAek+giYrw==
   dependencies:
     classnames "^2.0.0"
 
