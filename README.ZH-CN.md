@@ -33,11 +33,13 @@
 使用 npm:
 ```bash
 npm install --save-dev babel-plugin-react-directives
+npm install --save react-directives-runtime
 ```
 
 使用 yarn:
-```base
+```bash
 yarn add --dev babel-plugin-react-directives
+yarn add react-directives-runtime
 ```
 
 ### <span id="toc-configuring">添加配置 `.babelrc`</span>

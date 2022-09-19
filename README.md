@@ -37,7 +37,7 @@ npm install --save react-directives-runtime
 ```
 
 use yarn:
-```base
+```bash
 yarn add --dev babel-plugin-react-directives
 yarn add react-directives-runtime
 ```
