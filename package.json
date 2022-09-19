@@ -67,7 +67,7 @@
     "ajv": "^6.12.6",
     "ajv-errors": "^1.0.1",
     "chalk": "^4.1.0",
-    "react-directives-runtime": "^0.0.1",
+    "react-directives-runtime": "^1.0.0",
     "semver": "^6.3.0"
   },
   "devDependencies": {

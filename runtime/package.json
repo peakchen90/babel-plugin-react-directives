@@ -1,6 +1,6 @@
 {
   "name": "react-directives-runtime",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "The runtime code for babel-plugin-react-directives.",
   "publishConfig": {
     "access": "public",

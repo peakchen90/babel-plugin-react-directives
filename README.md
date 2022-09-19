@@ -33,11 +33,13 @@ Requires **node v10.0.0** or higher, **babel v7.0.0** or higher.
 use npm:
 ```bash
 npm install --save-dev babel-plugin-react-directives
+npm install --save react-directives-runtime
 ```
 
 use yarn:
 ```base
 yarn add --dev babel-plugin-react-directives
+yarn add react-directives-runtime
 ```
 
 ### <span id="toc-configuring">Configuring via `.babelrc`</span>

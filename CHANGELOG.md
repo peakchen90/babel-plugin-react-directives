@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## v3.0.0
+2022-09-19
+
+- **Feature**: Use a standalone npm package for runtime
+
 ## v1.1.1
 2019-12-03
 
