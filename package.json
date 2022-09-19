@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-react-directives",
-  "version": "2.0.3",
+  "version": "3.0.0-beta.0",
   "description": "A babel plugin that provides some directives for react(any JSX), similar to directive of vue.",
   "main": "src/index.js",
   "files": [
